@@ -1,0 +1,15 @@
+{
+  "name": "terramodulus-efps",
+  "version": "0.1.0",
+  "main": "renderer.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnvilloyDevStudio/TerraModulus-EFPs.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "dedent-js": "^1.0.1",
+    "xml2js": "^0.6.2"
+  },
+  "type": "module"
+}

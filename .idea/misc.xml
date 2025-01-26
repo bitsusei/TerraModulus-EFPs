@@ -2,5 +2,6 @@
 <project version="4">
   <component name="ProjectResources">
     <resource url="D:\BenFiles\Github\TerraModulus-EFPs\efp.xsd" location="$PROJECT_DIR$/efp.xsd" />
+    <xml-schema-version>XMLSchema_1_1</xml-schema-version>
   </component>
 </project>

@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
 		   xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1">
     <xs:element name="efp">
@@ -26,19 +26,46 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="body">
-					<xs:complexType mixed="true">
-						<xs:choice maxOccurs="unbounded" minOccurs="0">
-							<xs:element name="a" type="xs:string">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="section" maxOccurs="unbounded"/>
+							<xs:element name="namedReferences" minOccurs="0">
 								<xs:complexType>
-									<xs:attribute name="href" type="xs:anyURI" use="required"/>
+									<xs:sequence>
+										<xs:element name="reference" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:complexContent>
+													<xs:extension base="reference">
+														<xs:attribute name="anchor" type="xs:string">
+															<xs:simpleType>
+																<xs:restriction>
+																	<xs:pattern value="[\w-]+"/>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:attribute>
+													</xs:extension>
+												</xs:complexContent>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
-							<xs:element name="code" type="xs:string">
-								<xs:complexType mixed="true">
-									<xs:attribute name="lang" type="xs:string"/>
+							<xs:element name="references" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="reference" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:complexContent>
+													<xs:extension base="reference">
+														<xs:attribute name="id" type="xs:string"/>
+													</xs:extension>
+												</xs:complexContent>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
-						</xs:choice>
+						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
@@ -77,5 +104,140 @@
 		<xs:sequence>
 			<xs:element name="efp" type="xs:positiveInteger" maxOccurs="unbounded"/>
 		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="section">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="content" type="content"/>
+				<xs:element ref="section" maxOccurs="unbounded" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="title" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="content" mixed="true">
+		<xs:complexContent>
+			<xs:extension base="xs:token">
+				<xs:choice maxOccurs="unbounded" minOccurs="0">
+					<!-- Some elements are referred from HTML and Writerside XML Markup -->
+					<xs:element name="a">
+						<xs:complexType>
+							<xs:complexContent>
+								<xs:extension base="content">
+									<xs:attribute name="href" type="xs:anyURI" use="required"/>
+									<xs:attribute name="download" type="xs:string"/>
+								</xs:extension>
+							</xs:complexContent>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="code" type="xs:string"/>
+					<xs:element name="code-block" type="xs:string">
+						<xs:complexType mixed="true">
+							<xs:attribute name="lang" type="xs:string"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="br"/>
+					<xs:element name="dl">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="li">
+									<xs:complexType>
+										<xs:complexContent>
+											<xs:extension base="content">
+												<xs:attribute name="title" type="xs:string" use="required"/>
+											</xs:extension>
+										</xs:complexContent>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="i" type="content"/>
+					<xs:element name="b" type="content"/>
+					<xs:element name="i" type="content"/>
+					<xs:element name="p" type="content"/>
+					<xs:element name="img">
+						<xs:complexType>
+							<xs:attribute name="src" type="xs:anyURI" use="required"/>
+							<xs:attribute name="alt" type="xs:string"/>
+							<xs:attribute name="width" type="xs:string"/>
+							<xs:attribute name="height" type="xs:string"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="list">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="li" type="content"/>
+							</xs:sequence>
+							<xs:attribute name="type" default="bullet">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="bullet"/>
+										<xs:enumeration value="decimal"/>
+										<xs:enumeration value="lower-alpha"/>
+										<xs:enumeration value="none"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="math" type="xs:string"/><!-- LaTeX Math; rendered in SVG -->
+					<xs:element name="kbd" type="xs:string"/>
+					<xs:element name="table">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="tr" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:choice maxOccurs="unbounded">
+											<xs:element name="th" type="content"/>
+											<xs:element name="td" type="content"/>
+										</xs:choice>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="tabs">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="tab" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:complexContent>
+											<xs:extension base="content">
+												<xs:attribute name="title" type="xs:string" use="required"/>
+											</xs:extension>
+										</xs:complexContent>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="reference">
+		<xs:sequence>
+			<xs:element name="title" type="xs:string"/>
+			<xs:element name="author" type="xs:string"/>
+			<xs:element name="date">
+				<xs:complexType>
+					<xs:attribute name="year" type="xs:gYear" use="required"/>
+					<xs:attribute name="month" type="xs:gMonth"/>
+					<xs:attribute name="day" type="xs:gDay"/>
+					<xs:assert test="(not(@day) or @month)"/>
+					<!-- IntelliJ does not support xs:assert; see https://stackoverflow.com/a/63997014 -->
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="seriesInfo">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+					<xs:attribute name="value" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="target" type="xs:anyURI"/>
 	</xs:complexType>
 </xs:schema>
