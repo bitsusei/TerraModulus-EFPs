@@ -51,18 +51,18 @@
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="created" type="xs:date" use="required"/>
-			<xs:attribute name="category" type="xs:string" use="required">
+			<xs:attribute name="category" use="required">
 				<xs:simpleType>
-					<xs:restriction>
+					<xs:restriction base="xs:string">
 						<xs:enumeration value="informational"/>
 						<xs:enumeration value="process"/>
 						<xs:enumeration value="standard"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="status" type="xs:string" use="required">
+			<xs:attribute name="status" use="required">
 				<xs:simpleType>
-					<xs:restriction>
+					<xs:restriction base="xs:string">
 						<xs:enumeration value="draft"/>
 						<xs:enumeration value="deferred"/>
 						<xs:enumeration value="provisional"/>
