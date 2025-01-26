@@ -1,0 +1,41 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+		   xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1">
+    <xs:element name="efp">
+        <xs:complexType>
+			<xs:sequence>
+				<xs:element name="body">
+					<xs:complexType mixed="true">
+						<xs:choice maxOccurs="unbounded" minOccurs="0">
+							<xs:element name="code" type="xs:string">
+								<xs:complexType mixed="true">
+									<xs:attribute name="lang" type="xs:string"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="pullRequests">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="pullRequest" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="efp" type="xs:positiveInteger" use="required"/>
+			<xs:attribute name="title" type="xs:string" use="required">
+				<xs:simpleType>
+					<xs:restriction>
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="date" type="xs:date" use="required"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
