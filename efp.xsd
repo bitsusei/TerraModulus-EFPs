@@ -4,26 +4,41 @@
     <xs:element name="efp">
         <xs:complexType>
 			<xs:sequence>
+				<xs:element name="metadata">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="obsoletedBy" minOccurs="0" type="efpList"/>
+							<xs:element name="updatedBy" minOccurs="0" type="efpList"/>
+							<xs:element name="obsoletes" minOccurs="0" type="efpList"/>
+							<xs:element name="updates" minOccurs="0" type="efpList"/>
+							<xs:element name="pullRequests">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="pullRequest" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="body">
 					<xs:complexType mixed="true">
 						<xs:choice maxOccurs="unbounded" minOccurs="0">
+							<xs:element name="a" type="xs:string">
+								<xs:complexType>
+									<xs:attribute name="href" type="xs:anyURI" use="required"/>
+								</xs:complexType>
+							</xs:element>
 							<xs:element name="code" type="xs:string">
 								<xs:complexType mixed="true">
 									<xs:attribute name="lang" type="xs:string"/>
 								</xs:complexType>
 							</xs:element>
 						</xs:choice>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="pullRequests">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="pullRequest" maxOccurs="unbounded">
-								<xs:complexType>
-									<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
-								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
@@ -35,7 +50,32 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="date" type="xs:date" use="required"/>
-        </xs:complexType>
+			<xs:attribute name="created" type="xs:date" use="required"/>
+			<xs:attribute name="category" type="xs:string" use="required">
+				<xs:simpleType>
+					<xs:restriction>
+						<xs:enumeration value="informational"/>
+						<xs:enumeration value="process"/>
+						<xs:enumeration value="standard"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="status" type="xs:string" use="required">
+				<xs:simpleType>
+					<xs:restriction>
+						<xs:enumeration value="draft"/>
+						<xs:enumeration value="deferred"/>
+						<xs:enumeration value="provisional"/>
+						<xs:enumeration value="final"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
     </xs:element>
+
+	<xs:complexType name="efpList">
+		<xs:sequence>
+			<xs:element name="efp" type="xs:positiveInteger" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
 </xs:schema>
