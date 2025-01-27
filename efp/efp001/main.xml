@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 <efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
-	efp="1" created="2025-01-26" category="process" status="draft" title="EFP Architecture">
+	efp="1" created="2025-01-26" category="process" status="provisional" title="EFP Architecture">
 	<metadata>
 		<pullRequests>
 			<pullRequest id="1"/>
@@ -75,6 +75,9 @@
 					the <code>efp</code> folder, named <code>efp&lt;XXX&gt;</code>, where <code>XXX</code> is
 					a 3-digit number assigned identifier of the entire EFP, with leading zeros filled if any.
 					The identifiers are assigned with increments of the latest proposed EFP, to new EFPs.
+					However, it is possible that the identifier later changes to 4 digits. Thus, the format change
+					is different from the EFP content change process, and may be conducted directly, but proposing
+					EFP(s) is still recommended for tracking.
 				</p>
 				<p>
 					All EFP documents are formatted in XML, with XHTML generated accordingly with the Node.js
