@@ -1,8 +1,28 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 <efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
-	date="" title="">
-	<body></body>
-	<pullRequests>
-		<pullRequest/>
-	</pullRequests>
+	 efp="" created="" category="" status="draft" title="">
+	<metadata>
+		<pullRequests>
+			<pullRequest id=""/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+
+			</content>
+		</section>
+		<section title="">
+			<content>
+				
+			</content>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li><a href=""></a></li>
+				</list>
+			</content>
+		</section>
+	</body>
 </efp>
