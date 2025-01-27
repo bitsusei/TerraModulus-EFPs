@@ -34,6 +34,12 @@
 					methods are generally understood.
 				</p>
 				<p>
+					EFPs are publicly visible and allow open project supervisions by the public, while keeping
+					the project workflow streamlined enough. These could provide clear guidelines and information
+					about various topics, so as the processes. This would also allow certain public involvement in
+					the project while keeping certain intent of organized workflow.
+				</p>
+				<p>
 					When mentioning "repository" in the following, it refers to the GitHub repository hosting all
 					the EFPs of the project and the community. The specific context may involve directory structure
 					of the repository and the files included.
