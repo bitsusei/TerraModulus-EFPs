@@ -131,7 +131,14 @@
 							</xs:complexContent>
 						</xs:complexType>
 					</xs:element>
-					<xs:element name="code" type="xs:string"/>
+					<xs:element name="code">
+						<xs:complexType mixed="true">
+							<xs:choice minOccurs="0" maxOccurs="unbounded">
+								<xs:element name="i" type="content"/>
+								<xs:element name="b" type="content"/>
+							</xs:choice>
+						</xs:complexType>
+					</xs:element>
 					<xs:element name="code-block" type="xs:string">
 						<xs:complexType mixed="true">
 							<xs:attribute name="lang" type="xs:string"/>
@@ -155,7 +162,7 @@
 					</xs:element>
 					<xs:element name="i" type="content"/>
 					<xs:element name="b" type="content"/>
-					<xs:element name="i" type="content"/>
+					<xs:element name="u" type="content"/>
 					<xs:element name="p" type="content"/>
 					<xs:element name="img">
 						<xs:complexType>
