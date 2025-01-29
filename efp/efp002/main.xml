@@ -1,0 +1,156 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+	 efp="2" created="2025-01-28" category="process" status="draft" title="Relictus Review Process">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="2"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					Before the actual development of TerraModulus, the old codebase, Relictus, should be reviewed
+					for further development. This includes all the works to do for the development, like the
+					features, utilities and mechanisms.
+				</p>
+				<p>
+					In this proposal, several topics would be covered and certain procedures would be defined.
+				</p>
+			</content>
+		</section>
+		<section title="Code Styles">
+			<content>
+				<p>
+					Mainly, this is about Java code styles. However, some would be translated to Kotlin, so
+					some code styles would be in Kotlin. Though later, some more code styles would be
+					defined for the whole project for more parts like the ones in Rust.
+				</p>
+				<p>
+					Generally, some principles would be adapted, which are SOLID (SRP (Single Responsibility
+					Principle), OCP (Open/Closed Principle), LSP (Liskov Substitution Principle), ISP (Interface
+					Segregation Principle), DIP (Dependency Inversion Principle)), DRY (Don't Repeat Yourself),
+					GRASP (General Responsibility Assignment Software Patterns), LoD (Law of Demeter), COI
+					(Composition Over Inheritance), BDD (Behavior-Driven Development), CQRS (Command Query
+					Responsibility Segregation), DDD (Domain-Driven Design), ACID (Atomicity, Consistency, Isolation,
+					Durability), CAP Theorem (Consistency, Availability, Partition tolerance), FP (Functional
+					Programming), IoC (Inversion of Control), EDA (Event-Driven Architecture), CQS (Command-Query
+					Separation), DbC (Design by Contract), and basic ones: Encapsulation, Abstraction, Polymorphism,
+					Cohesion, Coupling, Delegation, Idempotence.
+				</p>
+				<p>
+					However, some design patterns or principles would not be implemented, like KISS (Keep It Simple,
+					Stupid), YAGNI (You Aren't Gonna Need It) and Singleton. There are several reasons for this.
+					Firstly, KISS is too generic while our systems would less likely be always simple unnecessarily.
+					As for YAGNI, since our systems are mainly APIs, when there are potential usages and functions,
+					the features or methods could be implemented, the principle would less likely be adapted. For all
+					the Object-Oriented (OO) Designs, Singleton would not be considered, instead, separate instances
+					would be considered. This would assure that the system would not be too fragile and thus less
+					error-prone and more rigid. Despite this, if the application involves local resources, a file
+					lock could be used to ensure that only single instance is launched for data integrity and
+					consistency.
+				</p>
+			</content>
+			<section title="Object-Oriented Programming">
+				<content>
+					<p>
+						In general Object-Oriented Programming, for both Java and Kotlin, the designs and principles
+						would be discussed in the following.
+					</p>
+					<p>
+						Several principles would be adapted directly: SRP, LSP, DbC, CQS, DIP, DRY, LoD,
+						GRASP, COI, BDD, FP, IoC, EDA.
+					</p>
+					<p>
+						For OCP, the entities are not necessarily closed, but should always be open. This should
+						ensure that the system are extensible in wide ways, but modifications are not always
+						avoided for functionality expansions. Other parts of OCP would be adapted directly.
+					</p>
+					<p>
+						There should be a balance between ISP and DDD. While realizing DDD, each entity should
+						have only one responsibility in one level, which is not limited to the responsibilities
+						in lower levels. This is all decided by designs.
+					</p>
+					<p>
+						DRY is the realization of using abstractions. Using delegations, LoD would be used.
+						Many of the above principles involve abstractions and encapsulation.
+					</p>
+					<p>
+						All the global states should be immutable. Mutable states are kept in objects
+						or instances. Thus, all these objects and instances should only exist in methods
+						or function blocks, and not stored in global states. This is not applicable in the
+						terms of threads or processes.
+					</p>
+					<p>
+						When using assertions or assertion-like programming, it should be ensure that all
+						cases are covered, and when necessary, errors may be thrown. Considering all
+						potential cases should ensure that no potential bugs would occur. If some
+						"assertions" failed, it is regarded as design bugs and are preferentially thrown
+						with crashing, although the design bugs may not essentially interrupt the process.
+						In some aspects, mods or plugins may be the causes of design bugs, it may be related
+						to be code of them, or the compatibility issue of the APIs with the content, but more
+						likely the authors of the content to check the code.
+					</p>
+					<p>
+						The responsibility of the class should not change with the constructor arguments.
+						Then, there should be no unused fields leftover while the fields may be used in
+						other cases, decided by the constructor. This is the responsibility of the fields.
+						This is purely affected by the code design. In other words, a field should not be
+						unused because one field is in another value, or "state". In any state, all the fields
+						should be used in the same way, taking their only responsibility. Otherwise, it could
+						also not ensure the class has only one responsibility. When needed, subclasses should
+						be made instead. An example of realization is
+						<a href="https://github.com/MinicraftPlus/minicraft-plus-revived/pull/666">
+							Minicraft+ #666
+						</a>.
+					</p>
+					<p>
+						Avoid having code that may access the fields during class initialization. For example
+						in Java, if there is code in another method accessing the field before field assignment
+						invoked in the class initialization, a Null Pointer Exception (NPE) may be thrown when
+						accessing the field in a non-null way. In design, it should be ensured that no code
+						that would access the class or object field during the initialization of the class or
+						object, unless it is highly assured. This is difficult to be checked by the compiler
+						and thus the responsibility of the developer.
+					</p>
+					<p>
+						For exceptions and errors, all exceptions should be caught regardless whether they
+						are checked or not. This should ensure that when there is any exception occurred,
+						the information would be enough for bug fixing. The main is to avoid uncaught exceptions
+						as many as possible.
+					</p>
+				</content>
+			</section>
+			<section title="Java">
+				<content>
+					<p>
+						Firstly, all static fields should be immutable and thus final. Even if they are final
+						it does not mean they are "immutable". Since they are just references, the fields of
+						the objects may still be mutable. This is ensured by code design, and is not compiler's
+						responsibility. Singleton object design is related to this, as "singletons" are meant
+						to be the instances stored as the static final <code>INSTANCE</code> fields in the
+						respective classes. Many parts in the code of Minicraft+ does not follow this design.
+						Although it is OOP, non-final static fields should always be avoided. Static fields
+						mean global states, mutable static fields are always disallowed.
+					</p>
+					<p>
+						Then, all the exceptions should all be handled. The excepted cases, are handled in
+						the respective expected ways, including the exceptions.
+					</p>
+				</content>
+			</section>
+			<section title="Kotlin">
+				<content>
+					<p>
+
+					</p>
+				</content>
+			</section>
+		</section>
+		<section title="Reviewing Procedures">
+			<content>
+
+			</content>
+		</section>
+	</body>
+</efp>
