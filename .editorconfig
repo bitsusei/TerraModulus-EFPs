@@ -5,6 +5,6 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 [*.{xml,xsd}]
-tab_width = 4
 indent_style = tab
 max_line_length = 120
+ij_smart_tabs = true
