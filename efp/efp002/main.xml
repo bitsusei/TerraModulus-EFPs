@@ -59,7 +59,8 @@
 					</p>
 					<p>
 						Several principles would be adapted directly: SRP, LSP, DbC, CQS, DIP, DRY, LoD,
-						GRASP, COI, BDD, FP, IoC, EDA, UA.
+						GRASP, COI, BDD, FP, IoC, EDA, UA. Mostly, there would not be much extra interpolations
+						over them.
 					</p>
 					<p>
 						For OCP, the entities are not necessarily closed, but should always be open. This should
@@ -165,6 +166,15 @@
 						to this design pattern. This is good for logical neatness and uniformity, and favored
 						by OOP. Many logical bugs could be prevented in this manner.
 					</p>
+					<p>
+						For DIP, it is applicable only for cases that the classes are designed to be not
+						concrete. Concrete classes include the main application class and various manager
+						classes.
+					</p>
+					<p>
+						Most fields should be accessed by using methods, that are generally overrideable,
+						allowing flexible API implementations. Sealed classes may or may not be useful here.
+					</p>
 				</content>
 			</section>
 			<section title="Java">
@@ -184,6 +194,10 @@
 						exceptions, so the developer could be more aware of the exceptions and handle
 						them right away.
 					</p>
+					<p>
+						All the fields should be accessed by getters and setters and made private. This
+						is not applied on constants.
+					</p>
 				</content>
 			</section>
 			<section title="Kotlin">
@@ -199,6 +213,10 @@
 						exceptions if they are known to be thrown by the methods. However, it is preferred
 						to mark all the possible exceptions with the <code>@Throws</code> annotation or
 						in the KDoc of the methods.
+					</p>
+					<p>
+						All classes and functions are public and final by default. They are made private
+						and open on purpose aiming for API.
 					</p>
 				</content>
 			</section>
