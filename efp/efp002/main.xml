@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 <efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
-	 efp="2" created="2025-01-28" category="process" status="draft" title="Relictus Review Process">
+	 efp="2" created="2025-01-28" category="process" status="draft" title="Relictus Review Plan">
 	<metadata>
 		<pullRequests>
 			<pullRequest id="2"/>
@@ -19,12 +19,12 @@
 				</p>
 			</content>
 		</section>
-		<section title="Code Styles">
+		<section title="Code Patterns">
 			<content>
 				<p>
-					Mainly, this is about Java code styles. However, some would be translated to Kotlin, so
-					some code styles would be in Kotlin. Though later, some more code styles would be
-					defined for the whole project for more parts like the ones in Rust.
+					Mainly, this is about Java code styles or patterns. However, some would be translated
+					to Kotlin, so some code patterns would be in Kotlin. Though later, some more code patterns
+					would be defined for the whole project for more parts like the ones in Rust.
 				</p>
 				<p>
 					Generally, some principles would be adapted, which are SOLID (SRP (Single Responsibility
@@ -35,8 +35,8 @@
 					Responsibility Segregation), DDD (Domain-Driven Design), ACID (Atomicity, Consistency, Isolation,
 					Durability), CAP Theorem (Consistency, Availability, Partition tolerance), FP (Functional
 					Programming), IoC (Inversion of Control), EDA (Event-Driven Architecture), CQS (Command-Query
-					Separation), DbC (Design by Contract), and basic ones: Encapsulation, Abstraction, Polymorphism,
-					Cohesion, Coupling, Delegation, Idempotence.
+					Separation), DbC (Design by Contract), UA (Uniform Access), and basic ones:
+					Encapsulation, Abstraction, Polymorphism, Cohesion, Coupling, Delegation, Idempotence.
 				</p>
 				<p>
 					However, some design patterns or principles would not be implemented, like KISS (Keep It Simple,
@@ -54,12 +54,12 @@
 			<section title="Object-Oriented Programming">
 				<content>
 					<p>
-						In general Object-Oriented Programming, for both Java and Kotlin, the designs and principles
-						would be discussed in the following.
+						In general Object-Oriented Programming (OOP), for both Java and Kotlin, the designs and
+						principles would be discussed in the following.
 					</p>
 					<p>
 						Several principles would be adapted directly: SRP, LSP, DbC, CQS, DIP, DRY, LoD,
-						GRASP, COI, BDD, FP, IoC, EDA.
+						GRASP, COI, BDD, FP, IoC, EDA, UA.
 					</p>
 					<p>
 						For OCP, the entities are not necessarily closed, but should always be open. This should
@@ -117,7 +117,53 @@
 						For exceptions and errors, all exceptions should be caught regardless whether they
 						are checked or not. This should ensure that when there is any exception occurred,
 						the information would be enough for bug fixing. The main is to avoid uncaught exceptions
-						as many as possible.
+						as many as possible. Then, all the exceptions should all be handled. The excepted cases,
+						are handled in the respective expected ways, including the exceptions. If the
+						unexpected exceptions are known from the documentation, such cases may be directly
+						regarded as "design bugs" or coding bugs; else they are handled as unknown errors.
+						Unknown errors could be more serious as it may involve more different parts of
+						the application and the runtime, but it could also be the issues caused by badly
+						coded mods or plugins.
+					</p>
+					<p>
+						In any cases of exceptions, logs, even traces, are still preferentially printed.
+						Exceptions are used only when the cases are <i>unexpected</i> or <i>unusually</i>
+						happened. This could prevent too many exceptions being thrown in runtime and saving
+						CPU time generating stack traces. If they are expected, code that does not throw
+						the exceptions is more preferred. Exceptions other than checked or runtime exceptions
+						may be handled by the top running loop or as uncaught, since these errors should
+						be completely unexpected to happen. When unexpected exceptions occur, the needed
+						steps are just to pass them to the error handler, and cancel the operation according
+						to the level of exception. They should not be thrown again as they are "caught".
+						However, if the exceptions should be rethrown to be handled by higher level, these
+						should be rethrown directly and possibly wrapped in a more general exception,
+						preferentially without logging.
+					</p>
+					<p>
+						An example of exception usage is number parsing. Input should first be checked by
+						a regex made completely fitting the case, then no exception would be expected, since
+						the malformed numbers would have already been handled when checking with the regex.
+						Any more exception thrown by parsing would instead be regarded as "design bug", that
+						the regex is not well-formed to suit the case.
+					</p>
+					<p>
+						For API flexibility and extensibility, classes are encourages to be non-final, but
+						the classes could be final, only if they are completely not designed to be extendable.
+						Sometimes, classes or registries are preferred over enums if the components could be
+						designed to be extendable for mods. This would allow wide extensibility for modding.
+					</p>
+					<p>
+						EDA is useful when the main process enters the main loop. Arbitrary events are
+						proceed in the side threads, and may trigger the main process for further operations.
+						This would include sound events, which act as side threads for audio processing.
+						These may not directly control the main process, but would affect the main process
+						at some extents, and the main process may control the states of the event processes.
+					</p>
+					<p>
+						While coding, special cases should generally be avoided. This should ensure the neatness
+						of the code while keeping the logic clean and intuitive. The UA Principle is applicable
+						to this design pattern. This is good for logical neatness and uniformity, and favored
+						by OOP. Many logical bugs could be prevented in this manner.
 					</p>
 				</content>
 			</section>
@@ -134,22 +180,71 @@
 						mean global states, mutable static fields are always disallowed.
 					</p>
 					<p>
-						Then, all the exceptions should all be handled. The excepted cases, are handled in
-						the respective expected ways, including the exceptions.
+						Custom errors are preferentially checked for coding. Compiler checks for checked
+						exceptions, so the developer could be more aware of the exceptions and handle
+						them right away.
 					</p>
 				</content>
 			</section>
 			<section title="Kotlin">
 				<content>
 					<p>
-
+						Basically, all singleton objects declared by <code>object</code> as the top level
+						classes are avoided. However, companion object is preferred, but acts like the
+						static members in Java, while these members should still be consistent across
+						application states, and changeable only by the arguments.
+					</p>
+					<p>
+						All the exceptions are unchecked, but it is still possible to catch all the
+						exceptions if they are known to be thrown by the methods. However, it is preferred
+						to mark all the possible exceptions with the <code>@Throws</code> annotation or
+						in the KDoc of the methods.
 					</p>
 				</content>
 			</section>
 		</section>
-		<section title="Reviewing Procedures">
+		<section title="Reviewing Process">
 			<content>
-
+				<p>
+					First of all, an Informational EFP would be made for the review report of Relictus.
+					The EFP would be associated with this review plan. However, both would be in
+					progress at the same time. This EFP would be updated and kept <i>Provisional</i>
+					while reviewing process is ongoing, so that the entire process could be described
+					completely here, and the report completely acts as a "report". This would allow
+					complementing necessary information and steps required for the entire reviewing
+					process.
+				</p>
+				<p>
+					The main part is the codebase, but not only the code. To plan for future development
+					of TerraModulus, the roadmap and the development direction, including the gameplay
+					content would also be a part of the review. Here, Minicraft+ would be taken as the
+					reference.
+				</p>
+				<p>
+					While reviewing, no commit to the Relictus branch would be made, as no change would
+					be made by reviewing. This is different from the previous plan to optimize the
+					codebase. However, some code may be tested for the reviews. Still, mainly reviewing
+					would be made based on what is in the codebase.
+				</p>
+				<p>
+					Several sections would be included in the report:
+					<list>
+						<li>
+							<b>Code Quality</b>: Commenting on the code patterns based on aforementioned
+							standards and principles
+						</li>
+						<li>
+							<b>Feature Implementation</b>: Commenting on the features and functionalities
+							implemented in the codebase and planning on the future implementations based
+							on the code
+						</li>
+						<li>
+							<b>Development Roadmap and Direction</b>: Commenting on the original direction
+							of the project of Minicraft+ and planning on the future roadmap and direction
+							based on that for TerraModulus
+						</li>
+					</list>
+				</p>
 			</content>
 		</section>
 	</body>
