@@ -74,7 +74,8 @@
 					</p>
 					<p>
 						DRY is the realization of using abstractions. Using delegations, LoD would be used.
-						Many of the above principles involve abstractions and encapsulation.
+						Many of the above principles involve abstractions and encapsulation. When performing
+						abstractions, it is always recommended to apply COI.
 					</p>
 					<p>
 						All the global states should be immutable. Mutable states are kept in objects
@@ -83,7 +84,7 @@
 						terms of threads or processes.
 					</p>
 					<p>
-						When using assertions or assertion-like programming, it should be ensure that all
+						When using assertions or assertion-like programming, it should be ensured that all
 						cases are covered, and when necessary, errors may be thrown. Considering all
 						potential cases should ensure that no potential bugs would occur. If some
 						"assertions" failed, it is regarded as design bugs and are preferentially thrown
@@ -104,6 +105,10 @@
 						<a href="https://github.com/MinicraftPlus/minicraft-plus-revived/pull/666">
 							Minicraft+ #666
 						</a>.
+					</p>
+					<p>
+						SRP is applied together with CQRS, CQS and DbC. On the other hand, IoC may also be used
+						for some interfaces.
 					</p>
 					<p>
 						Avoid having code that may access the fields during class initialization. For example
@@ -174,6 +179,26 @@
 					<p>
 						Most fields should be accessed by using methods, that are generally overrideable,
 						allowing flexible API implementations. Sealed classes may or may not be useful here.
+					</p>
+					<p>
+						For database management, it is the responsibility of the application or service to
+						ensure data integrity and accessibility. Once service is off, it is the responsibility
+						of the actor to ensure the data is usable and valid. Most of the time, the data stored
+						in the data should be used, if no error has occurred. If the data has outdated, the
+						service should try to fix the data up to meet the latest format of the data. However,
+						the service may not need to always fix the data if it is intended to ignore old data.
+						If the database has unintended changes during off-time of the service, it is
+						recommended to notify the user of the status, but since the responsibility is up to
+						the actor, data recovery may not be necessary. Moreover, if the data corruption is
+						caused by the service during normal operation, it is the responsibility of the
+						service to fix the data unless it is known that there may be data corruption during
+						the operation of the service. Despite the above, if the corruption is caused by
+						an actor who is not related to the service, the service should be tolerated and
+						ignore the changes, while default or reset data may be used instead. Users may still
+						have the rights to keep the original corrupted data, so a copy of the corrupted data
+						should be made for the maximum data conservation for the user. It would not be the
+						responsibility of the service for backup management. Consistency is the main point
+						with this idea. Then, the availability should be attained.
 					</p>
 				</content>
 			</section>
