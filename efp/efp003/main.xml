@@ -1,0 +1,32 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="3" created="2025-01-30" category="informational" status="draft" title="Relictus Review Report">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="3"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				In EFP 2, a plan to review TerraModulus Relictus branch has been made. This EFP describes
+				about the report of the entire review process.
+			</content>
+		</section>
+		<section title="Code Quality">
+			<content>
+
+			</content>
+		</section>
+		<section title="Feature Implementation">
+			<content>
+
+			</content>
+		</section>
+		<section title="Development Roadmap and Direction">
+			<content>
+
+			</content>
+		</section>
+	</body>
+</efp>
