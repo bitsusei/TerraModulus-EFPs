@@ -155,6 +155,10 @@
 					of the EFP. If there is a new EFP replacing, the EFP could be marked as "Obsoleted" by the
 					new EFP.
 				</p>
+				<p>
+					Numbering of EFP is decided only when the EFP pull request is accepted. A pull request
+					having a request to add an EFP is possible to be rejected or closed.
+				</p>
 			</content>
 		</section>
 		<section title="Usages">
