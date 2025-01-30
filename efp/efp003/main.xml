@@ -15,12 +15,193 @@
 		</section>
 		<section title="Code Quality">
 			<content>
-
+				<p>
+					Source code is generally reviewed in the following order:
+					<list type="decimal">
+						<li>core</li>
+						<li>core.io</li>
+						<li>network</li>
+						<li>gfx</li>
+						<li>screen</li>
+						<li>entity</li>
+						<li>item</li>
+						<li>level.tile</li>
+						<li>level</li>
+						<li>saveload</li>
+						<li>util</li>
+					</list>
+					However, some classes may be reviewed earlier or later.
+				</p>
+				<p>
+					The review has made as of commit <code>64c8abbcd33edb1046abee40d8e712b546c1b47d</code>.
+					In the following, various content would be discussed.
+				</p>
 			</content>
+			<section title="Basic Class Structures">
+				<content>
+					<p>
+						<code>Action</code> in Kotlin could be instead a typealias of function type
+						<code>() -> Unit</code>, and declared in utils. It is the similar as
+						<code>Condition</code>, which could instead be <code>() -> Boolean</code>
+						or a functional interface with advanced features. However,
+						<code>MonoCondition</code> could be replaced by <code>Predicate</code>.
+					</p>
+					<p>
+						For <code>Game</code>, several things are noticeable. Firstly, it should be
+						an instance, not completely static members or as a singleton. The class name
+						would be <code>TerraModulus</code>. The <code>NAME</code> field would be a
+						top level constant. The field <code>VERSION</code> will later be handled
+						by the application profile, so it would be loaded in early runtime of the
+						application, and accessible later by a getter. <code>Initializer</code>
+						would be handled in <code>Main.kt</code> file, which would also include
+						all the initializations of all other main threads, including rendering
+						and ticking threads.
+					</p>
+					<p>
+						The similar things are applicable on <code>Initializer</code>, that there
+						should be no static members. The window frame would be handled with a window
+						handler, which may also handle the windows for some error popups. FPS and TPS
+						counter would be handled respectively in their handler classes, with which threads
+						taken into account. Argument parsing would be handled in the <code>Main.kt</code>
+						file. The <code>run</code> function would be in the <code>TerraModulus</code>
+						class. The function <code>getExceptionTrace</code> may somehow be reused for
+						error information displaying or crash reports.
+					</p>
+					<p>
+						The <code>ClipboardHandler</code> should be handled by <code>InputHandler</code>.
+						Since the input interactions, including keyboard and mouse, would be handled by
+						GLFW, the interfaces would not have to be implemented. This includes key inputs.
+						The menu structure would also be changed, so key inputs would only be listened
+						by the desired menus elements with some priorities.
+					</p>
+					<p>
+						The <code>InputHandler</code> manages quite a lot of things, input processing,
+						key mapping, controller states, key state processing. Controller management should
+						be separated, say like <code>ControllerManager</code>. The functionalities provided
+						by the gamepad library is quite poor. The abstract <code>Key</code> class and its
+						subclasses are quite useful. In fact, repeating keys would no longer be necessary,
+						so <code>PhysicalKey</code> would be simplified and <code>ControllerKey</code> would
+						not be needed. Then, there could be functions on <code>Key</code>, that "or" and
+						"and" could be used. String expressions are no longer needed. What is
+						<code>PhysicalKey#stayDown</code>? Probably ignorable. However, if the functions
+						return single <code>Key</code> state after processing, there is no really need to
+						have subclasses <code>CompoundedKey</code> and <code>ORKey</code>. While returning
+						the key state from the mapping, the states are proceeded according to the setting
+						before returning. Key mapping would not use the <code>Key</code> but another class.
+					</p>
+					<p>
+						There should be 4 classes, <code>KeyInputHandler</code>,
+						<code>TextInputHandler</code>, <code>GamepadInputHandler</code> and
+						<code>MouseInputHandler</code>, over single <code>InputHandler</code>. Among them,
+						<code>TextInputHandler</code> handles also clipboard. Text input queues would be
+						proceeded only when a request to accept text inputs is sent and reset before each
+						tick. A regex filter could be used, and the backspace keys would also be proceeded
+						in the same way. The <code>releaseAll</code> method is ignored. Key hints are quite
+						troublesome, but most probably it would be handled in the similar way. Modifiers
+						would not be handled separately in the handler class. Controller vibration feedback
+						would be handled by <code>ControllerManager</code> or another class instead, but
+						controller detection and management are certainly handled by the manager class.
+					</p>
+					<p>
+						<code>SaveManager</code> or a similar class would handle what the upper part of
+						what <code>FileHandler</code> used to handle. For other file helper functions for
+						folder deletion and copying, they are already handled in Kotlin by
+						<code>Path.deleteRecursively</code> and <code>File.copyRecursively</code>
+						respectively. There is no need to list assets with the filesystem when we would
+						have an advanced assets system implemented in the future.
+					</p>
+					<p>
+						<code>io</code> would not be in <code>core</code>, and it is too generic. At least,
+						<code>audio</code> and <code>Localization</code> would be separated from it. All
+						display elements would become registered to the menu, so simply a reload traversing
+						all the elements would be enough, without any "hook".
+					</p>
+				</content>
+			</section>
 		</section>
 		<section title="Feature Implementation">
 			<content>
-
+				<p>
+					There would be a <code>Main.kt</code> file, made for client and server respectively.
+					The file contains the entry point <code>main</code> function, which initializes the
+					application along with the arguments proceeded and major handler(s) launched.
+				</p>
+				<p>
+					Errors, would be popped up with information only when the errors occurred before
+					the completion of rendering initialization or the error is in or out of the scope
+					of the application. For error catching, only documented errors should be included,
+					unless it is in the major catch block or the error handler.
+				</p>
+				<p>
+					The window would be launched very early once very basic elements have been
+					initialized, so that a splash screen without window would not be needed. The window
+					is always centered on launch.
+				</p>
+				<p>
+					For the launching arguments, all the options would be named, with kebab cases starting
+					with double hyphens. Hardware acceleration is enabled by default, but a launching option
+					to disable it would also be available. The fullscreen option is just the toggle to
+					whether to launch the window in fullscreen on start. The window size option would always
+					be used regardless of the option. There would be default dimensions for the case when the
+					window size is not specified.
+				</p>
+				<p>
+					Everything would be logged regardless of the levels, so there would be no extra launching
+					options for logging, debugging or tracing. This includes the debug mode, so there is
+					nothing called the "debug mode". Debugging is always available in the application and
+					could be disabled in some parts. This is because it is easy to create user-created
+					content, debugging should also be easy-to-access. When each class is organized and
+					has only single responsibility, logging target with the qualified class names would
+					then be clear, without the need to specify "title names" of the behavior. Log4j 2
+					would be responsible for the logging utility. A top-level helper function would be
+					added like mentioned in <a href="https://stackoverflow.com/a/34462577">this answer</a>.
+					It is not recommended to add the extension functions due to pollutions.
+				</p>
+				<p>
+					For key inputs, the handler receives the events triggered by GLFW. Text inputs are
+					used <i>only on text inputs</i>; keyboard inputs are always used. The events are
+					queued to the main ticking thread. Every keystroke, has 3 states, just pressed, down
+					and just released, with each a boolean value. A press event turns just pressed true and
+					down true; a release event turns down false, just released true. At each input tick from
+					the beginning, both just pressed and just released states are reset to false. After that,
+					the queued input events are proceeded and the key states are updated correspondingly.
+					Then, other window ticking which may take inputs would proceed. The ticking
+					frequency would be 1.5 times of the maximum FPS. There might be another ticking
+					thread with a constant frequency if needed.
+				</p>
+				<p>
+					Input mapping is another manager than the input handler. It may be configured by
+					preferences, but some are hardcoded. This includes the F3 debug key and some advanced
+					mechanisms related to the <kbd>Shift</kbd>, <kbd>Ctrl</kbd> and <kbd>Alt</kbd> modifiers.
+					In-game inputs are handled by this too. Controllers are also handled in the similar way,
+					and also in the same classes. Also, the fields would be used instead of strings, in
+					which they would be static final fields if in Java. The mapping is just for the logics
+					to use, so there would not be the "string keys" of the keys, but surely a mapping to
+					display strings for displaying only. The mapping would be hardcoded, so a loop would not
+					be used. The final states resulted by the input events are simply just "piped" (logical
+					or), so the usages of the states should be mindful enough. This way, it could ensure
+					that all the inputs are taken into account as much as possible. No sticky key is
+					realized for this.
+				</p>
+				<p>
+					When it is possible to not use string keys, they should be avoided. Instead, constants
+					or enums would be used. It is because any errors caused with the strings could only
+					sometimes be known in runtime, thus there could be potential bugs. It could also
+					cause extra performance overheads in runtime by string parsing.
+				</p>
+				<p>
+					The controller management should be improved by GLFW. So, it is possible to choose
+					the controller to use. It is configurable in settings, but not saved to disk. There
+					would still be the on-screen keyboard for controller, but the mechanisms could be
+					significantly improved.
+				</p>
+				<p>
+					For key mapping configuration, at the moment of the first key pressed released, all
+					the keys pressed are recorded as the key combination. However, some keys are prohibited
+					for configurations, like the escape, menu and Windows keys. This is enforced for
+					context compatibility. The escape key is also used to cancel key detection. Note that
+					the escape key is hardcoded for menu controls.
+				</p>
 			</content>
 		</section>
 		<section title="Development Roadmap and Direction">
