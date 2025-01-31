@@ -37,7 +37,7 @@
 					In the following, various content would be discussed.
 				</p>
 			</content>
-			<section title="Basic Class Structures">
+			<section title="Basic Code Structures">
 				<content>
 					<p>
 						<code>Action</code> in Kotlin could be instead a typealias of function type
@@ -108,13 +108,180 @@
 						folder deletion and copying, they are already handled in Kotlin by
 						<code>Path.deleteRecursively</code> and <code>File.copyRecursively</code>
 						respectively. There is no need to list assets with the filesystem when we would
-						have an advanced assets system implemented in the future.
+						have an advanced asset system implemented in the future.
 					</p>
 					<p>
 						<code>io</code> would not be in <code>core</code>, and it is too generic. At least,
 						<code>audio</code> and <code>Localization</code> would be separated from it. All
 						display elements would become registered to the menu, so simply a reload traversing
 						all the elements would be enough, without any "hook".
+					</p>
+					<p>
+						The debug locale is not quite useful in fact. When there are already the logs of
+						untranslated strings and careful programming, there is completely no need to display
+						the translation keys on the screen. Locales would be defined in assets. Further
+						detailed implementation would depend on the new asset system. The main purpose of
+						the "debug" locale is to display the parts that should use translation keys but
+						have not, though this ability could be changed into a hotkey highlighting untranslated
+						components on the UI. All the entries would have already been loaded into memory,
+						so there would not actually be "loading" when switching language.
+					</p>
+					<p>
+						<code>Settings</code> would become <code>Preferences</code>, but not using the UI
+						entries as the entries, which is quite a bad idea. The settings values should be
+						independent on the UI components, but instead the UI components would be made with
+						linkages with these setting values. World generation options would only exist in the
+						world generation options but not here as global entries. All the settings would be
+						made with type specified property entries.
+					</p>
+					<p>
+						No class would extend the major game class <code>TerraModulus</code>. The
+						<code>RenderSystem</code> would only handle the top operations. UI components would
+						be handled in another manager, like <code>UIManager</code> or <code>MenuManager</code>.
+						The sprite management would be merged into the registry system. Everything would be
+						enhanceable by hardware accelerations, so the rendering system would highly depend on
+						the native libraries and the APIs, especially physics. Detailed implementation of
+						graphics and physics would be discussed later. The major render system would manage
+						the states of the world renderer, so the systems of UI and world graphics are
+						separated. This way, several fields would be separated. Also, the window size
+						would not be fixed, and there would not be something called the canvas "scale",
+						but there would be UI "scale", which is a simple multiple of the base dimensions,
+						available for setting depending on the window size (not saved). The entire render
+						system would be backed by the rendering engine.
+					</p>
+					<p>
+						The canvas would be fully filled. The several UI elements like the app status bar
+						and HUD elements (e.g. hot bar, boss bar, debug screen) would become menu components.
+						Level rendering would be a part of world rendering, which includes world background
+						and sky rendering. Toasts are usable, but not the notification text directly on
+						screen. All notifications would be replaced by chat (in game for world events) or
+						toasts (any client event in game).
+					</p>
+					<p>
+						In-game TPS would be 20 instead if 60. The length of a day would become 20 minutes
+						instead of 18 so that it could be a reasonably long time and a multiple of 60, as
+						the number of minutes in an hour. The game speed should be constant for several
+						performance considerations, so it should not be paused. Several fields would be
+						available for several values:
+						<list>
+							<li>
+								<code>dayTime</code>: total time (number of ticks) elapsed for the game day
+							</li>
+							<li><code>dayCount</code>: number of days elapsed in world during gameplay</li>
+							<li>
+								<code>gameTime</code>: total time (number of ticks) played (elapsed) in
+								world during gameplay
+							</li>
+						</list>
+						Fullscreen and screenshots would be handled instead by the render system. The
+						toasts would have their own lifetime. There might be a backup routine however,
+						to replace auto saving, which requires full pause of the gameplay ticking for
+						game data synchronization across each part, but not allowed to pause the game
+						due to the above restriction.
+					</p>
+					<p>
+						Ticking would be handled in the <code>TerraModulus</code> class. In fact, menu
+						ticking should be done there, so <code>MenuManager</code> should be outside the
+						<code>RenderSystem</code>, but rendering takes it as a parameter. World ticking
+						is handled by the respective manager. Audio main process would be in a separate
+						thread managed by the audio system. <code>Display</code> would be renamed to
+						<code>Screen</code> for clarity. There would be no the original class of
+						<code>Screen</code>, but probably just a <code>Canvas</code>. The screens would
+						still be using the Last-In-First-Out (LIFO) linked list, but the way to handle
+						screen initialization and exiting could be improved, may be by a reference to
+						the constructor instead of the initializing function, especially the function's
+						parameter for the parent instance acts only for rendering. This case, having a
+						constructor function passed and parent screens handled in the menu manager would
+						seemingly be better.
+					</p>
+					<p>
+						The usages of toasts are not in the same level. <code>AppToast</code> is a subclass
+						of <code>Toast</code>, but it is used in the same level as the superclass by the
+						fields. They should either be separate classes or subclasses, or even in the same
+						system. It depends on actually how they would be implemented. The behaviors of the
+						toasts may be different by this, so it could not be said in simple words just now.
+					</p>
+					<p>
+						For this kind of event handling, like the controller port events, should be instead
+						handled by listener callbacks but not pulling events each tick. This kind of event
+						is expected to be separated and not frequent, and listener callbacks would be
+						sufficient. Also, the response of the events is also simply just state updating.
+						In fact, the event by GLFW would include the target controller, so no extra
+						searching is even needed. Anyway, <code>GamepadInputHandler</code> would probably
+						be ticked only when controllers are enabled.
+					</p>
+					<p>
+						Ticking of player entity should be entirely independent of UI ticking. The entity
+						<i>is</i> a world object, but UI is a client side-only system. This is probably
+						because menu interactions are handled in the entity ticking function, but it is
+						not practical. Such parts should instead be handled by the <code>MenuManager</code>
+						class or a similar class. This could also ensure class isolation and responsibility.
+					</p>
+					<p>
+						<code>World</code> would be instantiated and not a part of <code>core</code>.
+						Also, levels would be managed by the world instances instead of being handled
+						by other unrelated classes. Many several configurations and behaviors would not be
+						hardcoded within program code, but with the assets, including the dimensions. Also,
+						the world configurations like the seed and world name would be stored in an object.
+					</p>
+					<p>
+						All world-related randoms would belong to instances. These instances may also be
+						replaced by the backend engine if necessary. Also, The fields for the level change
+						listener, last world enter and exit time are not quite practical. The actual
+						realization of dimension change would depend on the actual implementation, but not
+						likely with a listener not implemented to do anything. Moreover, there is no need
+						to compare and check the time when they could just be the initialization and
+						termination, which could be handled by instantiations and instance destroys.
+						Still, resetting sprite animations by this may not be a good way, but sprite
+						animations should be handled in another way. Having instances would still be
+						simpler than having the function of <code>resetGame</code>. Also, the logic
+						is also problematic when both <code>Player#respawn</code> and
+						<code>Level#add</code> are in the same block, so obviously the code should be
+						more semantic, straightforward and logical. <code>WorldSettings</code> matches
+						the logic, but the entire code is still not, unfortunately.
+					</p>
+					<p>
+						There should be a better way to handle world loading. For example, loading assets
+						would have a progress bar, so as loading world. There would be loading sessions
+						specified when starting the progress. Resource loading logic is outside the menus,
+						so the loading code does not need to be inside the menus, but the loading menu.
+						The loading screen is instantiated with the loading session, then the progress
+						would then be updated and refreshed during the loading progress. There is no really
+						need for the logger with the world name as it is already clear with just the
+						reorganized class structures. Resetting world before initialization would not be
+						needed if it is instantiated; when the world is loaded, the reset values would be
+						even not used.
+					</p>
+					<p>
+						The exceptions used in world loading are quite reasonable. It is clear that when
+						these rare exceptions occur, the entire operation must be interrupted or cancelled.
+						This example is quite practical, despite the unorganized class structures.
+					</p>
+					<p>
+						The default uncaught exception handler should be set as early as possible.
+					</p>
+				</content>
+			</section>
+			<section title="Extra Notes">
+				<content>
+					<p>
+						While doing the low level programming anywhere, even in the Kotlin parts, careful
+						coding is always required. It means, extra attentions are always needed, to ensure
+						the logics make sense without heavily relying on the compiler while the compiler
+						may not give valuable information just by the errors or warnings. This is especially
+						important while porting low level APIs to the higher level places, since it may
+						sometimes be forgotten.
+					</p>
+					<p>
+						When there are some utility classes, the internal code may be somehow lower level,
+						so the above rules apply. Also, the resultant syntax of the usages should be
+						idiomatic in Kotlin or even practical according to the code patterns.
+					</p>
+					<p>
+						The way to handle world events, activities and commands should be carefully studied.
+						It may skip the desired code if not handled properly. It includes teleporting
+						entities across dimensions. The necessary unprocessed events should not be ignored
+						if there exists any.
 					</p>
 				</content>
 			</section>
@@ -202,11 +369,90 @@
 					context compatibility. The escape key is also used to cancel key detection. Note that
 					the escape key is hardcoded for menu controls.
 				</p>
+				<p>
+					The audio system would be remade with using OpenAL. Several features would be
+					implemented. And note that no mixing algorithm would be used, only simple additions.
+					This should ensure the quality of audio with consistency. When not in game, there would
+					only be UI sounds and BGM; when in game, other sounds only come from the world. There
+					should be no limitation with in-game sound sources, but seemingly only 2 major sources
+					for non-game elements. Further implementation would be handed in the future asset
+					system.
+				</p>
+				<p>
+					Many menu components are certainly required to be updated. This includes the hot bar
+					and several menu frames. However, this part relates to graphics which would be discussed
+					at the later stage. Rendering system may be mostly implemented ourselves for the best
+					compatibility and usages, but it is still worth finding an existing meshing, modelling or
+					sprite library for backing.
+				</p>
+				<p>
+					Sleeping mechanisms would be updated later. Actually, a compromise way ensuring
+					consistency for both game time speed and continuous game events is to not skip or
+					acceleration the time. However, a problem here is that the nighttime could be too
+					long for some intentions. To solve this, <i>a world of dream</i> could be implemented
+					during sleeping, with each world a single player dimension, that if the player received
+					a large amount of damage or died, the player wakes up immediately from bed. The
+					corresponding biological health system would be made for this. The player would be
+					allowed to sleep at any time, only when the character is tired enough. This way,
+					various consistencies could be attained while the player could still be in the gameplay.
+					Detailed implementation would be discussed later. This could also avoid performance
+					issues that may be caused by speeding up game ticking during the time period.
+				</p>
+				<p>
+					Some utility classes could be made for synchronization. For some places, synchronized
+					maps and collections are needed, but the syntax should be more straightforward, like
+					the <code>Mutex</code> or <code>ReadWriteLock</code> in Rust. A similarly favored class
+					could be made for generic instances holding internally by the constructor with the new
+					instances. This could only be ensured by the developer writing the code, though.
+				</p>
+				<p>
+					For settings, probably a good way is to apply changes only on the menus closed. When
+					in settings, there may be several submenus with the screen. So, while UI elements
+					are created with linkages with the values, they are updated only on close. This way,
+					it could be ensured that the setting effects would not occur too frequently if the user
+					change the values frequently during setting.
+				</p>
+				<p>
+					In the future, there would be some hot keys associated with <kbd>F3</kbd>, which is
+					majorly used for debug screen toggle. It would not be allowed in custom key mapping,
+					but instead hardcoded for all the usages. To align with consistency as a part of code
+					quality, the way to handle both a single <kbd>F3</kbd> keystroke input and a combined
+					input with other keys at the same time, an invisible menu session would be used. The
+					session is activated only when <kbd>F3</kbd> is pressed, and deactivated when a
+					command is sent or the key is released. The session would only handle key inputs and
+					trigger commands when applicable. For most keys, a command would be sent to the target
+					which may be a toggle for debugging; otherwise, when the key is released, a match would
+					be done to check whether it has entered any advanced input session to trigger commands,
+					and the debug screen would eventually be toggled if none.
+				</p>
+				<p>
+					A input masking session could be made for each tick for input state checking for menus.
+					This could be managed by the <code>MenuManager</code>. This way, when the processing
+					menu requires the specific inputs which may be mappings, to be hidden for the queued
+					menus, even fully hidden, it could be done dynamically and on demand. It would also
+					not affect global checking for a physical key outside the menu ticking session, though
+					it might not be necessary or practical.
+				</p>
+				<p>
+					The time enums for each part of a day may not be that regular as quarters, especially
+					when 0 would be set as the midnight or midday. As seasons and seasonal day length may
+					be implemented in the future, there might be definite constants specifying the part of
+					a day. The way Minecraft handles may be taken as reference, although the day time tick
+					does not align with the actual real world time system on which how 0 is defined. Detailed
+					implementation would be discussed and decided later.
+				</p>
+				<p>
+					According to the future plan of implementation of the world system, there would be
+					no the depth indices for each dimension, and there are no levels but dimensions.
+					There is not yet the concept of "level" in the proposed ideas actually.
+				</p>
 			</content>
 		</section>
 		<section title="Development Roadmap and Direction">
 			<content>
+				<p>
 
+				</p>
 			</content>
 		</section>
 	</body>
