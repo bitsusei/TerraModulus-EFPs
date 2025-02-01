@@ -258,7 +258,55 @@
 						This example is quite practical, despite the unorganized class structures.
 					</p>
 					<p>
-						The default uncaught exception handler should be set as early as possible.
+						The default uncaught exception handler should be set as early as possible. Then, when
+						there is any uncaught exception, they could be handled well, and users could be
+						informed properly. A lambda would be used instead of simply referring to a function.
+						The content would be unique to distinguish from other caught errors or exceptions.
+					</p>
+					<p>
+						Somehow illogical that the canvas instance is passed to construct the input handler.
+						Anyway, resources or assets would not be loaded that early, but packs would be loaded
+						at the same time as vanilla assets. However, probably only the loading screen, with
+						probably a splash screen would be the hardcoded asset image embedded into the
+						application. There would be a progress bar to initialize full loading of all parts
+						after the appearance of the splash screen with a logo, like Minecraft's one, simple
+						and neat but symbolic. Maybe there could be customized splash screen inserted after
+						initialization just before the title screen or pre-, during or post-world loading.
+						As for when to initialize tiles, entities and items, still a question, since it
+						depends on how they are defined with registries later. For the title screen, it
+						would be set only after the initialization, so the necessary resources would be
+						ready first. Users would have their client IDs, but detailed implementation would
+						be decided later. If it is set to fullscreen on start, the window would be set to
+						fullscreen when initialized, not that separated.
+					</p>
+					<p>
+						The entire save and load system would be separate, not simply just <code>Save</code>
+						and <code>Load</code>. Every part is isolated, so as the timings, systems, and
+						responsibilities of them. Preferences would be handled alone, without associated
+						with other saves.
+					</p>
+					<p>
+						For server, the entire system would have to be planned. This includes serialization,
+						routing and network communication. However, activities would have some treatments to
+						prevent non-synchronization and data loss. There would be no really difference in
+						implementation between single player and multiplayer for consistency and
+						compatibility, especially in the server side or the server-client relationship.
+						Actually, it may work like using numeric ID to identify the transmission data, but
+						the protocol would neither be forward- nor backward-compatible.
+					</p>
+					<p>
+						When there is a server, analytics could be done. It includes counting active clients
+						by the Launcher activities and the pings like in Minicraft+. Note that this is not
+						telemetry, which collects even device information and usage reports. However, these
+						data could still be collected <i>only when the user agrees</i>. Even the user decided
+						to agree or not during the first launch (identified by local save data) of the
+						application, the user could still toggle it in preferences. Both of these are
+						optional, and there would be the corresponding terms made. Counting would be done
+						on the server since it is just the database record, but pings would be kept
+						anonymous. Both telemetry and automatic crash report transfers may not be anonymous,
+						and some device information or account identifier would be included in the
+						transmissions. Detailed implementation would be discussed later, but it is certainly
+						something.
 					</p>
 				</content>
 			</section>
@@ -445,6 +493,28 @@
 					According to the future plan of implementation of the world system, there would be
 					no the depth indices for each dimension, and there are no levels but dimensions.
 					There is not yet the concept of "level" in the proposed ideas actually.
+				</p>
+				<p>
+					As for client IDs, UUIDs with special tricks would be used. On the server side, all the
+					client IDs are recorded, and associated to account IDs. Account IDs would be unique
+					UUIDs guaranteed by the server database, also used as server player entity IDs (EIDs).
+					These EIDs would be unique within the server, or the world, in which the player EIDs
+					would be appended with an identifier for players, distinguished from other entities.
+					The client IDs would be unique, so it is allowed to launch instances of the Launcher
+					on different client devices at the same time, but not allowed to have 2 client instances
+					connected to the server with the same client ID, or a new client ID would be regenerated.
+					However, no 2 or more clients could be connected to the sane server with the same
+					account. Also, in single player, to be allowed in offline gameplay, the player EID would
+					be the default ID hardcoded in the game, but translated to player EID by the account ID,
+					allowing guest modes without accounts. Although it could be more convenient to implement
+					if guest mode is not implemented that the account player EID is always used in the game,
+					so no worry that server worlds could not be played offline. Of course all these things
+					would assume that no one edited the information in an unideal way.
+				</p>
+				<p>
+					Certainly EIDs are not something really "network", but it is now placed in
+					<code>Network</code>. This would probably be handled as utils or with a dedicated
+					category instead.
 				</p>
 			</content>
 		</section>
