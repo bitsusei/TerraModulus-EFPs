@@ -308,6 +308,71 @@
 						transmissions. Detailed implementation would be discussed later, but it is certainly
 						something.
 					</p>
+					<p>
+						Colors, there is entirely no need to care about old-formatted color values. However,
+						it could just use the similar functions, but there could be more colors, using less
+						the tint function, or probably using other utility functions. For formatting codes,
+						they would not be handled in <code>Color</code>, but another class handling display
+						strings or whatever fits. In fact this kind of format may exist control characters
+						that normally could not be typed, so they could not be used properly. The
+						<code>limit</code> function is just the <code>clamp</code> function, repeated. The
+						tinting functions and most other functions would likely be removed, but the lightness
+						calculation could be reused, in somewhere.
+					</p>
+					<p>
+						<code>Dimension</code>, <code>Insets</code>, <code>Point</code> and
+						<code>Rectangle</code> could be made into value classes, in which the fields should
+						be immutable. Likely these classes related to graphics would be hidden into the
+						graphics module, which would be only used by client side. There could be more
+						functions to transform, operate or interact with these value classes. Also, Insets
+						may not be really needed when there is <code>Dimension</code>, but probably the
+						functions could be directly added to <code>Rectangle</code>.
+					</p>
+					<p>
+						If guessed correctly, <code>Ellipsis</code> is probably just the dotting animation.
+						This style is mostly not used, since it is more tended to show more details and be
+						more intuitive. Mostly, spinners, progress bars or more fancy animations are used
+						nowadays. Ellipsis would not be used in the future. <code>SequentialEllipsis</code>
+						seems to be moving a single dot per period; <code>SmoothEllipsis</code> seems to be
+						looping dots like a loading progress bar without progress. The <code>DotUpdater</code>
+						updating methods seem to be various but really unnecessary, it is still lacking
+						information.
+					</p>
+					<p>
+						The <code>Font</code> class would be made into a single package but most likely just
+						hidden within the graphics module. The <code>chars</code> would be fully configurable
+						later by assets pack. Several drawing mode of text would be available, like plain,
+						formatted, hard-/pre-formatted (styled). When drawing, an optional configuration
+						object like the <code>FontStyle</code> could be passed as an argument, for background
+						and foreground colors, and the rendering bounds? Actually for bounds, horizontal
+						scrolling may be disused, but perhaps only the vertical values are useless. The
+						ability to scroll entries horizontally would eventually not be implemented, but for
+						displaying scrolling text only. Still, all the drawing modes could be combined to
+						just set whether to enable formatting codes as the configuration attributes, since
+						when nothing is set, it is fully plain; when something is set, it could be styled.
+						The "redo" code may still be too complex in the system, so the stack class would not
+						be needed. Width calculation, maybe using advanced looping, since invalid codes
+						would not be used in formatting; probably display component architecture would be
+						used to prevent this. Drawing centered may not be used anymore; drawing paragraphs
+						would be quite advanced, so it would be higher level. For drawing styles, there
+						could be paragraph alignment and shadows, but the current implementation of
+						<code>FontStyle</code> is quite poor, and it could be replaced by using UI
+						components.
+					</p>
+					<p>
+						Texture atlas could be implemented, especially when the engine is lower level, since
+						it could improve memory efficiency for a mass number of sprites. All the textures
+						would use the same set of atlases, in which a new one would be created only when
+						the existing one(s) is/are full. However, a difficulty is that not all the sprites
+						would be squares or even squares with the sides of powers of 2, a good algorithm
+						would be required. A reference could be taken from
+						<a href="https://www.david-colson.com/2020/03/10/exploring-rect-packing.html">
+							this article
+						</a>. Note that they would be mostly rectangles or squares, and all textures from
+						all the assets packs would be loaded. <code>MinicraftImage</code> is just an
+						alternative of the existing image classes with just a simpler class structure, but
+						may not be used.
+					</p>
 				</content>
 			</section>
 			<section title="Extra Notes">
