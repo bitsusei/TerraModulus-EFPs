@@ -444,6 +444,29 @@
 						Display is literally monitor display, but not the screens which commonly mean
 						the sets of pictures being shown on the window canvas.
 					</p>
+					<p>
+						Not too much to note on the title screen, but there could really be a background.
+						For all the selectable entries, there could be highlights, but not using the
+						arrows to simplify the appearance. On the title screen, there could be the logo,
+						the menu entries, the version string, the splashes, the background. The splashes
+						would not be hardcoded and conditioned, and thus fully customizable by assets
+						packs. There would not be the need to show the help message on the bottom when
+						mouse is supported, and enabled by default. The version string would be longer
+						to add some more text. Probably the splash text does not splash, so named just
+						"title texts". It is true that if they are made into components like how we do
+						with AWT or Swing, there is no need to recalculate the positions or lengths
+						again and again every frame, and the values would not be out of scope, for
+						code quality it is beneficial. The code in the <code>init</code> function
+						of <code>TitleDisplay</code> is not something should show up for the screen.
+						The "Play" entry would become "Singleplayer" and "Multiplayer" 2
+						entries, then "Settings"; achievements would not be there yet, so the entry
+						would not be added. The simple screen like the 4 entries of the "Help" menu
+						could just be a dialog menu, for simplicity. If the layout involves "clearing"
+						the entire canvas or fully covering all the components in the back, it would be
+						made as a screen, with all the content made as menus and/or components. When it
+						involves a set of entries, the entries should be included within a menu. Then,
+						the entries would be "Help" and "Quit".
+					</p>
 				</content>
 			</section>
 			<section title="Extra Notes">
@@ -651,6 +674,36 @@
 					Certainly EIDs are not something really "network", but it is now placed in
 					<code>Network</code>. This would probably be handled as utils or with a dedicated
 					category instead.
+				</p>
+				<p>
+					For "Settings", "Options", "Preferences" and "Configurations", there are the definitions
+					here:
+					<list>
+						<li>
+							<b>Settings</b> refer to the configurations and adjustments available within an
+							application that define how it operates, controlling various features and
+							functionalities.
+						</li>
+						<li>
+							<b>Options</b> refer to the choices or alternatives available within a
+							specific context or feature, often presented as a list or menu of different
+							choices to customize user experience or perform specific actions.
+						</li>
+						<li>
+							<b>Preferences</b> refer to the user's personalized settings that determine
+							how they want the application to behave by saving and selecting their
+							choices.
+						</li>
+						<li>
+							<b>Configurations</b> refer to the arrangement and setup of
+							settings, parameters, and options that define the behavior and structure of
+							an application or system, specifying how different components of a system work
+							together specialized for functionalities.
+						</li>
+					</list>
+					"Settings" is the entire system of menu of all settings or several sets of settings
+					encapsulating various "options", where "preferences" of user settings are saved on
+					disk. "Configurations" would not be used in this context.
 				</p>
 			</content>
 		</section>
