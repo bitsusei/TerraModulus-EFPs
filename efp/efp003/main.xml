@@ -467,6 +467,20 @@
 						involves a set of entries, the entries should be included within a menu. Then,
 						the entries would be "Help" and "Quit".
 					</p>
+					<p>
+						If achievements become account-based, all the data would come from server instead
+						of application assets. The implementation would probably like the Xbox achievements
+						in Minecraft: Bedrock Edition. Anyway, the code, logic or parts that are not related
+						to the UI should be separated from the classes, like the loading thing or achievement
+						management. The achievement notification could be a lot better, like using toasts.
+					</p>
+					<p>
+						Toast is quite a good idea, but the implementation could still be improved. There
+						are application (system) toasts and gameplay toasts, having similar properties, but
+						they are used in different places. To make them separated, a better way could be
+						putting application notifications in the bottom-right corner like the system
+						notifications and gameplay notifications in the top-right corner.
+					</p>
 				</content>
 			</section>
 			<section title="Extra Notes">
