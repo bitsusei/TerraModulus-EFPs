@@ -479,7 +479,32 @@
 						are application (system) toasts and gameplay toasts, having similar properties, but
 						they are used in different places. To make them separated, a better way could be
 						putting application notifications in the bottom-right corner like the system
-						notifications and gameplay notifications in the top-right corner.
+						notifications and gameplay notifications in the top-right corner. Players could still
+						access the gameplay notification center in the inventory menu screens and the
+						application notification center in the pause menu or any other screen outside game.
+						The content should be formatted text, but somewhere, there could be bold title with
+						details by an external function forming the resultant formatted text. There would not
+						be too frequent for the instances, so the frames could be fully instantiated without
+						using singletons. The constructor could be similar, that parameters are mostly decided
+						by the subclasses with optional extra parameters. The sprite property could also be
+						abstract property instead of constructor parameter with field, such patterns could be
+						generalized as a code style. It accepts nullable for custom rendering, but should only
+						with sprites for simplification. Animations could be supported, but it is another
+						topic. <code>AchievementUnlockToast</code> is not that good usage. Still, there should
+						be a better to handle the content, frame and animations.
+					</p>
+					<p>
+						For the <code>BookDisplay</code>, most probably the previous trial to implement the
+						editable books, but the way to handle text fields could really be better. More details
+						should be discussed later. Books without the title and page count are not books and
+						should never use this class.
+					</p>
+					<p>
+						There would be an abstract class of <code>InventoryScreen</code>. All the menu
+						screens containing the player inventory should extend the class. It includes the
+						player inventory menu, crafting menus, container menus, but not the book screens.
+						All the inventory menus would have the item counter, but different from the item
+						list menu, which should really be used by the creative mode item list.
 					</p>
 				</content>
 			</section>
