@@ -504,7 +504,82 @@
 						screens containing the player inventory should extend the class. It includes the
 						player inventory menu, crafting menus, container menus, but not the book screens.
 						All the inventory menus would have the item counter, but different from the item
-						list menu, which should really be used by the creative mode item list.
+						list menu, which should really be used by the creative mode item list. The on-screen
+						keyboard menu would be controlled by an input field instead of the parent menus, it
+						also means flexible dynamic menu addition with certain priority should be supported.
+					</p>
+					<p>
+						For the screens like the <code>ContainerDisplay</code> with 2-sided menus, a better
+						way is to use directional controls without "looping" through menus. However, if they
+						are top-bottom menus, it would be different since they are likely more connected;
+						still, tabs may still be enough. Note that the controls to select slots or move
+						stacks across slots and menus would be available only when mouse is disabled to
+						prevent conflicts with mouse controls, just like selecting tiles by keyboard. There
+						would still be better layouts for these menus to work, but decided later. So,
+						<code>getOtherIdx</code> does not really make sense here. Plus, determining controls
+						by checking which menu the cursor is at, does not at all make this logical sense.
+						It could also bother functionality changes. A standardized way should be supported.
+						It should not be called "heaviness", but a better name or mechanism should be made.
+						That color fading could later be realized by using the alpha channel.
+					</p>
+					<p>
+						It has been noted that the <code>CraftingDisplay</code> would be integrated into
+						<code>PlayerInvDisplay</code>, which would later be renamed to
+						<code>PlayerInventoryScreen</code>. Depending on implementation, there could also
+						be subclasses of <code>SurvivalPlayerInventoryScreen</code> and
+						<code>CreativePlayerInventoryScreen</code> or something, but surely to make the
+						system more logically aligned with the code style. The recipe system would later
+						be decided, so as the related crafting menus and recipe unlocking functionality.
+						The way to get achievements is too hardcoded. The refreshing function is quite
+						odd, but listening to inventory changes could be made if needed.
+					</p>
+					<p>
+						The <code>DebugPanelDisplay</code> is just like the GUI mode of commands. If
+						commands are supported, it could be removed, but could still be there in case
+						if needed. However, maintaining it could be a little complex. A recommendation
+						would be dropping this menu. There are quite many entries derived only used by
+						this menu, so only using the commands in the chat room would be a better way.
+					</p>
+					<p>
+						<code>Display</code> should surely be an abstract class renamed as
+						<code>Screen</code>. However, <code>parent</code> should not be handled here
+						and instead by the manager only. Some several functionalities would be supported
+						to enhance the features used by other menus associated with the menus. There
+						would not be <code>clearScreen</code>, and <code>canExit</code> may be replaced
+						by an overridable function, or probably a screen handle callable by the screen.
+						This class would become like a panel or something. <code>selection</code> of
+						menu would only be useful for keyboard controls, but likely tabbing would do
+						this. For components to be selectable by using arrow keys, they could be aligned
+						using layouts like AWT does or relative positions, like grid layout and border
+						layout. There may not be the need for <code>onSelectionChange</code>, but it
+						may be used if it is used for accessing hidden menus which could also be
+						accessible with mouse hovering, only if it contains only selectable component.
+						This rendering function is no longer applicable, and rendering depth should not
+						depend on selection index.
+					</p>
+					<p>
+						There could still be the <code>HowToPlayDisplay</code> screen. Firstly, the
+						rendering of keys could be enhanced with using images, which are the mapped
+						keys, but not the names of the mappings. All the paragraphs would be put into
+						a single translation entry to simplify this thing, but there may be ignorable
+						odd double line breaks between paragraphs. There would be actually 3 types of
+						controls: Keyboard Only, Mouse &amp; Keyboard, Controller. No fallback, so when
+						any controller is disconnected, keyboard would still not usable, unless it is
+						"Controller &amp; Keyboard", with the pattern that "major-first-minor-second".
+						For every set of controls, there would be a guide, with topics in the subtopics
+						under each setting of control. If there are guides without <i>any</i> control,
+						they should be placed aside the control guides. Usage guidelines for each set
+						of controls could be different, but most of the basic functionalities would
+						still be usable. Control guides should be put into control guides; general
+						gameplay guides should be put into general guides. However, advanced guides
+						would not be placed here, but instead other places, like with a wiki. The
+						layout of this screen may refer to the one in Minecraft: Bedrock Edition.
+					</p>
+					<p>
+						There would not be the <code>InfoDisplay</code>, but there could be statistics
+						in the pause menu. Each player would have their own set of statistics, but not
+						for the server or the world. The world information may not be seen here, but
+						perhaps other places.
 					</p>
 				</content>
 			</section>
@@ -743,6 +818,17 @@
 					"Settings" is the entire system of menu of all settings or several sets of settings
 					encapsulating various "options", where "preferences" of user settings are saved on
 					disk. "Configurations" would not be used in this context.
+				</p>
+				<p>
+					As for synchronization between clients, the decisions of changes would be made by
+					the server, so if the server decide that the player acts are invalid, they could
+					be ignored or just reversed.
+				</p>
+				<p>
+					There might be 2 modes to fully utilize keyboard to move and select tiles. One way
+					is fully using the moving keys and the selected tile is always the tile in the front;
+					another way is to use a set of movement keys to <i>only move</i> (like WASD) and
+					another set of keys to <i>only select tiles</i> by directions (like arrow keys).
 				</p>
 			</content>
 		</section>
