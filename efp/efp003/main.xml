@@ -581,6 +581,163 @@
 						for the server or the world. The world information may not be seen here, but
 						perhaps other places.
 					</p>
+					<p>
+						The <code>InventoryMenu</code> could have the holder, but not limited to entity.
+						The inventory content would be linked or associated to the holder's inventory.
+						Any update made in either place would be reflected to the another. However, the
+						content alignment would not be needed, thus the <code>slot</code>. Each slot in
+						the menu would correspond to a slot of the actual inventory. There would not be
+						the creative inventory handled here as mentioned previously. A listener would be
+						registered to the inventory if they are inventory slots. If they are temporary
+						slots, like in the crafting menu, the listener would be registered in the menu.
+						However, since inventory slots may still be updated without interacting with the
+						menus, the listener related to the inventory would probably be registered directly
+						into the inventories, by the holder or something. Item stack operations could be
+						handled by the item list menu, but well-formed structure to handle both the items
+						in the non-inventories and the stacks in the inventory slots should be both handled.
+						There might be a wrapper handling this, but the detailed implementation should be
+						discussed later. There may not need the <code>refresh</code> function for updating
+						the menu frame. The description menu may be later made as a tooltip or a separate
+						menu aside.
+					</p>
+					<p>
+						Dropping a full stack may be handled by using sneaking modifier with the drop
+						hotkey. So, if the configured key for item dropping contain the keys to sneak,
+						it would be regarded as a conflict. Actually, hotkey configuration could be
+						made as the way that for each mapping, a permitted set of keys which is probably
+						set in a constant, would be passed. Available sets:
+						<list>
+							<li>
+								<b>Typing Keys</b>: letters, numbers, punctuations on the main keypad without
+								any modifiers
+							</li>
+							<li>
+								<b>Control Keys</b>: <kbd>Ctrl</kbd>, <kbd>Alt</kbd>, <kbd>Shift</kbd>,
+								<kbd>Tab</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Enter</kbd>,
+								<kbd>Backspace</kbd>, <kbd>Pause/Break</kbd>, <kbd>Insert</kbd>,
+								<kbd>Delete</kbd>
+							</li>
+							<li><b>Function Keys</b>: <kbd>F1</kbd> to <kbd>F12</kbd></li>
+							<li>
+								<b>Navigation Keys</b>: <kbd>Home</kbd>, <kbd>End</kbd>,
+								<kbd>Page Up</kbd>, <kbd>Page Down</kbd>
+							</li>
+							<li>
+								<b>Numpad Keys</b>: all the keys on the numpad except <kbd>Num Lock</kbd>
+							</li>
+							<li>
+								<b>Forbidden Keys</b>: the keys usually used system-widely, including
+								lock keys, <kbd>Win</kbd>, <kbd>Context</kbd>, <kbd>Print Screen</kbd>
+							</li>
+						</list>
+						Note that in fact, <kbd>Tab</kbd> could also be a navigation key, but excluded
+						from the set to prevent duplication across sets. Unlisted keys may be ignored.
+						Mapped hotkeys would not be used when input fields are activated in the design,
+						so printed keys could be used, but hardcoded keys like the escape key and enter
+						key may be handled specially, especially in one-line field or with an Input
+						Method Editor (IME). While checking conflicts, hardcoded ones would be taken
+						into account.
+					</p>
+					<p>
+						Each menu may handle the content in a different way. There may not be entries,
+						<code>ListEntry</code>, but components, so there would also not be
+						<code>removeSelectedEntry</code>. However, the implementation might be similar
+						to AWT or Swing. The way to handle stacks in <code>InventoryMenu</code> is not
+						perfect.
+					</p>
+					<p>
+						When <code>ItemListMenu</code> becomes using slots, there would not need the
+						display length thing. Also, there is no longer the need to "cut" or align the
+						entries, so the positioning parameter could be dropped. The way to build the
+						menu would be more flexible as components than using like this way, including
+						the padding.
+					</p>
+					<p>
+						Since the language setting is a part of preferences, they should be within the
+						settings class as an inner class. As aforementioned, the debug locale would be
+						dropped, so sorting could even be simpler. Also, when the GUI could be enhanced,
+						there is no need to highlight the entries, reduce troubles to tint colors, but
+						instead bordering the selection, that the active option could be bold and/or
+						tinted in another obvious and distinguishable color. When the user exits the
+						menu, the selected entry would be the new setting to apply, so there is no the
+						"save" button. The translation disclaimer could be kept, and there is no an
+						option to force Unicode font.
+					</p>
+					<p>
+						The <code>LevelTransitionDisplay</code> would just act as the UI. The process
+						of dimension change would be handled in the manager. There is likely not the
+						definite progress, so seemingly the loading screen would appear a standard
+						background with a message. Also, the "level" which then be dimension may not
+						be loaded in advance, it needs to wait for the loading completed at least for
+						the targeted chunk.
+					</p>
+					<p>
+						The <code>ListItemSelectDisplay</code> could instead be a menu dialog, but
+						this screen is only used by the debug panel, so this screen would not be
+						implemented, including all the entries in <code>screen.entry.commands</code>.
+						Also, if there exist classes only used by another class within the package
+						containing various classes, the classes may better be placed in the class
+						using them, especially when there is a theme.
+					</p>
+					<p>
+						The <code>LoadingDisplay</code> would become <code>WorldLoadingScreen</code>,
+						which is not controllable by the escape key. Since the world is loaded chunk
+						by chunk, the progress would be separated into segments with each corresponding
+						to the state of a chunk. Corrupted chunks and regions would be regenerated with
+						backups of original data made, such chunks are deleted from the loaded chunks.
+						If there is any missing chunk at or around the spawn point, they are created
+						and monitored by <code>WorldCreatingScreen</code>, which would also be used
+						by the <code>WorldCreateScreen</code>. The current implementation of
+						<code>LoadingDisplay</code> is quite messy. Loading would not be handled by
+						the screen but the manager class, so the exceptions would not be caught there,
+						and thus the menu dialog would be launched by the manager. About auto fixing,
+						it would be handled directly in loading schemas, as they would be assumed to
+						be bugs previously reported and resolved. The message popups could instead be
+						application notifications. The progress handling would be quite special.
+					</p>
+					<p>
+						<code>Menu</code> would become more general, as a component container. It
+						would not contain any entry by default. If there is any container-like
+						component managing entries like <code>ListEntry</code>, they would be other
+						cases and handled in another way. Importantly, an abstract menu would basically
+						not have any property like size, position, title, spacing, frame, selectability,
+						rendering and searching, even no content. Better may be making the menu
+						containing a container passed into the constructor as final and protected, with
+						delegations, and menus are managed as a separate system than components. Then,
+						<code>Screen</code> would be the similar case, with a difference that only
+						<code>Screen</code> could contain any <code>Menu</code>, but not class itself.
+						The copy constructor and builder patterns are quite messy here. The searching
+						function would be provided separately when the container needs it, which would
+						be powered by a input field and the searching context, working together to
+						give the filtered result, without that fragile highlighting and meaningless
+						scrolling functions. Searching is performed when <kbd>Enter</kbd> is pressed,
+						but not every time the field is updated, and pressing <kbd>Escape</kbd>
+						deactivates the field without performing searching, <kbd>Enter</kbd> also
+						deactivates the field. Rendering of components and such things would be based
+						on relative positions, so there is no need for the translating functions.
+						There might be "visibility". Some containers may have listeners supported.
+						Scrolling animation really complicates the code. There would be no need to
+						update and remove entries, as well as the builder and <kbd>MenuListEntry</kbd>.
+					</p>
+					<p>
+						Only the top-most screen is interacted. Moreover, if the upper screen intends
+						to cover the lower screen(s), rendering of the lower screens is skipped. The
+						gameplay canvas would also be a screen, so that it could also be managed by
+						the <code>ScreenManager</code>. When the gameplay screen is added, it would
+						be placed as the lowest screen, and all other screens are dropped. Also, when
+						any of the world loading screens are initiated, other screens are also dropped.
+						Components may not take the menu or screen handle when ticking, but menus would
+						always take the screen handle passed to screen ticking. The handles and the
+						functioning would be handled directly in the screens and menus, even locally
+						defined components. Some menus may be with definite frames, but not all.
+						Rendering functions are all present in both menus, screens and components.
+					</p>
+					<p>
+						For the other usages of <code>MessageDisplay</code>, there are only the link
+						error message and resource pack description. The former could be replaced by
+						application notification and the latter could be combined into the main menu
+						layout or replaced by tooltips, so this class could be dropped.
+					</p>
 				</content>
 			</section>
 			<section title="Extra Notes">
@@ -603,6 +760,13 @@
 						It may skip the desired code if not handled properly. It includes teleporting
 						entities across dimensions. The necessary unprocessed events should not be ignored
 						if there exists any.
+					</p>
+					<p>
+						Listeners must be handled well. They are registered when they are set up, but they
+						should be unregistered when the holders of the event listeners are destroyed, or
+						they are no longer used. There should be no "zombie" listeners happening. This
+						could only be ensured by the developers, and the compiler could not validate this.
+						Try-finally may be used if it is inside a try-catch block.
 					</p>
 				</content>
 			</section>
