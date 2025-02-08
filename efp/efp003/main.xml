@@ -738,6 +738,50 @@
 						application notification and the latter could be combined into the main menu
 						layout or replaced by tooltips, so this class could be dropped.
 					</p>
+					<p>
+						For <code>MultiplayerDisplay</code>, there is nothing valuable for reference.
+						However, it is worth noting that logging in should be done by the Launcher,
+						and the client ID, user ID, authorization token and ID are all sent by launching
+						arguments. Some more data would be fetched by the application by these data.
+					</p>
+					<p>
+						The <code>OnScreenKeyboardMenu</code> would be probably using the same name,
+						but there would be a parameter in constructor accepting a input field object.
+						There might also be a menu handle of the screen passed, but it is quite unclear
+						how actually it would be implemented. However, it could also just be "invisible".
+						Invisible menus and components would be skipped from both ticking and rendering.
+						Since there could be a lot of differently sized keys, they could be mapped
+						instead by reference linking made as components. If they are null then there is
+						no accessible key(s) on that direction. Navigation would still be handled by D-Pad.
+						The state of the sticky key could be stored inside the key, which is also
+						referenced by the final property. A grid layout may be used for this. All the
+						states of a key should be stored inside the key object, including whether it is
+						pressed or selected. It would still be completely not controlled by keyboard,
+						but it would be hidden automatically if no controller is detected at any tick.
+						The triggered events by these keys should then be directly handled by the input
+						field instead. Also, there should be an abstract class so that there is no need
+						to use <code>\0</code> for the sticky key, and there could be keys not typing
+						any character but other functions like swapping keys like the numbers and symbols.
+						There would not be using x and y, since they are not needed. No exceptions should
+						be thrown like this, and these should be directly handled on the input field
+						instance and menu. There is no need to check whether it is visible in the ticking
+						function. Rendering could be simpler that sprites could be included in components.
+					</p>
+					<p>
+						There would not be separately <code>OptionsMainMenuDisplay</code> and
+						<code>OptionsWorldDisplay</code>, but just the same <code>SettingsScreen</code>.
+						The options should be no difference between the one from the main menu and the one
+						in game. Each option would store the original value and the current value, and the
+						values are compared to perform saving and notice if any. Further settings menus
+						would be instantiated only when they are accessed. Basically there are 2 kinds of
+						layout: Full Canvas and Tabbed. It would highly depend on how the menus are styled
+						and appeared. Changes are applied only when the menus are exited.
+					</p>
+					<p>
+						There is no teh real need of <code>PagedDisplay</code>. It could really be replaced
+						by using a scroll pane, which is even more easy-to-use than pages, unless they
+						are really books, but not the case. Not much to notice, this class could be dropped.
+					</p>
 				</content>
 			</section>
 			<section title="Extra Notes">
@@ -993,6 +1037,14 @@
 					is fully using the moving keys and the selected tile is always the tile in the front;
 					another way is to use a set of movement keys to <i>only move</i> (like WASD) and
 					another set of keys to <i>only select tiles</i> by directions (like arrow keys).
+				</p>
+				<p>
+					The way to handle the toggle of hardware acceleration is still a question. In
+					general there is no need to turn off hardware acceleration, but in rare cases
+					the graphics cards may not be compatible with the software, so they may have to
+					be turned off. However, if it has already malfunctioned when the application has
+					launched, the toggle in application is quite unusable. They should either be
+					configured by launching arguments or handled internally by the application.
 				</p>
 			</content>
 		</section>
