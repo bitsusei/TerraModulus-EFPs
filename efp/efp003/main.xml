@@ -774,13 +774,94 @@
 						in game. Each option would store the original value and the current value, and the
 						values are compared to perform saving and notice if any. Further settings menus
 						would be instantiated only when they are accessed. Basically there are 2 kinds of
-						layout: Full Canvas and Tabbed. It would highly depend on how the menus are styled
-						and appeared. Changes are applied only when the menus are exited.
+						layout: Submenus and Tabs. It would highly depend on how the menus are styled
+						and appeared. Changes are applied only when the menus are exited. In Settings, the
+						buttons that are not single options but with submenus popped up end with ellipsis,
+						if the layout of Submenus is used.
 					</p>
 					<p>
 						There is no teh real need of <code>PagedDisplay</code>. It could really be replaced
 						by using a scroll pane, which is even more easy-to-use than pages, unless they
 						are really books, but not the case. Not much to notice, this class could be dropped.
+					</p>
+					<p>
+						For the <code>PauseDisplay</code>, there would be <code>SingleplayerPauseScreen</code>
+						and <code>MultiplayerPauseScreen</code>. A singleplayer game or the host of a LAN world
+						would use the singleplayer version while a multiplayer game would use the multiplayer
+						version. A client connected to a LAN world is also regarded as multiplayer game. The
+						title of the menu would be "Game Menu". Basically, there would be "Back to Game",
+						"Settings", "Statistics", "Advancements". For singleplayer one, there would be "Open
+						to LAN", "World Options" and "Save and Quit"; for multiplayer, there would be
+						"Disconnect", but more functionalities may be added by plugins or mods. There is an
+						uncertainty that there would be a "Save" or "Backup" option for singleplayer, but a
+						more convenient-to-implement way is only using commands, just a problem that either
+						saving or backup would require a complete suspend of gameplay for synchronized game
+						data being saved well. Saving and backup could be performed only when all the game
+						ticking threads are suspended on the server side, so this should be handled by the
+						server internal part, but not what should be handled by the in-game commands. For
+						dedicated servers, there are server commands, but there are no such things in
+						singleplayer. As for the scope of in-game commands, the topic would be discussed
+						later. The only way to implement is only via the pause menu, so discussed later.
+						The background of the pause screen would be the dimmed gameplay screen, but the
+						gameplay screen would not be interacted, though rendering continues, even clicking
+						mouse on the dimmed screen would not close the menu.
+					</p>
+					<p>
+						The <code>PlayDisplay</code> has already been deprecated. The 2 entries would directly
+						be merged into the title screen as mentioned.
+					</p>
+					<p>
+						For the <code>PlayerDeathDisplay</code>, it would be <code>PlayerDeathScreen</code>
+						with the dimmed gameplay screen, similar to the pause menu. However, the gameplay
+						screen would be frozen to the last frame the player died. The title would be "You
+						Died!" in addition to the death message. When the player died, the entity does not
+						exist in the world, but the player <i>is still in the world</i>, with the status of
+						not being spawned. Therefore, the player could not receive any activity from the
+						world. In that status, the died player could only either respawn or quit while the
+						world is still running. If immediate respawning is enabled, this screen is skipped
+						and the player respawns. The quit button is the same as the one in the pause menu.
+						Player could not open any other menu while on this screen and there would not be any
+						other information shown.
+					</p>
+					<p>
+						Some details of <code>PlayerInvDisplay</code> may have already been mentioned
+						previously. The creative mode item list menus would be accessed in another way,
+						either tabbed or made into other menus aside. For the other parts, it would be
+						as what mentioned. Anyway, the selected slot would be bordered or highlighted,
+						and the selected stack of item would be at the cursor, hovering above the
+						inventory menu(s), with the original slot being empty or as a reference of the
+						source slot. There would not be the help text. Then, it would not be using this
+						way to hide the item list menu.
+					</p>
+					<p>
+						For other usages of <code>PopupDisplay</code>, some of them could be replaced by
+						tooltips or full-canvas options dialogs or screens. Some as submenus would be
+						implemented like simple panes with just a few components added, similar to anonymous
+						classes. The ones with just messages could be replaced by notifications. Some with
+						just simple buttons of options could be made by a class named <code>OptionMenu</code>
+						or something else composited of a display message content and options with name and
+						fallback. There may not be the need to have a confirmation popup on quit. As for the
+						options dialog menu, if it would not exit or change the current screen, it could be
+						full-canvas; otherwise it could be with a menu frame. Full-canvas screens could be
+						with lightly dimmed and blurred original screen or with a background image, along
+						with its components. As for listening key sequences in the settings, a non-full-canvas
+						menu or a banner could be shown to indicate that it is listening key inputs and what
+						keys are currently pressed. The resultant sequence would be at the moment before any
+						key has just been released. For example, the confirmation dialog menu of resetting
+						all key bindings would be framed. The styles or appearance of the frame would be
+						decided later. When there are buttons, it would not rely on hotkeys and this structure
+						could be discarded, even for keyboard-only controls, with just a few simple options.
+						It could also make use of the screen resolution by fitting options horizontally.
+						Even using select entries would be easier to use than listening keys. Note that the
+						options dialog menu would not be exited by <kbd>Esc</kbd>, and the options must be
+						used instead. The on-screen keyboard (OSK) would not be handled specifically here.
+					</p>
+					<p>
+						For <code>QuestsDisplay</code>, the management part could be separated like how
+						advancements should have been done. This kind of quest tree display would be quite
+						complex, so keyboard navigation would be available only on keyboard-only mode; or
+						the mouse should be used to drag. Like mentioned in other mechanisms like OSK keys,
+						the components could be linked.
 					</p>
 				</content>
 			</section>
@@ -888,8 +969,8 @@
 				<p>
 					The controller management should be improved by GLFW. So, it is possible to choose
 					the controller to use. It is configurable in settings, but not saved to disk. There
-					would still be the on-screen keyboard for controller, but the mechanisms could be
-					significantly improved.
+					would still be the OSK for controller, but the mechanisms could be significantly
+					improved.
 				</p>
 				<p>
 					For key mapping configuration, at the moment of the first key pressed released, all
