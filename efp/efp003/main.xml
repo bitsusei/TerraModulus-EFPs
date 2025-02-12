@@ -861,7 +861,85 @@
 						advancements should have been done. This kind of quest tree display would be quite
 						complex, so keyboard navigation would be available only on keyboard-only mode; or
 						the mouse should be used to drag. Like mentioned in other mechanisms like OSK keys,
-						the components could be linked.
+						the components could be linked. There are various ways to display the node description
+						in the tree layout: the first way is using tooltips; the second way is showing the
+						content in a separate menu with the hovering node, empty if nothing hovered; the third
+						way is to select the node on press and show the content in a separate menu. It would
+						depend on whether there would be features supported here. As for the JSON structure,
+						it would not be important when it would no longer be formatted in this way as sources.
+						Full refreshing functions like <code>refreshDisplayableQuests</code> should only be
+						invoked only when they are loaded or something, but not every time some elements are
+						updated, which should always be done in sync with any related activities. This includes
+						<code>reloadEntries</code>, though the data should not be updated in real-time even if
+						they are changed, instead should be the snapshot at the time accessed for simplicity
+						and also consistency. The <code>Display</code> inner classes are quite complex, but
+						they could just be made as submenus.
+					</p>
+					<p>
+						In the structure of quests, they are organized as series. There is no singleton quests
+						but series of quests. A series includes several quests, which may be unlocked in
+						sequence. When showing the menu list of series, they could be listed on the
+						left-hand-side and put the tree layout on the right-hand-side menu, making use of the
+						screen. If there is description for the series, it would be put on the right-hand-side,
+						on the top or on the bottom, outside te tree. Certainly, while there would be 2 separate
+						systems of quests and advancements, quests would not depend on the system of advancements
+						but the more abstract structure. In abstraction, they are called "Progression Systems".
+						Locked quests would always be hidden to prevent spoiler, but advancements may be hidden
+						depending on the levels. The implementation of <code>SeriesQuestViewerDisplay</code> is
+						really complex, if there is a component supporting drawing graphics in shapes this could
+						be a lot simpler, in addition that the nodes could still be boxes of components. Still,
+						if the components could be shapes, there is even no need for the graphics component,
+						simply placing them in the component pool. Making rows and columns while they are
+						unnecessarily like that would be complex, but making linking like elements in a linked
+						list should be enough. That means there would also not need the map of quest
+						relationships when they could just be put into the quest node component instance. Auto
+						scrolling would be used only for keyboard or controller controls, or mouse dragging would
+						be used instead. If the quest manager is instantiated, there is no need the functions of
+						<code>resetGameQuests</code> or <code>load</code>, and saving would be handled by a world
+						save manager. There are no need separated tabs for unlocked and completed series, but
+						probably a select dropdown for showing all, only unlocked or only completed series, and
+						the display menu on the right would be empty if no series is selected in the tab.
+					</p>
+					<p>
+						A new recipe system would be made. The recipe menu and crafting menus would differ a lot.
+						The most important part is that it would become an inventory menu with the player storage
+						space shown on the screen.
+					</p>
+					<p>
+						There may be different sets of directions or positions, but they should be managed in a
+						standardized way, with their enum classes. For example, there would be sets of 2, 4, 5,
+						8 or 9 directions. <code>RelPos</code> is an example of a set of 9 directions in a
+						rectangle. A border layout would use a set of 5 directions. <code>xIndex</code> and
+						<code>yIndex</code> should rather be computed on demand according to the natures of
+						<code>ordinal</code>. To be value-safe, functions like <code>getPos</code> would be
+						avoided, and <code>getOpposite</code> would use switch-case or when instead. If there
+						must be a value of anchor based on <code>Point</code> and <code>RelPos</code> specified,
+						a dedicated class of <code>Anchor</code> could exist.
+					</p>
+					<p>
+						The <code>RepairBenchDisplay</code> would still be an inventory menu. Actually, if
+						possible, storage slots would be recommended over temporary slots, which are what
+						<code>RepairBenchCarrier</code> is using. This style and approach is quite new to
+						this codebase, but the <code>SlotEntry</code> would not be an entry later, just
+						simply be a slot. Every menus handling stack transfers in their places, it is quite
+						repetitive whilst could be simplified by an improved model in fact. The component
+						of a slot would associate with a backing slot instance. If they are just buttons
+						and slots, disabled buttons and empty slots may still be selected, but just could
+						not be interacted. Storage spaces may have attributes or properties, that could
+						define what kind of slots they are, like crafting inputs, products, and so on. The
+						durability of fishing rod could really be implemented to simplify the situation.
+						The functionalities of slot entries would mostly depend on the natures of the
+						backing slots. The <code>RepairInfo</code> is actually a context generated by the
+						input items. The existence of the carrier is just to draw the scope within the
+						display class. Having a leading space in the string for positioning is somehow
+						problematic, but common in this codebase. The slot labels could actually be
+						replaced by intuitive graphics. The function of <code>onAction</code> is used
+						only once in a specific scope, so it could instead be a lambda. That "checking
+						again" may be turned into assertions since it is intentional. Although stack
+						movement would primarily be specified for the destination, mouse scrolling or
+						L1-R1 switching on a slot may still be supported and act like
+						<code>addToCarrier</code>, probably directly operating on the stack. If they
+						are storage slots, the stacks would not need to be dropped on exit.
 					</p>
 				</content>
 			</section>
@@ -892,6 +970,16 @@
 						they are no longer used. There should be no "zombie" listeners happening. This
 						could only be ensured by the developers, and the compiler could not validate this.
 						Try-finally may be used if it is inside a try-catch block.
+					</p>
+					<p>
+						In fact, when the constructions of classes are limited, as long as they are still
+						in the scope of context, they should be safe to be public. This covers the cases
+						when particularly some classes are doing their responsibilities in their domains
+						for other parts. This case, if the source data are from the other parts where the
+						creations are already limited and the classes in the domain are using the source
+						data with the publicly exposed classes definitions, the source data are still
+						limited in the scope safely even they are in the other domains as long as they
+						are well-designed.
 					</p>
 				</content>
 			</section>
