@@ -941,6 +941,91 @@
 						<code>addToCarrier</code>, probably directly operating on the stack. If they
 						are storage slots, the stacks would not need to be dropped on exit.
 					</p>
+					<p>
+						The resource packs and similar things would no longer rely on the directory
+						structures. There would be several categories of the assets. The only supported
+						version of the packs should only be the one the version of the application was
+						designed for, and the older packs may only be loaded with minimal supports
+						where possible. As for the vanilla assets, if all the assets are configurable,
+						they should be packed as one and either embedded in the binary or as an external
+						asset, but modifications to it is disallowed and thus only loaded once on start.
+						There is no longer the need to traverse the embedded assets. The screen would
+						still be 2 tabs with the left unloaded and the right to load. With a higher
+						resolution, there is really no need to combine them into one list while it could
+						reduce the discoverability of the list. Only the brief description of the packs
+						would be needed, so the screen does not have to be detailed. The watcher would
+						monitor all the packs. When leaving this screen, all the packs are loaded into
+						memory, and the packs would not be locked, so all the packs except vanilla
+						assets would be reloaded even if there is no change while on this screen. For
+						the list entries, if there are new items added to the list, the selected one
+						would be kept selected but shifted, and the selection would be removed if the
+						entry is removed; the list entries would not be said to be selected by the mouse,
+						but for the other controls. The file watcher, would be itself as a utility class,
+						so would not be the inner class of the display class or such. On the other hand,
+						they are locked to ensure it would not be modified during loading. If they are
+						keyboard or controller controls, the packs could only be moved while selected.
+						Then, the list entries are also likely linked. For reading the information of
+						the pack, "soft read" lock would only be needed, the dimensions of the logo
+						would not be limited, but there are always the optimal ones. This stream handling
+						part is actually quite low level. There would also no need for the filter to
+						get the assets content. Depending on the assets, mostly only the embedded assets
+						may use the <code>readStringFromInputStream</code> function, but not a must. The
+						metadata would no longer be a single file, and most content may not use the JSON
+						structures.
+					</p>
+					<p>
+						The steps to load packs on start during initialization would be:
+						<list>
+							<li>Load directory for packs.</li>
+							<li>Match packs with preferences.</li>
+							<li>Select matched packs and ignore others, warnings may be emitted.</li>
+							<li>Hard lock all the packs including vanilla assets.</li>
+							<li>Validate vanilla assets with a checksum, an error may be emitted.</li>
+							<li>Load all the packs in order into the memory.</li>
+							<li>Release all the packs.</li>
+							<li>Finish initialization.</li>
+						</list>
+						Note that the assets for the loading screen would be embedded, but it is possible
+						that there could be a "booting" screen configured after loading.
+					</p>
+					<p>
+						The steps to load packs after saving the pack preferences would be:
+						<list>
+							<li>Unload all the assets except vanilla assets.</li>
+							<li>Select matched packs and hard lock packs, errors may be emitted.</li>
+							<li>If reversible errors are emitted, return to the pack list screen.</li>
+							<li>If any pack is updated during the process, return the screen.</li>
+							<li>Load all the packs in order into the memory.</li>
+							<li>Release all the packs.</li>
+						</list>
+						Obviously, the way to manage the vanilla assets is quite different from custom
+						packs, but the format and specification would still be the same. The part which
+						matters would only be how the pack manager works to align with the standard system.
+					</p>
+					<p>
+						Since it would involve different stages for initialization and configuration, there
+						may not only be the single manager for the packs. Post-construction initialization
+						would not be design-safe, so the stages may be separated into several utility parts
+						for the entire pack management system. Individual packs would be on their own, but
+						the workflows must be safe enough as designed.
+					</p>
+					<p>
+						For pack loading, all the parts would just be handled by a function with the manager.
+						Skins would be handled separately from the assets. If assets loading is handled in the
+						lower level, the processing code may not be here. As for loading packs, the exceptions
+						would only take for a single pack, but the entire loading process would be stopped for
+						strict mode. Also, the compatible mode would skip some unimportant exceptions and allow
+						loading old versions.
+					</p>
+					<p>
+						Since skins would be handled by the account system on the platform, they would not be
+						handled by the application.
+					</p>
+				</content>
+			</section>
+			<section title="Other Assets">
+				<content>
+					All the assets would be reviewed, including the content and structures.
 				</content>
 			</section>
 			<section title="Extra Notes">
@@ -980,6 +1065,12 @@
 						data with the publicly exposed classes definitions, the source data are still
 						limited in the scope safely even they are in the other domains as long as they
 						are well-designed.
+					</p>
+					<p>
+						Visibilities of entities should be handled well and logical enough. If there
+						exist some functions or constants that are general, they could be considered
+						being moved out of the class. Also, if some members are designed to be used in
+						a specific scope, they should not be highly visible to prevent breaking mechanisms.
 					</p>
 				</content>
 			</section>
