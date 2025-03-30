@@ -1019,7 +1019,179 @@
 					</p>
 					<p>
 						Since skins would be handled by the account system on the platform, they would not be
-						handled by the application.
+						handled by the application. There would also not be the screen to preview or configure
+						skin in game. Then, they would not be stored as associated textures, and thus directly
+						as player data. The skin data would be sent only from the server to the client side,
+						comparison would be done on the client side. The watcher thread would no longer be
+						needed. The Mob Sprite would be a huge difference.
+					</p>
+					<p>
+						The <code>TempDisplay</code> is quite useless. If a URL is being opened in browser,
+						a confirmation popup would always be shown. There is no actual need to automatically
+						close the screen noting opening in browser, but immediately close the confirmation
+						popup menu.
+					</p>
+					<p>
+						Tutorials should be reworked. However, they could just be in the How to Play screen
+						or as guides configured in the menus, which could be referred from RimWorld. As for
+						completion detection, those may be detected in realtime, including the interactive
+						elements and input events. The one in Minecraft is not valuable for reference here.
+					</p>
+					<p>
+						As for the world names, there should be no limitation. Therefore, the directory names
+						of worlds would be differently handled, by a randomly generated character table of
+						alphanumerics by indices, with an incrementing counter. Both the table and the counter
+						are stored as "internal" data of the client application. In normal operation, the
+						directory names must not be modified as there would be an internal table storing the
+						directory names as the identifiers for some preference-related local user data, like
+						the last played world. Since there is a chance that an unexpected collision occurs,
+						so a warning would be emitted and such string would be skipped. Overall, the string
+						would seemingly be incremented as 62-based and likely random. On the other hand,
+						server data are not stored on the client side, but sent on demand, only the server
+						configurations and primary metadata are stored in client application data. Then, there
+						is totally no need to check the names with any regular expression. Players are more
+						advised to access the world directory via an application rather than a filesystem
+						browser, and edit most files with advanced editors. This way, players must use the
+						application to import or export worlds, even making backups, the launcher might also
+						support such operations. Even worlds with duplicated names could exist, so it is
+						advised to make the name identifiable and unique, a warning would be shown if such
+						scenario occurs, but the name would still be saved as is instead of being modified
+						to become unique.
+					</p>
+					<p>
+						The <code>WorldCreateDisplay</code> would be renamed and accessed from the world list
+						screen listing local worlds. The screen would only handle the inputs, all the
+						user-specified settings. If some of them are empty or remained as "default" without any
+						customization, the default values would be filled during the initialization of world
+						creation process. The seed field would accept any character but further hashed with
+						a custom hasher even they are numbers, so an option to input real numeric seed would be
+						provided near the input field. If there is any field containing illegal characters or
+						unknown values, they would be marked as "unparsable" and the button to complete would be
+						disabled. There is also no need to show what name would be saved eventually. The setting
+						fields would be initialized only on this screen, so no any settings are saved after world
+						creation, and they would not be saved as global states like the <code>Settings</code>.
+						The <code>WorldSettings</code> class would be a record class storing all the input values,
+						declared not in the screen class.
+					</p>
+					<p>
+						In the world list screen, there would be several operations available, including importing,
+						exporting, copying, deleting and creating worlds, where exporting, copying and deleting
+						could only be done on existing worlds. Basically, the <code>WorldInfo</code> class might
+						be just the similar record class with fewer information, but with an addition of world
+						size on disk. The icon of world can be customized but the default icon would be the same.
+						Note that the world version shown would not be the actual logical data version but the
+						display version that the version of the game last accessed. The directory name would not
+						be shown however, but the user could open the world folder via the browser by a button,
+						labelled "Open Folder", or as a button on the selection, so that there is no need to show
+						disabled buttons. Then, the user has to press the play button on the selection, although
+						there might be optional quick access by double-clicking the entry, disabled by default.
+						Since the screen would be a lot finer and larger, the world information would be shown
+						within the entry instead of the separate menu. If there is any data stored a world key
+						which does not exist, such data would become unknown. While the screen is opened, the
+						watcher thread would keep tracking of the changes notified by the filesystem and the
+						operating system. While there is an operation emitted in the screen menu, the world
+						data of the selected entry would be sent as argument, without using the static fields.
+						Too much duplicate code in the ticking method, but many parts could be separated and
+						simplified.
+					</p>
+					<p>
+						Many screen menus would not allow using <kbd>Esc</kbd> to return to the previous screen.
+						In such cases, if the screens are allowed to be returned, a dedicated button would be
+						available. This could prevent user losing any progress easily.
+					</p>
+					<p>
+						The process to load world information would differ a lot from the original one. Also,
+						having methods of <code>setWorldName</code> and <code>hasLoadedWorld</code> is really
+						weird. <code>getValidWorldName</code> would not be needed. To simplify the process,
+						copying world could just be a simple "duplicate", appending "Copy of" in the front of
+						the original world name. User has to edit the world to change the name afterward, or
+						the user could enter a different name than the default given name in a similar dialog
+						like the one in IntelliJ.
+					</p>
+					<p>
+						The Player entity is actually a living entity, but different from mobs (or a different
+						name for accuracy). The only general difference is that the controls are handled and
+						implemented differently. This way, the entity system could be more generalized into
+						various elements without having to bothering to making more subclasses of entities and
+						implementing similar behaviors. Since the take action would be handled by a player
+						ability, this would not be an available part of a general entity. A new tree of entity
+						types would be proposed later after this report. However, there are some general concepts
+						should have been noted:
+						<list>
+							<li>
+								In the following context, the details will be explained by: "actor", who act or
+								apply an action on the target; "target", who received an action from the actor
+								as an event; "controller", which controls and decides the behaviors of an entity
+								depending on various events, different controllers may exist in the same entity;
+								methods in code will be described as respective events; the context of all the
+								states in a world will be described as the global states.
+							</li>
+							<li>
+								Since anything is processed on events, all the related actions are acted only
+								when the events are emitted and started being processed, including the regular
+								ticking and the occasional updating events. While there are no such spontaneous
+								events of attacking and using, but the receiver interface of hurting or damage
+								receiving events. If an entity or a mob actor likes to emit an attack or use
+								event on the target, the event is then emitted during the main event, forming
+								a tree-linked relationship between the events. The passive outcomes initiated by
+								the master event, relying on its provided arguments, along with the common states
+								seen by the most parts.
+							</li>
+							<li>
+								If the attack event is a passive event triggered by the controller, the event
+								should only take its responsible part to respond to the master event with provided
+								arguments and the given global states. The more important part is that an attack
+								initializing event is simple and only calculates the basic elements of an attack,
+								while the precedent parameters are given by the controller, so there should not be
+								the general event responsive in the main body of an entity. The attack action may
+								however be managed by a separate controller, and the counterpart of the initialized
+								attack action should only handle and response to the event only, but not limited
+								to the indirect states affected by the event. Thus, there may only be just the
+								hurt receiver event in the main body of an entity to be triggered by the damage
+								source.
+							</li>
+							<li>
+								Also, for use actions, there might be something to note. There could be "use" event
+								with the subject of a tile or entity, and the "used on" event with the subject of
+								an item. By default, the target is the subject, but the subject may change depending
+								on which one is the subject depending on the event. Unless there comes to a new
+								solution solving the ambiguity, this use action could still not be split. However,
+								the middle mouse button could indeed be used for this, detailed resolution may
+								be discussed later.
+							</li>
+						</list>
+					</p>
+					<p>
+						When an entity is added into the world, an identifier would be passed into the constructor
+						of the entity. The identifier would be unique to the world and thus readonly. Since the
+						removal of entity would be handled on each tick of world updates and there would not be
+						a field saving the boolean whether it is removed, everything would still be taken into
+						account without knowing whether the entity is still in the world next tick, it is advised
+						to avoid pure incoming references existing more than a tick on the target entity. The
+						models of entities should be hidden and immune to direct external impacts but rely on
+						internal states. There might be a record class of <code>EntityPrototype</code> before
+						the construction of entity, by storing all the controls. By the way, entity color is
+						really pointless.
+					</p>
+					<p>
+						The rendering part of entity is mainly responsible by the texture models, but the
+						appearance may be different depending on the entity states and properties. For this,
+						an extra control element might be better than using method overrides. Moreover, the
+						interactive models are handled differently and only affect physics, while both are
+						stored in the entity. Still note that the interactive models should be simpler than
+						the texture models, since textures may be preloaded as atlas.
+					</p>
+					<p>
+						It is not a good way to have both <code>isSolid</code> and <code>blocks</code> to handle
+						collision conditions. A better way may still be having only <code>blocks</code> and
+						assessing entity data on collision if necessary.
+					</p>
+					<p>
+						The properties of whether the entity can swim or walk on anything should only be handled
+						by the AI moving controls, given to their usages. Also, visual "on fire" would be a
+						special temporary metadata property of an entity, but the entity may reject the property
+						when appending. For the damages of fire or burning, they are handled by the damage
+						sources as the arguments.
 					</p>
 				</content>
 			</section>
