@@ -1191,7 +1191,61 @@
 						by the AI moving controls, given to their usages. Also, visual "on fire" would be a
 						special temporary metadata property of an entity, but the entity may reject the property
 						when appending. For the damages of fire or burning, they are handled by the damage
-						sources as the arguments.
+						sources as the arguments. For the controls, there might be a method that even mods could
+						add by the interface with the default values; this may require Typed Anchor Dynamic
+						Mapping, which will be proposed later.
+					</p>
+					<p>
+						For the <code>isAttackable</code> methods, since an entity still blocks the interaction
+						no matters what, there should be no necessity for the extra checking method before the
+						actual functioning method. In fact, if they are the entities that are not supposed to be
+						interacted, the action should act like there is nothing interacted. The similar concepts
+						are also applicable on both <code>isInvulnerableTo</code> and <code>isUsable</code>, so
+						it could eliminate the risk of time-of-check to time-of-use race conditions (verify) and
+						simplify the API for callers. Damage handling should also be handled by controls.
+					</p>
+					<p>
+						Movement would mostly be tackled by the physics engine, so there is no need to worry about
+						the <code>move</code> methods for entities. However, the velocity and acceleration
+						controls matter, thus they would be managed by move controls. The actual implementation
+						for the algorithm used sub-stepping by breaking down the movement unit by unit, but
+						unrealizable for a decimal coordinates system. Before the algorithm was implemented,
+						tunneling actually occurred for increased speed, which had also been reported in fact.
+					</p>
+					<p>
+						Despawning would also be handled by a dedicated control. This way, if the entity does not
+						support despawning, the control would be null instead. This also includes the call when
+						the entities are removed or killed. Moreover, the methods for "delegations" of controls
+						could actually be inline functions as they are just helper methods, added that controls
+						could be dynamically added, so the scopes and ranges of them could not be limited. The
+						same as <code>ItemHolder</code>.
+					</p>
+					<p>
+						With the new entity system, an entity cannot be barely removed from a dimension but killed.
+						However, the entity could move to another dimension by altering the coordinates, which
+						cannot be empty. The <code>getClosestPlayer</code> method should be a helper method that
+						generally could be used, so even commands may use that. Other methods may be kept.
+					</p>
+					<p>
+						Both <code>Tickable</code> and <code>ClientTickable</code> have no use. There is no point
+						to have them, so the reason behind this cannot be found. The <code>Direction</code> is
+						actually the entity activity direction, but when it would not be 4 or 5 only, the enum
+						would become insufficient. For direction system other than the compass directions, a
+						vector in spherical coordinates with a unit length would be used.
+					</p>
+					<p>
+						Having <code>ExplosionTileTicker</code> as the animation is actually a bad idea. In fact,
+						using tiles as the animations is a bad design idea itself already. Given the tile system
+						that ticking of tiles are random, but tile entities are ticked regularly, the transitional
+						state as a tile could interfere the design consistency of the entire system. Apparently,
+						other than having a transitional tile, particle animations with immediate tile destruction
+						are a more consistent way to the system.
+					</p>
+					<p>
+						The mechanisms and situation of <code>Arrow</code> has been explained before. When there
+						is the new entity system, this could also actually be solved way more easily, including
+						the collision detection. Also, no idea why the check of tile with ID 16, which is lapis
+						ore?
 					</p>
 				</content>
 			</section>
