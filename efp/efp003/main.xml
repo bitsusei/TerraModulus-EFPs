@@ -1247,6 +1247,31 @@
 						the collision detection. Also, no idea why the check of tile with ID 16, which is lapis
 						ore?
 					</p>
+					<p>
+						Although <code>ItemEntity</code> itself would not have acceleration, initial velocity and
+						frictions on the ground could still be applied. Most likely, the code has messed up what
+						"velocity" and "acceleration" actually mean in mechanics. Ideally, each Item Entity
+						should only represent a stack of item(s). There could also be 2 separate properties for
+						the total time lasted and the remaining time before deletion. If the remaining time is
+						null, the entity would never be deleted. The two fields for synchronization are quite
+						meaningless. When there is the 3D world system, there is no need to solely calculates
+						the vertical motion of the entities for animation, as well as the shadows, which could
+						also be standardized across different entities. However, the initial direction and
+						velocities of the entities should not be determined within the constructor but with
+						factor methods that handle differently for dropping items and loots.
+					</p>
+					<p>
+						It is still an uncertainty of how items should be dropped when the player died. A
+						discussion has been held for this topic, but different implementations come with
+						different properties. The actual implementation would eventually be considered by the
+						theme of the game. When the game's goal is to make the mechanisms more realistic, death
+						drops would likely be implemented like in Rust, with a dead player body included with
+						inventories. Then, the idea of <code>DeathChest</code> could be dropped.
+					</p>
+					<p>
+						Pushing of <code>Furniture</code> should be handled more wisely when there is the
+						decimal coordinates system.
+					</p>
 				</content>
 			</section>
 			<section title="Other Assets">
