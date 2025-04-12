@@ -1270,7 +1270,86 @@
 					</p>
 					<p>
 						Pushing of <code>Furniture</code> should be handled more wisely when there is the
-						decimal coordinates system.
+						decimal coordinate system. Light thing may still be entities, but heavier things like
+						<code>Furnace</code> and <code>Oven</code> would become tiles. The item sprite should
+						not be stored in its entity instance. Using reflection in copying could be a fragile
+						design.
+					</p>
+					<p>
+						If there is something that runtime lists may not do much, static fields may actually
+						more debugging-friendly. If the new sleeping mechanics is implemented, there would be
+						no need to count players sleeping. Also, there is no need to store the color enum in
+						<code>Bed</code> instances. Items, entities and tiles would not have display names
+						given in their constructors, but the translation keys and registry keys. Moreover,
+						removing the player entity from level when sleeping is quite an illogical design.
+					</p>
+					<p>
+						Inventory randomization should not be put in <code>Chest</code>, but the places that
+						handle generations. The container inventory would be publicly visible as it would be
+						a public interface access. Also, having <code>die</code> in Furniture is quite awkward.
+						When there is no longer the dungeon, the mechanisms of the entire dungeon could be
+						ignored, since they could be better written.
+					</p>
+					<p>
+						As for <code>Composter</code>, there could be more details in the mechanisms. It may
+						still depend on the direction of the game, but most likely, everything could be harder
+						and more complex.
+					</p>
+					<p>
+						All the crafting mechanisms are too similar, and more differences could be made. Also,
+						this string analysing way is too error-prone. In fact, we should rather let compiler
+						complain than allow runtime errors or subtle bugs to occur, and reducing the amount of
+						code does not mean improving runtime performance, even using loops to reduce the parts
+						of code does not mean the method is wise or the developer is smart.
+					</p>
+					<p>
+						<code>Lantern</code> could be just one of the advanced artificial light source options.
+						The way to handle lighting could be really better. The current way does not handle light
+						blocking by objects, but actually gameplay experience could be enhanced if it could be
+						done. The way to if-else chain the enums could be changed into switch-cases if the JDK
+						version could be raised, but in Kotlin, <code>when</code> could be used.
+					</p>
+					<p>
+						The code structure of <code>RepairBench</code> is actually neat. There could be slots
+						stored in the entity.
+					</p>
+					<p>
+						Actually, in the structure of Kotlin, some constructor parameters could be simplified
+						to abstract properties. Also, not everything has to be in the constructors but the
+						factor helper methods. Still, the <code>RewardChestInventory</code> could be
+						generalized to a class next to the <code>UnlimitedInventory</code>.
+					</p>
+					<p>
+						The mechanisms of <code>Spawner</code> are quite "<i>reflective</i>". However, this thing
+						would less likely be implemented into TerraModulus. Even if there is a need to have a
+						machine to generate mobs, a better interface should be made to prevent low level code
+						structure. Also, the way to detect daylight to skip spawning could be improved if the
+						lighting system is changed.
+					</p>
+					<p>
+						There should be a guideline that when initialization of fields are enough to be inlined,
+						they should be kept there and not put into initialization block. <code>Tnt</code> may
+						remain as <code>Furniture</code>, but more visual effects could be added. Also,
+						interactions due to explosion could be standardized into general explosion algorithms
+						for both entities and tiles, especially the factors of exposure and ranges, although
+						the calculations of interactions of entities and tiles would still be separated. There
+						would also be different attributes for an explosion. However, there might be different
+						types of explosions, like gas or fire.
+					</p>
+					<p>
+						The <code>walkDist</code> field in <code>Mob</code> only relates to the sprite animation
+						but no other uses. Such data should be grouped together within an object, so that the
+						objects could be responsible for the master class. Anyway, if the character moves from
+						zero by walking, the velocity should increase gradually in a period like a second, to
+						better simulate the motion. The walking distance for statistics should also be handled
+						by the move control. There should also be another object storing all the geologic data
+						of the mob, like the position and direction. Knocking back by external motion would be
+						handled by impact, that will be converted to a constant velocity to be resisted by
+						resistance from the ground or air. There is probably no need to have delay between
+						attack damages; as for attack cooldowns, this should be implemented thoughtfully to
+						balance the acts instead of receives, this kind of short period immunity may not make
+						much sense. There might be a data monitoring object Measure to hold both the bounds
+						and the actual counter of the value of measurement.
 					</p>
 				</content>
 			</section>
@@ -1322,6 +1401,12 @@
 						exist some functions or constants that are general, they could be considered
 						being moved out of the class. Also, if some members are designed to be used in
 						a specific scope, they should not be highly visible to prevent breaking mechanisms.
+					</p>
+					<p>
+						If a numerical countdown involves a specific event as designed, it should not be
+						made as a countup unless there are more events associated to this counter. However,
+						specifically, if the event dominates, there may still be a countdown designed for
+						the event and the countup for the others.
 					</p>
 				</content>
 			</section>
