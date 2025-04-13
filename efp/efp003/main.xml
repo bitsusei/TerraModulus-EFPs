@@ -1218,7 +1218,8 @@
 						the entities are removed or killed. Moreover, the methods for "delegations" of controls
 						could actually be inline functions as they are just helper methods, added that controls
 						could be dynamically added, so the scopes and ranges of them could not be limited. The
-						same as <code>ItemHolder</code>.
+						same as <code>ItemHolder</code>. Control classes may also add extension functions to
+						master classes like <code>Entity</code>.
 					</p>
 					<p>
 						With the new entity system, an entity cannot be barely removed from a dimension but killed.
@@ -1350,6 +1351,30 @@
 						balance the acts instead of receives, this kind of short period immunity may not make
 						much sense. There might be a data monitoring object Measure to hold both the bounds
 						and the actual counter of the value of measurement.
+					</p>
+					<p>
+						For spawning and despawning conditions of mobs, they may be changed depending on the
+						design of the gameplay and the styles. To add a little realism, spawning of mobs may
+						mostly be held during world generation without natural despawning.
+						<code>noActionTime</code> in <code>Mob</code> is just for despawning check, and the
+						<code>speed</code> field is also not useful. The interactive box size is quite casual,
+						the sizes may differ, while they may look similar in sprites. There is also no need to
+						counter as <code>tickTime</code>. For temporary timers of events such as burning damages,
+						there could be a pool of ticked handlers for each entity to tackle such work, without
+						the need to bloat the code in the entity class while there is no much responsibility
+						for the main class itself. Dead detection should be done in the health object;
+						speed tweaking should be done in the move control, especially special treatment for
+						speed effects. For mob sprites, the compilation would be generalized into a kind of
+						models. The burn command to a mob could become a dynamic property of a mob, as a
+						property assignment. Explosion damage would be sent from explosion directly to the
+						entity, rather than an event interface <code>onExploded</code>.
+					</p>
+					<p>
+						<code>MobAi</code> being a subclass does not make much sense. Several components of
+						despawning, intelligent behaviors, automations, rendering, loots could be separated
+						into different controls and handlers. Even the generation of mobs should be handled
+						in world generation. The level of mob is another mechanism, but unlikely to be
+						generally implemented.
 					</p>
 				</content>
 			</section>
