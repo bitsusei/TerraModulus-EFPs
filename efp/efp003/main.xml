@@ -1376,6 +1376,39 @@
 						in world generation. The level of mob is another mechanism, but unlikely to be
 						generally implemented.
 					</p>
+					<p>
+						For <code>EnemyMob</code>, the intelligent behavior would also be handled by the
+						controls. The target tracking algorithm could be enhanced. The attacking range should
+						also be larger than only touching. All the attacking methods should be combined into
+						only one method taking damage source as the parameter.
+					</p>
+					<p>
+						There is actually no need to have a field of <code>color</code> in
+						<code>PassiveMob</code>. The behaviors like grazing could be more realistic, like
+						having a countdown in the action. Both hostile and neutral mobs could have a list
+						of enemies for tracking. In code, it seems like spawner is immune to creeper, but the
+						way is too chaotic. Many mobs have only simple mechanisms without obvious difference.
+					</p>
+					<p>
+						<code>Player</code>: If the models of mob are standardized, there is no need to have
+						separate sprite sets for carrying textures. There are quite a number of exposed field
+						when they are not hidden by using handlers, including the delay counters. All
+						fishing-related code should all be handled in the item class. The GUI-related parts
+						should not be handled in the mob class. Potions effects could also be generalized
+						into controls. Tile-related events by condition checking should be handled in tiles
+						but not mobs when they are not mob-specific behaviors. Interactions would always pick
+						the closest target within the range, or there would not be any interaction, especially
+						when cursor could be supported, the target selection could be more precise; when there
+						is entity blocking the target selection, the tile would never be selected even the
+						entity has not reacted. Rendering of player is quite straightforward, like swimming
+						and item holding, even falling, but item holding might but clearer, not only when
+						they are being used. Item picking feature would be generalized to all mobs with slots.
+					</p>
+					<p>
+						<code>DamageSource</code> should take an argument with type inferred by the
+						<code>DamageType</code>. The argument may contain one or more data, that could be
+						used for various cases.
+					</p>
 				</content>
 			</section>
 			<section title="Other Assets">
