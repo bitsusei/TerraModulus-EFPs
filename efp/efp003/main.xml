@@ -1380,7 +1380,7 @@
 						For <code>EnemyMob</code>, the intelligent behavior would also be handled by the
 						controls. The target tracking algorithm could be enhanced. The attacking range should
 						also be larger than only touching. All the attacking methods should be combined into
-						only one method taking damage source as the parameter.
+						only one method taking a damage source as the parameter.
 					</p>
 					<p>
 						There is actually no need to have a field of <code>color</code> in
@@ -1408,6 +1408,104 @@
 						<code>DamageSource</code> should take an argument with type inferred by the
 						<code>DamageType</code>. The argument may contain one or more data, that could be
 						used for various cases.
+					</p>
+					<p>
+						For particles, each particle entity should represent one unit of sprite for
+						consistency. Also, they are not expected to have active interactions with other
+						world objects. The <code>TextParticle</code> is actually not like particles, but other
+						kind of visual effects, and the effects are too much for a particle. The mechanism of
+						<code>WaterParticle</code> is actually too complex, but the code could have been
+						simplified if initial velocities could be supported as general entity mechanisms.
+					</p>
+					<p>
+						When an item is being rendered, most of the time it would be on the Heads-Up Display
+						(HUD) or in inventory menus. Other chances to be the sprites of item entities. The
+						difference is that, when they are rendered on the Graphical User Interface (GUI),
+						some extra information like durability may also be rendered along with the model of
+						the item. Therefore, models and the GUI rendering functions would be separated for
+						items. The data part of item has failed, but all the metadata/properties and display
+						information should have been separately provided for different usages by different
+						ways, that description is one of the display information. When items are linked by
+						resource keys, there would not be the need to associate the sprites or models
+						manually one by one.
+					</p>
+					<p>
+						Item stacks would be supported by an inventory provider that handles and constructs
+						inventories and item managers. Items would have to configure based on the providers
+						and managers, including the stacking criteria and limitations. It means that stacking
+						size would not be directly hardcoded into items or stacks. Solely items could not be
+						cloned, but the stacks. Depletion of items may be checked each time the stack is being
+						handled; when there is change in the stack, the listener of the inventory manager
+						would be invoked; interaction methods may return <code>true</code> for successful
+						interactions, which may change the states of the stack.
+					</p>
+					<p>
+						Some attributes of items may be hardcoded for an item, but some may be dynamic.
+						Internal attributes would become item properties while public ones would become item
+						tags. Any of them could be either dynamic or static.
+					</p>
+					<p>
+						If the nature of books is to be an item in the world with content stored, it is not
+						recommended to have them translated unless they are a special type of books. It is
+						because there could be inconsistencies between server and client sides if the stored
+						content may differ between different client settings. Thus, for the static books
+						generated or originated from the game internals, like the "Antidious" book, they
+						should be handled in a separate item instead of regular book item. This is to
+						support client side translation, which clients would support.
+					</p>
+					<p>
+						<code>BucketItem</code> should contain fluid instead of tile. Hole does not make sense
+						but null since this kind of item is intended to contain actual fluid or liquid. The
+						<code>offset</code> field is no longer useful when they are cut down to smaller
+						sprites from an entire sprite sheet, could be replaced by <code>ordinal()</code>.
+					</p>
+					<p>
+						<code>ClothingItem</code> has been an issue for long time. There is actually no
+						real use for the original mechanism, but it could be rewritten like Leather Armor
+						in Minecraft.
+					</p>
+					<p>
+						In fact, dyes could be more flexible than having a small set of colors, but a wide
+						range of colors like 32-bit RGB set. A limitation would be that dyed objects may
+						be hardly modelled, so a blending or color mapping function may be necessary. A
+						1-bit image could be used for tinting textures with the given tinting function.
+					</p>
+					<p>
+						<code>FishingData</code> could be turned into resources linked by resource keys.
+						It might be more realistic if string could be broken when stretched too much, that
+						players have to change the string. Fishing rods would be only able to catch fishing
+						but not other items. Also, rods could be used anywhere.
+					</p>
+					<p>
+						If there would be a new food system with various recipes, the materials could contain
+						fewer attributes as they are similar item type. Eating food would still cost stamina
+						anyway.
+					</p>
+					<p>
+						The implementation of furniture item depends on the mechanism of furniture eventually.
+						If all furniture could be held, players may be able to take them with bare hands or
+						a helper item; if only certain furniture could be held, it would be inconsistent.
+						On the other hand, if a furniture item associates the data with property, there must
+						be a resource key registered without dynamic registration. Eventually, there could be
+						furniture without having an item form if it is not automatically registered.
+						Players would only be allowed to hold certain furniture, so it is possible that not
+						all furniture may be normally accessible by player.
+					</p>
+					<p>
+						If there would be potion effects supported, they would be generally supported as an
+						interface for all living mobs. Also, there would be a registry for storing all the
+						potion effect types and the handlers, so that it could be a public interface.
+					</p>
+					<p>
+						<code>PowerGloveItem</code> still act as a placeholder for taking furniture. It could
+						either be removed or rewritten depending on the future plans of the inventory
+						system.
+					</p>
+					<p>
+						<code>TileItem</code> would still exist, that the items are placed tiles directly.
+						However, it depends on the plans about how tiles should be done. It is still possible
+						that they would just become the items to be used in creative mode only for fast
+						placements of tiles.
 					</p>
 				</content>
 			</section>
@@ -1464,7 +1562,9 @@
 						If a numerical countdown involves a specific event as designed, it should not be
 						made as a countup unless there are more events associated to this counter. However,
 						specifically, if the event dominates, there may still be a countdown designed for
-						the event and the countup for the others.
+						the event and the countup for the others. If it involves time, increment or decrement
+						should be done at the end of the ticking function, and all the conditions regarding
+						the counter should be done prior than counter updates.
 					</p>
 				</content>
 			</section>
