@@ -1505,7 +1505,57 @@
 						<code>TileItem</code> would still exist, that the items are placed tiles directly.
 						However, it depends on the plans about how tiles should be done. It is still possible
 						that they would just become the items to be used in creative mode only for fast
-						placements of tiles.
+						placements of tiles. For <code>TileModel</code>, basically would be default data, but
+						not keeping data, there is no reason to keep data in general when tiles could be
+						stacked. If tiles may not be in item form, there might be a item type that with only
+						one resource key but storing everything about tile in the metadata. The major factor
+						for the places to be placed would be the type of tiles.
+					</p>
+					<p>
+						For <code>ToolType</code>, it would not be an enum, but a typical class, with all the
+						instances stored as constants. All the <code>ToolItem</code> instances would use the
+						references to the types for construction, without any looping. The tool type would be
+						stored as item property. However, if all the tiles have a health system, there might
+						not be a kind of mining level system for tools. Still, there could be two meters of
+						health that when a suitable tool is used, a mining meter could be used. Also, if
+						some tools could harvest a resource with only one action, the health meter could be
+						ignored, and thus the aforementioned concern would be invalid. Durability of tool
+						would not be set in the type but only in the item instances. It is possible that
+						there could be a material that there is no a tool type specifically for it. For
+						attack damage bonuses, there could be a mapping to collections for tools, taking
+						attacker and attack targets as parameters, and eventually sent to the collection
+						for the specific tool; the entire collection would then be registered to the tool.
+					</p>
+					<p>
+						Generally, if the loader cannot find the target object to be loaded for, an error
+						should be emitted, indicating that the target resource is not found. Thus, there
+						should not be an unknown object eventually loaded. <code>UnknownItem</code> would
+						be discarded for consistency. When there is loading error, loading should be aborted
+						in strict mode.
+					</p>
+					<p>
+						The glint particle in <code>WateringCanItem</code> should be registered. Besides,
+						the splashing particles could be handled better, to a more generalized extent.
+						The working mechanisms of this are actually quite magical, but could be rewritten.
+						Also, it should not take the tile player selected as the target but the area of
+						tiles close to the player.
+					</p>
+					<p>
+						The inventory system has actually organized quite neatly, but they should be placed
+						in another package than <code>item</code>. However, if inventories tend to have
+						slots, they should be using maps of slots than general lists; there might also be
+						different sets of slots in an inventory storage. For an item to be stacked, all the
+						metadata except counts of item should be same for the model of the simplified
+						slot-counting-driven inventory system to work. If slots are supplied by the underlying
+						storages, which would give the maximum sizes for the primary inventory.
+					</p>
+					<p>
+						The entire recipe system could actually be put into a separate package. If recipes
+						are created using constructors or factor methods, there is completely no need to
+						parse any string during constructions. Also, using references of instances is far
+						more efficient than strings or names, even safer. All recipes would still have to
+						be unlocked before being used, so the advancement system would still be used for
+						this.
 					</p>
 				</content>
 			</section>
