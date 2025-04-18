@@ -1240,7 +1240,7 @@
 						that ticking of tiles are random, but tile entities are ticked regularly, the transitional
 						state as a tile could interfere the design consistency of the entire system. Apparently,
 						other than having a transitional tile, particle animations with immediate tile destruction
-						are a more consistent way to the system.
+						are a more consistent way to the system. <code>ExplodedTile</code> should be removed.
 					</p>
 					<p>
 						The mechanisms and situation of <code>Arrow</code> has been explained before. When there
@@ -1555,7 +1555,62 @@
 						parse any string during constructions. Also, using references of instances is far
 						more efficient than strings or names, even safer. All recipes would still have to
 						be unlocked before being used, so the advancement system would still be used for
+						this. The main method should be replaced by scripts, but due to the nature of
+						scripts, they have a higher requirement than using the same environment as the
+						code; recipes should be handled as resources than being coded.
+					</p>
+					<p>
+						Instead of <code>Tile$Material</code>, all the tiles may have a list of properties,
+						such as flammability, material type, hardness, blast resistance, luminosity, etc.
+						Some tools may rely on such properties, but not with an enum. Identifiers may only
+						be stored in the registry instead of within tile instance, but a resource entry may
+						be returned to include the resource key along with the resource object. Other usages
+						of this enum should be replaced by tile properties or metadata. Also, having this
+						as argument may have limited the variations of tiles.
+					</p>
+					<p>
+						For tile interactions like the reactions when being stepped on or collided, they
+						could be handled by standard methods in tiles and returning tile entities if they
+						involve continuous followups. Factory method, like <code>onTileSet</code>, should
+						be handled inside the scope where the tiles are set and initialized; certain
+						initialization may also be set by the tile properties. Fluid tiles would be a
+						special type of tiles, that there would be fluid mechanisms with these tiles.
+						For the texture appearance of tile connections, they should be done in textures
+						only. For the callbacks of tile destruction like mining and explosion, they should
+						be made into a standard method accepting the destruction source or type. There is
+						actually no need to have <code>getData</code> methods in tiles, when they should
+						already be handled by chunk or tile managers.
+					</p>
+					<p>
+						Loots of tiles after breaking could be standardized by tile properties; damage
+						multiplication should be managed by game rules, so it could be applied when
+						there are damages acted on players. Automatic damage reviving actually makes
+						no sense, while some tiles have no health, only handled by other interactions
+						like mining.
+					</p>
+					<p>
+						<code>ConnectTile</code> should be removed. With a theoretically infinitely
+						large world, there should be no boundaries visible or discoverable by players
+						normally when players should be limited to the inner soft world boundaries
+						with no normal access outside the boundaries.
+					</p>
+					<p>
+						There is no much advantage in using enum than general constructors and fields
+						for <code>DecorTile</code>. Instead, when tiles are registered and stored as
+						fields, the arguments would be directly passed into the constructors.
+					</p>
+					<p>
+						The metadata and models of a tile should not rely on the positions of the tile.
+						The mechanisms of having variants of tiles in <code>DirtTile</code> do not obey
 						this.
+					</p>
+					<p>
+						<code>FenceTile</code> is just an overlay tile over the ground tile, but parts
+						of the code are verbose for this simplified tile system.
+					</p>
+					<p>
+						Since <code>HoleTile</code> means nothing, it would be removed. Instead, there
+						might be "<i>air tile</i>". This includes <code>InfiniteFallTile</code>.
 					</p>
 				</content>
 			</section>
@@ -1687,7 +1742,7 @@
 					When it is possible to not use string keys, they should be avoided. Instead, constants
 					or enums would be used. It is because any errors caused with the strings could only
 					sometimes be known in runtime, thus there could be potential bugs. It could also
-					cause extra performance overheads in runtime by string parsing.
+					cause extra performance overheads in runtime by string representation and parsing.
 				</p>
 				<p>
 					The controller management should be improved by GLFW. So, it is possible to choose
