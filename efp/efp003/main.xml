@@ -1252,14 +1252,15 @@
 						Although <code>ItemEntity</code> itself would not have acceleration, initial velocity and
 						frictions on the ground could still be applied. Most likely, the code has messed up what
 						"velocity" and "acceleration" actually mean in mechanics. Ideally, each Item Entity
-						should only represent a stack of item(s). There could also be 2 separate properties for
+						should only represent a stack of item(s). There could also be two separate properties for
 						the total time lasted and the remaining time before deletion. If the remaining time is
 						null, the entity would never be deleted. The two fields for synchronization are quite
-						meaningless. When there is the 3D world system, there is no need to solely calculates
+						meaningless. When there is the 3D world system, there is no need to solely calculate
 						the vertical motion of the entities for animation, as well as the shadows, which could
-						also be standardized across different entities. However, the initial direction and
-						velocities of the entities should not be determined within the constructor but with
-						factor methods that handle differently for dropping items and loots.
+						also be standardized across different entities. The class would provide a factory method
+						to initialize the entity, instead of by <code>Level</code>. However, the initial
+						direction and velocities of the entities should not be determined within the
+						constructor but with factor methods that handle differently for dropping items and loots.
 					</p>
 					<p>
 						It is still an uncertainty of how items should be dropped when the player died. A
@@ -1689,6 +1690,55 @@
 						generation would not take place before generation commands were sent. It is not
 						recommended to generate structures at a certain location on a world without any
 						major pattern.
+					</p>
+					<p>
+						The order of ticking in a world is important. Any tick event may affect the
+						positions and even the existence of entities, so all the entity existence events
+						should be handled at the end of the entire ticking period. Also, since players
+						consist of local players and remote players, ticking of them would depend on the
+						transmissions of signals, but all the entities should be handled at the same time,
+						including controls and existence, for synchronization and consistency. Then, the
+						chunk managers would refresh the positions of the entities depending on their new
+						coordinates with stages to efficiently manage them. If parallel processing of
+						entities has to be implemented, certain ticking-related events should be separated
+						and queued instead of being executed immediately for state synchronization.
+					</p>
+					<p>
+						All entities would be stored in two different maps. Each chunk would manage a single
+						quadtree or k-d tree for all entities within the chunk; each dimension would manage
+						all loaded chunks, with an indexer to query entities in the chunks within the
+						dimension; each world would manage all loaded dimensions, with an indexer to query
+						entities in the dimension, but also a global map mapping entity classes to the
+						collections of entities. When searching nearest entity target, if a range is
+						specified, only the selected chunks would be in consideration, nearest neighbor
+						searching would be used; or entities would be filtered by the desired types using
+						the map, then the collection would be looped through. However, for the selections
+						that include all entities within a range, including ones on top of a tile, temporary
+						geometries in the physics engine may be used to examine the collided objects,
+						which do not only count in the centers of entities.
+					</p>
+					<p>
+						Background of the world would be handled by shaders, so the scene may not be static.
+						Entity rendering would be controlled by rendering distance configured by the client.
+						Light rendering would be controlled by shaders based on the tile light values,
+						light blending and raytracing would also be programmed by shaders, without the
+						information of entity lighting, including the sight blocking from player.
+					</p>
+					<p>
+						Coordinates, such as x and y, would not be treated as separate parameters. Instead,
+						they would be consolidated into a single entity, particularly when representing a
+						vector or an object's position. This approach ensures that positional data is conveyed
+						as a unified parameter, whether in the form of a simple vector, a tile position
+						referencing a dimension, or another integrated structure. When returning entries,
+						like a tile from chunk manager, an entry describing the positions and the specified
+						tile type with all the metadata included would be created, so the data could also be
+						modified directly without invoking extra methods. Entity instantiations and removals
+						may also be handled in the similar way.
+					</p>
+					<p>
+						If mobs are spawned only during world generation, additional natural spawning may
+						not be implemented. Therefore, chunk manager would not handle any mob natural
+						spawning interface.
 					</p>
 				</content>
 			</section>
