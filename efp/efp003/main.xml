@@ -1738,7 +1738,119 @@
 					<p>
 						If mobs are spawned only during world generation, additional natural spawning may
 						not be implemented. Therefore, chunk manager would not handle any mob natural
-						spawning interface.
+						spawning interface. While all ordinary structures would only be spawned during
+						world generation in the dedicated areas, no spawner-like device would be
+						implemented. Village generation should actually be standardized like a general
+						structure.
+					</p>
+					<p>
+						World generation would be handled by a manager with registries of generation
+						parameters, functions and configurations. This would be aided by a random number
+						generator with the seeds provided in the code for the generation process. The
+						generator would always be available for chunk generations as the world is still
+						loaded. All the generation configurations would not be hardcoded in the code but
+						separately for the public customization interface. However, the primary functions
+						would be supported by the interface for generator configuration, including sampling
+						functions and random number generator algorithms.
+					</p>
+					<p>
+						If world size is theoretically unlimited, there is no need to validate anything
+						when the generator is designed well. Also, it is challenging to design a suitable
+						testing function to validate the content of the world, especially when they are
+						generated parts by parts.
+					</p>
+					<p>
+						If world generation tends to be fancy, consisting of a lot of variations, it would
+						not be simple as only with switch-cases, loops and if-else conditions. Also, even
+						if the entire generation is desired to be fully programmed, constants should be
+						more manageable, like being defined in the fields or the top level. The caves
+						would not be horizontal.
+					</p>
+					<p>
+						The dungeon is an example of unordinary dimension generation, which is not set by
+						general algorithms but major design patterns. The boss room and dungeon gate
+						structure generations are the obvious evidence, they are generated toward the
+						center. To support such generation patterns, there may be the need of scripts
+						instead of simply just lists of attributes and properties. This means the system
+						would not use data structures like JavaScript Object Notation (JSON).
+					</p>
+					<p>
+						The map generation testing function should not be included in the production code.
+						The main reason is that it could become a redundant part of the release whilst not
+						accessible without altering hidden launching parameters. There might another module
+						to manually enter parameters to visually examining the results and the effectiveness
+						of the configurations and algorithms.
+					</p>
+					<p>
+						Early world generations such as terrains would be done in the Rust part. After
+						generation, chunk data would be sent back to the Kotlin part for further populations.
+						Features are small scale decorative elements, being as tile placements, while
+						structures are large scale templates and logics of tiles and entities with data and
+						parameters. Jigsaws are presets of the templates to be used by structures. Most of
+						them would come with custom data formats while generator configurations, features
+						and structure definitions may come with scripting. This should be able to ensure
+						that the supports are extensive, flexible, customizable, modularized and
+						standardized enough.
+					</p>
+					<p>
+						Both <code>HistoricLoad</code> and <code>LegacyLoad</code> were developed to
+						ensure compatibility with older versions of world saves. The former was initially
+						implemented to support older save formats, but as the system evolved, the latter
+						was subsequently introduced to further delineate the transition between the period
+						when version tracking was not originally considered and the time when versioning
+						became included. This distinction was necessary due to significant structural
+						changes following the "legacy" phase, requiring a dedicated approach for handling
+						older saves.
+
+						Specifically made to separate the difference between the stages when the save
+						system did not yet support versioning and when it was supported. However, since
+						there was also a big change after the "legacy" times, the code was separated to
+						handle the older saves. Note that the new code of <code>HistoricLoad</code>
+						realized the new approach in this codebase, with a brand-new style of strict
+						conditional checking, which had never been used before, when mostly simple if-else
+						and switch-case were used. The main factor was that most of the formats were simply
+						text-based, comma-separated, or JSON, requiring a lot of string parsing. This was a
+						new trial to reduce potential errors while providing as much minimal support as
+						possible for old saves.
+					</p>
+					<p>
+						Additionally, <code>HistoricLoad</code> introduced a stricter conditional checking
+						methodology in the codebase, moving away from previous implementations that relied
+						predominantly on the simple if-else statements and switch-case logics. This change
+						was driven by the reliance on text-based comma-separated values (CSV) format, which
+						required extensive string parsing, while the following approach of using JSON also
+						conforms to this. By using this approach, potential errors could be minimized while
+						maintaining essential support for older saves.
+					</p>
+					<p>
+						Despite these refinements, the forthcoming comprehensive save system would adopt
+						a scheme-driven approach to ensure robust backward compatibility. This framework
+						would allow data fixing to be systematically integrated into the loading process,
+						with older saves undergoing progressively more extensive fixes based on predefined
+						schemes. These data fixers, expected to remain static and rigid, could be
+						instantiated as singletons within the codebase. Loading exceptions would be managed
+						with greater contextual detail, offering improved variations and information when
+						errors or warnings arise. Exception behavior would vary depending on the mode: special
+						accommodations in compatible mode and immediate failure in strict mode. File loading
+						and format parsing would be assigned to lower-level components, particularly for
+						custom formats. In such cases, JVM objects would be instantiated within the Rust
+						part by the constructed Rust objects from parsing, though this would not apply to
+						user preference settings. Serialization functionality could also be integrated
+						within the system.
+					</p>
+					<p>
+						Save utilities would be managed independently rather than consolidated into a single
+						<code>Save</code> class. Serialization would be implemented separately for different
+						data objects, such as entities, ensuring that all dynamic tags being saved and
+						included could be processed effectively. A dedicated class, <code>WorldSave</code>,
+						would be introduced to specifically handle world save data, enabling a logical and
+						structured serialization process. Regarding preference settings, general
+						serialization could be applied since such configurations would already be structured
+						in a key-value format based on the implementation. The Rust component would
+						facilitate the encoding of serialized objects into the saves. It is important to note
+						that save versioning would not correspond to the game or interface version; instead,
+						it would be represented by a dedicated world save version number incremented
+						sequentially as a standalone identifier.
 					</p>
 				</content>
 			</section>
