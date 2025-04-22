@@ -473,6 +473,8 @@
 						in Minecraft: Bedrock Edition. Anyway, the code, logic or parts that are not related
 						to the UI should be separated from the classes, like the loading thing or achievement
 						management. The achievement notification could be a lot better, like using toasts.
+						The original unit class <code>Achievement</code> is quite light, with only a few
+						fields, with other parts in the display class, but not organized well.
 					</p>
 					<p>
 						Toast is quite a good idea, but the implementation could still be improved. There
@@ -780,7 +782,7 @@
 						if the layout of Submenus is used.
 					</p>
 					<p>
-						There is no teh real need of <code>PagedDisplay</code>. It could really be replaced
+						There is no the real need of <code>PagedDisplay</code>. It could really be replaced
 						by using a scroll pane, which is even more easy-to-use than pages, unless they
 						are really books, but not the case. Not much to notice, this class could be dropped.
 					</p>
@@ -1408,7 +1410,8 @@
 					<p>
 						<code>DamageSource</code> should take an argument with type inferred by the
 						<code>DamageType</code>. The argument may contain one or more data, that could be
-						used for various cases.
+						used for various cases. <code>DamageType</code> should be changed into a regular
+						class instead of enum for extensibility and public interface.
 					</p>
 					<p>
 						For particles, each particle entity should represent one unit of sprite for
@@ -1452,7 +1455,9 @@
 						content may differ between different client settings. Thus, for the static books
 						generated or originated from the game internals, like the "Antidious" book, they
 						should be handled in a separate item instead of regular book item. This is to
-						support client side translation, which clients would support.
+						support client side translation, which clients would support. This means
+						<code>BookData</code> would be an outdated structure. This kind of static content
+						should be handled by assets instead of being in the code.
 					</p>
 					<p>
 						<code>BucketItem</code> should contain fluid instead of tile. Hole does not make sense
@@ -1852,11 +1857,90 @@
 						it would be represented by a dedicated world save version number incremented
 						sequentially as a standalone identifier.
 					</p>
+					<p>
+						Advancements and quests share similar properties and natures, so a common superclass
+						should be made for simplification. A more important part is that most vanilla
+						modularized components should be able to be easily disabled in the same public
+						interface. There should be categories for advancements to organize for different
+						topics of progress; would still be series for quests. Even if they have
+						categorization, groupings may also be used within a category or a series, or in other
+						words, a category or a series may contain more than one tree of elements. To let the
+						progress be recorded, the elements or units could require both preceding elements
+						and completion criteria to be both exist, that the criteria may be recorded preventing
+						requiring repeated completion after the preceding elements being completed when they
+						have already been fulfilled. All the elements would still be tree-linked with the
+						preceding elements to be the requirement for the succeeding elements to be able to
+						be completed. The configuration may no longer use JSON to define the structure for
+						the ease of creation and parsing. When the preceding elements have already to be
+						completed, the succeeding elements should be unlocked unless they are necessarily
+						hidden; if completing an element requiring completing another element, it should be
+						included as a kind of criteria instead of being a "requirement" as both "criterion"
+						and "requirement" have similar meanings. Also, rewards should be abstract and with
+						a list for each element. Each criterion may follow with description and the boolean
+						value of whether to be visible. <code>AdvancementTrigger</code> should be renamed
+						to <code>AdvancementTracker</code> for clarity. Trackers would also be in a registry,
+						to let the conditions of criteria to be detected and fulfilled. In fact, trackers
+						and condition handlers may also be constructed as anonymous classes. For working
+						instances, they may have the references to the metadata of the elements and also
+						the status of the elements for each tracking target, either global or player.
+						Trackers should be using generic types to reduce the verbosity in using type
+						checking. <code>Rangeable</code> should be separated into Minimum, Maximum and
+						Range; <code>ItemConditions</code> could be simplified to a counting-based instead
+						stack-based basis; there should be no no-op criterion and tracker but empty for the
+						element to simplify the structure. During the processing of elements, the game
+						should not be saved for progress synchronization. When passing a record to trackers
+						to track for, a criterion working instance and the element working instance could
+						be bundled in a new record object instead of being mutually included to simplify
+						the structure.
+					</p>
+					<p>
+						Although most main utility parts of the advancement system are in the
+						<code>AdvancementElement</code> class, since the amount of code is quite high, it
+						would still be better to separate the content for different responsibilities in a
+						separate package. If recipes can be disabled, they should be in a separate public
+						interface, so not only advancements could be able to handle recipe locking. An
+						advancement category may be per-user basis or global, depending on the nature of
+						the topic.
+					</p>
+					<p>
+						A different of quests from advancements is that quests may have prerequisites to
+						be unlocked before to be able to be completed, so the completing criteria may not
+						even be tracked before being unlocked. However, the quest system would follow the
+						similar structure as the advancement system since the original style has been
+						outdated.
+					</p>
+					<p>
+						The logging system would be changed to a different library for more idiomatic.
+						Extensive logging configuration abilities would also be supported by the library
+						and the public interface. In Kotlin's idiomatic style, loggers would not be
+						pre-instantiated in another class but depending on the class names, which
+						should be enough descriptive than manually entering the target names. This
+						should also ensure the consistency of syntaxes. Since the console would normally
+						be hidden from user, the content may be as complete as the ones appended in files,
+						without filtering logs. Also, there is no need to customize logging configurations,
+						so all the logging configurations would be programmed in code. There would not be
+						any logging in the Rust part.
+					</p>
+					<p>
+						Most functions in <code>MyUtils</code> could be replaced by the helper functions
+						from various utility libraries. If there are functions designed specifically for
+						this codebase, they may actually be declared as top level functions for simplicity.
+					</p>
+					<p>
+						Unfortunately, due to the coordinate system implementation, the <code>Vector2</code>
+						class is not fully utilized in code. There would be several classes to represent
+						different forms of vectors with different parameters and properties. However, it
+						is important to note that they should all be record classes with all the fields
+						immutable, to be treated as primitive-like values.
+					</p>
 				</content>
 			</section>
 			<section title="Other Assets">
 				<content>
-					All the assets would be reviewed, including the content and structures.
+					All the assets would be reviewed, including the content and structures. There might
+					be internal assets for the ones that are not designed to be modularized and
+					customizable. Unless needed, resources would not be in another folder but in the root
+					level, including logos.
 				</content>
 			</section>
 			<section title="Extra Notes">
@@ -1910,6 +1994,15 @@
 						the event and the countup for the others. If it involves time, increment or decrement
 						should be done at the end of the ticking function, and all the conditions regarding
 						the counter should be done prior than counter updates.
+					</p>
+					<p>
+						When there is no necessity, avoid singletons. This is to avoid unnecessary verbosity
+						caused by the extra unused code regenerated by declaring classes as singletons.
+					</p>
+					<p>
+						For a single file, there should be no more than two levels of inner classes in
+						general. This is to prevent unnecessary verbosity and ensure simplicity,
+						organization and readability of class structures.
 					</p>
 				</content>
 			</section>
