@@ -40,15 +40,15 @@
 				</p>
 				<p>
 					However, some design patterns or principles would not be implemented, like KISS (Keep It Simple,
-					Stupid), YAGNI (You Aren't Gonna Need It) and Singleton. There are several reasons for this.
-					Firstly, KISS is too generic while our systems would less likely be always simple unnecessarily.
-					As for YAGNI, since our systems are mainly APIs, when there are potential usages and functions,
+					Stupid) and YAGNI (You Aren't Gonna Need It). There are several reasons for this. Firstly,
+					KISS is too generic while our systems would less likely be always simple unnecessarily. As
+					for YAGNI, since our systems are mainly APIs, when there are potential usages and functions,
 					the features or methods could be implemented, the principle would less likely be adapted. For all
-					the Object-Oriented (OO) Designs, Singleton would not be considered, instead, separate instances
-					would be considered. This would assure that the system would not be too fragile and thus less
-					error-prone and more rigid. Despite this, if the application involves local resources, a file
-					lock could be used to ensure that only single instance is launched for data integrity and
-					consistency.
+					the Object-Oriented (OO) Designs, singletons would be less considered than regular classes,
+					instead, separate instances would be considered. This would assure that the system would
+					not be too fragile and thus less error-prone and more rigid. Despite this, if the
+					application involves local resources, a file lock could be used to ensure that only single
+					instance is launched for data integrity and consistency.
 				</p>
 			</content>
 			<section title="Object-Oriented Programming">
@@ -59,7 +59,7 @@
 					</p>
 					<p>
 						Several principles would be adapted directly: SRP, LSP, DbC, CQS, DIP, DRY, LoD,
-						GRASP, COI, BDD, FP, IoC, EDA, UA. Mostly, there would not be much extra interpolations
+						GRASP, COI, BDD, FP, IoC, EDA, UA. Mostly, there would not be many extra interpolations
 						over them.
 					</p>
 					<p>
@@ -111,7 +111,7 @@
 						for some interfaces.
 					</p>
 					<p>
-						Avoid having code that may access the fields during class initialization. For example
+						Avoid having code that may access the fields during class initialization. For example,
 						in Java, if there is code in another method accessing the field before field assignment
 						invoked in the class initialization, a Null Pointer Exception (NPE) may be thrown when
 						accessing the field in a non-null way. In design, it should be ensured that no code
@@ -123,7 +123,7 @@
 						For exceptions and errors, all exceptions should be caught regardless whether they
 						are checked or not. This should ensure that when there is any exception occurred,
 						the information would be enough for bug fixing. The main is to avoid uncaught exceptions
-						as many as possible. Then, all the exceptions should all be handled. The excepted cases,
+						as many as possible. Then, all the exceptions should all be handled. The excepted cases
 						are handled in the respective expected ways, including the exceptions. If the
 						unexpected exceptions are known from the documentation, such cases may be directly
 						regarded as "design bugs" or coding bugs; else they are handled as unknown errors.
@@ -138,7 +138,7 @@
 						CPU time generating stack traces. If they are expected, code that does not throw
 						the exceptions is more preferred. Exceptions other than checked or runtime exceptions
 						may be handled by the top running loop or as uncaught, since these errors should
-						be completely unexpected to happen. When unexpected exceptions occur, the needed
+						be completely unexpected to happen. When unexpected exceptions occur, the necessary
 						steps are just to pass them to the error handler, and cancel the operation according
 						to the level of exception. They should not be thrown again as they are "caught".
 						However, if the exceptions should be rethrown to be handled by higher level, these
@@ -147,20 +147,20 @@
 					</p>
 					<p>
 						An example of exception usage is number parsing. Input should first be checked by
-						a regex made completely fitting the case, then no exception would be expected, since
+						a regex made completely fitting the case; then no exception would be expected, since
 						the malformed numbers would have already been handled when checking with the regex.
 						Any more exception thrown by parsing would instead be regarded as "design bug", that
 						the regex is not well-formed to suit the case.
 					</p>
 					<p>
-						For API flexibility and extensibility, classes are encourages to be non-final, but
+						For API flexibility and extensibility, classes are encouraged to be non-final, but
 						the classes could be final, only if they are completely not designed to be extendable.
 						Sometimes, classes or registries are preferred over enums if the components could be
 						designed to be extendable for mods. This would allow wide extensibility for modding.
 					</p>
 					<p>
 						EDA is useful when the main process enters the main loop. Arbitrary events are
-						proceed in the side threads, and may trigger the main process for further operations.
+						proceeded in the side threads, and may trigger the main process for further operations.
 						This would include sound events, which act as side threads for audio processing.
 						These may not directly control the main process, but would affect the main process
 						at some extents, and the main process may control the states of the event processes.
@@ -184,7 +184,7 @@
 						For database management, it is the responsibility of the application or service to
 						ensure data integrity and accessibility. Once service is off, it is the responsibility
 						of the actor to ensure the data is usable and valid. Most of the time, the data stored
-						in the data should be used, if no error has occurred. If the data has outdated, the
+						in the data should be used if no error has occurred. If the data is outdated, the
 						service should try to fix the data up to meet the latest format of the data. However,
 						the service may not need to always fix the data if it is intended to ignore old data.
 						If the database has unintended changes during off-time of the service, it is
@@ -205,12 +205,12 @@
 			<section title="Java">
 				<content>
 					<p>
-						Firstly, all static fields should be immutable and thus final. Even if they are final
+						Firstly, all static fields should be immutable and thus final. Even if they are final,
 						it does not mean they are "immutable". Since they are just references, the fields of
-						the objects may still be mutable. This is ensured by code design, and is not compiler's
+						the objects may still be mutable. This is ensured by code design and is not compiler's
 						responsibility. Singleton object design is related to this, as "singletons" are meant
 						to be the instances stored as the static final <code>INSTANCE</code> fields in the
-						respective classes. Many parts in the code of Minicraft+ does not follow this design.
+						respective classes. Many parts in the code of Minicraft+ do not follow this design.
 						Although it is OOP, non-final static fields should always be avoided. Static fields
 						mean global states, mutable static fields are always disallowed.
 					</p>
@@ -229,7 +229,7 @@
 				<content>
 					<p>
 						Basically, all singleton objects declared by <code>object</code> as the top level
-						classes are avoided. However, companion object is preferred, but acts like the
+						classes are avoided. However, companion objects are preferred, but acts like the
 						static members in Java, while these members should still be consistent across
 						application states, and changeable only by the arguments.
 					</p>
@@ -273,18 +273,15 @@
 					Several sections would be included in the report:
 					<list>
 						<li>
-							<b>Code Quality</b>: Commenting on the code patterns based on aforementioned
-							standards and principles, as well as the assets
-						</li>
-						<li>
-							<b>Feature Implementation</b>: Commenting on the features and functionalities
-							implemented in the codebase and planning on the future implementations based
-							on the code
+							<b>Codebase Commentary</b>: Commenting on the code structure and usages based
+							on the aforementioned standards and principles; the implementation of features
+							and functionalities may also be commented with the recommendations for amendments
+							and plans based on the original code and future development drafts
 						</li>
 						<li>
 							<b>Development Roadmap and Direction</b>: Commenting on the original direction
-							of the project of Minicraft+ and planning on the future roadmap and direction
-							based on that for TerraModulus
+							of the Minicraft+ project and planning on the future roadmap and direction based
+							on that for TerraModulus
 						</li>
 					</list>
 				</p>
