@@ -10,33 +10,253 @@
 		<section title="Introduction">
 			<content>
 				In EFP 2, a plan to review TerraModulus Relictus branch has been made. This EFP describes
-				about the report of the entire review process.
+				about the report of the entire review process. In the following, the report will be presented
+				section by section according to the previously made plan.
 			</content>
 		</section>
-		<section title="Code Quality">
+		<section title="Codebase Commentary">
 			<content>
 				<p>
-					Source code is generally reviewed in the following order:
-					<list type="decimal">
-						<li>core</li>
-						<li>core.io</li>
-						<li>network</li>
-						<li>gfx</li>
-						<li>screen</li>
-						<li>entity</li>
-						<li>item</li>
-						<li>level.tile</li>
-						<li>level</li>
-						<li>saveload</li>
-						<li>util</li>
-					</list>
-					However, some classes may be reviewed earlier or later.
-				</p>
-				<p>
-					The review has made as of commit <code>64c8abbcd33edb1046abee40d8e712b546c1b47d</code>.
-					In the following, various content would be discussed.
+					The source code was originally reviewed with an order but later reorganized by their
+					respective topics and themes. The review has been conducted as of commit
+					<code>2ba2b09bf94110efbdc36cd95ce8d74a20835205</code>.
+					In the following, various content will be discussed following their headers.
+					Please note that the organization of content in this section has been aided by Artificial
+					Intelligence (AI).
 				</p>
 			</content>
+			<section title="Application Initialization and Entrypoint">
+				<content>
+					<p>
+						The application framework would include a dedicated <code>Main.kt</code> file,
+						designed separately for both client and server implementations. This file contains
+						the entry point <code>main</code> function, which is responsible for initializing
+						the application, processing command-line arguments, and launching the primary
+						handlers essential for execution.
+					</p>
+				</content>
+			</section>
+			<section title="Application Core and Initialization">
+				<content>
+					<p>
+						Regarding the <code>Game</code> component, several critical aspects should be
+						considered. It ought to be instantiated rather than relying exclusively on static
+						members or being implemented as a singleton. The designated class name for this
+						component would be <code>TerraModulus</code>. Additionally, the <code>NAME</code>
+						field would be defined as a top-level constant. The <code>VERSION</code> field,
+						however, would be managed through the application profile, ensuring that it is
+						loaded during the early runtime phase and subsequently accessed via a getter
+						method.
+					</p>
+					<p>
+						<code>Initializer</code> class would be incorporated within <code>Main.kt</code>
+						file, facilitating the initialization of all core threads required for application
+						functionality, such as rendering and ticking threads.
+					</p>
+				</content>
+			</section>
+			<section title="Window Management and Handling">
+				<content>
+					<p>
+						Similarly, the <code>Initializer</code> class should avoid the use of static
+						members. Window management would be handled through a dedicated window handler,
+						which could also oversee error popups when necessary. FPS (Frames Per Second) and
+						TPS (Ticks Per Second) counters would be regulated within their respective handler
+						classes, ensuring proper thread management.
+					</p>
+					<p>
+						Additionally, the application window would be launched at an early stage,
+						following the initialization of essential basic elements. This approach eliminates
+						the necessity of a splash screen without a visible window. The window would always
+						be centered upon launch to ensure a consistent user experience.
+					</p>
+					<p>
+						Argument parsing would be handled within the <code>Main.kt</code> file, reinforcing
+						a structured approach to processing runtime configurations. The <code>run</code>
+						function would reside within the <code>TerraModulus</code> class. Moreover, the
+						<code>getExceptionTrace</code> function could potentially be repurposed for
+						detailed error reporting, contributing to improved debugging and system reliability.
+					</p>
+				</content>
+			</section>
+			<section title="Launching Arguments and Options">
+				<content>
+					<p>
+						The launching arguments would be systematically structured, with all options named
+						using kebab case, each prefixed with double hyphens. Hardware acceleration would be
+						enabled by default; however, a specific launch option to disable it would also be
+						available. The fullscreen parameter would function as a toggle, determining whether
+						the application starts in fullscreen mode. Regardless of the fullscreen setting, the
+						window size configuration would always be applied. If no specific window dimensions
+						were provided, default values would be used to ensure a consistent display.
+					</p>
+				</content>
+			</section>
+			<section title="Internal Assets">
+				<content>
+					<p>
+						Certain assets that are not intended for modularization or customization may be
+						designated as internal components. Unless explicitly required, these resources,
+						including logos, would remain at the root level rather than being organized into
+						separate directories.
+					</p>
+				</content>
+			</section>
+			<section title="Input Handling and Management Architecture">
+				<content>
+					<p>
+						The <code>ClipboardHandler</code> should be managed within the broader
+						<code>InputHandler</code>, as all input interactions, including keyboard and
+						mouse operations, would be handled via GLFW (Graphics Library Framework).
+						Consequently, there would be no necessity to implement separate interfaces for
+						key input processing. The menu structure would also undergo modifications to
+						ensure that key inputs are detected only by the relevant menu elements, following
+						a prioritized approach.
+					</p>
+					<p>
+						The <code>InputHandler</code> oversees numerous functionalities, including input
+						processing, key mapping, controller states, and key state handling. However,
+						controller management should be separated into a dedicated
+						<code>ControllerManager</code>. The capability of the originally used gamepad library
+						is relatively limited, necessitating enhancements in controller support. The abstract
+						<code>Key</code> class and its subclasses provide essential functionality, and
+						repeated key states would no longer be required. Consequently,
+						<code>PhysicalKey</code> could be simplified, and <code>ControllerKey</code> would
+						be deemed unnecessary. Additionally, logical operations such as "or" and "and" could
+						be incorporated within the <code>Key</code> class. String-based expressions would
+						be deprecated, and the <code>PhysicalKey#stayDown</code> function would likely be
+						disregarded. Moreover, if key state processing results in a single <code>Key</code>
+						state, subclasses such as <code>CompoundedKey</code> and <code>ORKey</code> would
+						no longer be required. Key mapping would employ a distinct class rather than relying
+						on the <code>Key</code> class.
+					</p>
+					<p>
+						To improve organization and efficiency, input handling should be structured into
+						four distinct classes: <code>KeyInputHandler</code>, <code>TextInputHandler</code>,
+						<code>GamepadInputHandler</code>, and <code>MouseInputHandler</code>. Among these,
+						<code>TextInputHandler</code> would also manage clipboard operations. Text input
+						queues would be processed only upon request and reset at the start of each tick
+						cycle. A regex filter could be implemented for validation, and backspace key
+						operations would follow the same structured processing method. The
+						<code>releaseAll</code> method would be omitted, while key hints, despite being
+						complex, would likely follow a similar implementation method. Modifier keys would
+						not be handled separately within the handler class. Controller vibration feedback
+						would be managed by <code>ControllerManager</code> or another dedicated class, but
+						controller detection and management would remain within
+						<code>ControllerManager</code>.
+					</p>
+				</content>
+			</section>
+			<section title="Key Input Event Processing">
+				<content>
+					<p>
+						Key input events triggered by GLFW would be received and queued within the main
+						ticking thread. Text inputs would be restricted exclusively to text input fields,
+						while keyboard inputs would remain universally active. Each keystroke transitions
+						through three states: "just pressed," "down," and "just released," represented as
+						boolean values. A press event sets "just pressed" and "down" to <code>true</code>,
+						while a release event sets "down" to false and "just released" to <code>true</code>.
+						At the start of each input tick, both "just pressed" and "just released" states
+						would be reset to <code>false</code>. Subsequently, queued input events would be
+						processed, updating key states accordingly, followed by window ticking operations
+						that handle input. The ticking frequency should be set to 1.5 times the maximum FPS.
+						If necessary, an additional ticking thread operating at a constant frequency could
+						be introduced.
+					</p>
+				</content>
+			</section>
+			<section title="Input Mapping and Key Assignments">
+				<content>
+					<p>
+						Input mapping should be managed separately from the input handler, allowing
+						configurations based on user preferences while keeping certain mappings hardcoded.
+						This includes the F3 debug key and advanced modifier functionalities involving
+						<kbd>Shift</kbd>, <kbd>Ctrl</kbd>, and <kbd>Alt</kbd> modifiers. In-game inputs
+						and controllers would follow similar processing principles and be handled within
+						the same class structure. Mapped hotkeys should remain inactive when input fields
+						are engaged, allowing standard printed key inputs while ensuring hardcoded keys
+						such as escape and enter receive the appropriate handling, especially in one-line
+						field or with an Input Method Editor (IME).
+					</p>
+					<p>
+						Key mapping would employ predefined sets with the keys of constants rather than
+						arbitrary string-based assignments, ensuring clarity in configuration and
+						eliminating the need for loops. Mapping would strictly serve logical purposes,
+						while a separate display mapping would exist for UI representation. Since the
+						mapping configurations would only be used internally in the program, the necessity
+						to use string representation would be ineffective. The mapping would be hardcoded,
+						so a loop would not be used. The final input states resulting from triggered events
+						would be logically combined using "or" operations to ensure all inputs are properly
+						accounted for. However, no sticky key would be realized for this system.
+					</p>
+				</content>
+			</section>
+			<section title="Controller Management Enhancements">
+				<content>
+					<p>
+						Controller management should be enhanced through GLFW, enabling users to select
+						their preferred controller. This configuration option would be adjustable via
+						settings but would not be persisted to disk. Additionally, an On-Screen Keyboard
+						(OSK) for controllers would remain available, though significant improvements to
+						its mechanisms would be introduced.
+					</p>
+				</content>
+			</section>
+			<section title="Key Mapping Configuration and Restriction">
+				<content>
+					<p>
+						During key mapping configuration, upon the first key release event, all keys
+						pressed concurrently would be recorded as a key combination. However, specific
+						keys, including escape, menu, and Windows keys, would be restricted from inclusion
+						due to contextual compatibility requirements. The escape key would also function
+						as a cancellation trigger during key detection. Notably, the escape key would
+						remain hardcoded for menu control operations.
+					</p>
+				</content>
+			</section>
+			<section title="Hotkey Configurations and Key Sets">
+				<content>
+					<p>
+						Dropping an entire item stack would be executed using the sneaking modifier
+						alongside the drop hotkey. If the configured drop key sequence includes the
+						sneak key, it would be considered a conflict. Each mapping should define a set
+						of permitted keys within a predefined constant.
+					</p>
+					<p>
+						<b>Permitted key sets</b>:
+						<list>
+							<li>
+								<b>Typing Keys</b>: Letters, numbers, and punctuation characters on the
+								main keypad, excluding modifiers
+							</li>
+							<li>
+								<b>Control Keys</b>: <kbd>Ctrl</kbd>, <kbd>Alt</kbd>, <kbd>Shift</kbd>,
+								<kbd>Tab</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Enter</kbd>,
+								<kbd>Backspace</kbd>, <kbd>Pause/Break</kbd>, <kbd>Insert</kbd>,
+								<kbd>Delete</kbd>
+							</li>
+							<li><b>Function Keys</b>: <kbd>F1</kbd> to <kbd>F12</kbd></li>
+							<li>
+								<b>Navigation Keys</b>: <kbd>Home</kbd>, <kbd>End</kbd>,
+								<kbd>Page Up</kbd>, <kbd>Page Down</kbd>
+							</li>
+							<li>
+								<b>Numpad Keys</b>: All numpad keys except <kbd>Num Lock</kbd>
+							</li>
+							<li>
+								<b>Forbidden Keys</b>: System-wide reserved keys, including
+								lock keys, <kbd>Win</kbd>, <kbd>Context</kbd>, <kbd>Print Screen</kbd>
+							</li>
+						</list>
+					</p>
+					<p>
+						Although <kbd>Tab</kbd> could be categorized as a navigation key, it has been
+						excluded from that set to avoid redundancy. Unlisted keys may be disregarded.
+						While checking conflicts, hardcoded keys would be taken into account to ensure
+						compatibility.
+					</p>
+				</content>
+			</section>
 			<section title="Basic Code Structures">
 				<content>
 					<p>
@@ -45,62 +265,6 @@
 						<code>Condition</code>, which could instead be <code>() -> Boolean</code>
 						or a functional interface with advanced features. However,
 						<code>MonoCondition</code> could be replaced by <code>Predicate</code>.
-					</p>
-					<p>
-						For <code>Game</code>, several things are noticeable. Firstly, it should be
-						an instance, not completely static members or as a singleton. The class name
-						would be <code>TerraModulus</code>. The <code>NAME</code> field would be a
-						top level constant. The field <code>VERSION</code> will later be handled
-						by the application profile, so it would be loaded in early runtime of the
-						application, and accessible later by a getter. <code>Initializer</code>
-						would be handled in <code>Main.kt</code> file, which would also include
-						all the initializations of all other main threads, including rendering
-						and ticking threads.
-					</p>
-					<p>
-						The similar things are applicable on <code>Initializer</code>, that there
-						should be no static members. The window frame would be handled with a window
-						handler, which may also handle the windows for some error popups. FPS and TPS
-						counter would be handled respectively in their handler classes, with which threads
-						taken into account. Argument parsing would be handled in the <code>Main.kt</code>
-						file. The <code>run</code> function would be in the <code>TerraModulus</code>
-						class. The function <code>getExceptionTrace</code> may somehow be reused for
-						error information displaying or crash reports.
-					</p>
-					<p>
-						The <code>ClipboardHandler</code> should be handled by <code>InputHandler</code>.
-						Since the input interactions, including keyboard and mouse, would be handled by
-						GLFW, the interfaces would not have to be implemented. This includes key inputs.
-						The menu structure would also be changed, so key inputs would only be listened
-						by the desired menus elements with some priorities.
-					</p>
-					<p>
-						The <code>InputHandler</code> manages quite a lot of things, input processing,
-						key mapping, controller states, key state processing. Controller management should
-						be separated, say like <code>ControllerManager</code>. The functionalities provided
-						by the gamepad library is quite poor. The abstract <code>Key</code> class and its
-						subclasses are quite useful. In fact, repeating keys would no longer be necessary,
-						so <code>PhysicalKey</code> would be simplified and <code>ControllerKey</code> would
-						not be needed. Then, there could be functions on <code>Key</code>, that "or" and
-						"and" could be used. String expressions are no longer needed. What is
-						<code>PhysicalKey#stayDown</code>? Probably ignorable. However, if the functions
-						return single <code>Key</code> state after processing, there is no really need to
-						have subclasses <code>CompoundedKey</code> and <code>ORKey</code>. While returning
-						the key state from the mapping, the states are proceeded according to the setting
-						before returning. Key mapping would not use the <code>Key</code> but another class.
-					</p>
-					<p>
-						There should be 4 classes, <code>KeyInputHandler</code>,
-						<code>TextInputHandler</code>, <code>GamepadInputHandler</code> and
-						<code>MouseInputHandler</code>, over single <code>InputHandler</code>. Among them,
-						<code>TextInputHandler</code> handles also clipboard. Text input queues would be
-						proceeded only when a request to accept text inputs is sent and reset before each
-						tick. A regex filter could be used, and the backspace keys would also be proceeded
-						in the same way. The <code>releaseAll</code> method is ignored. Key hints are quite
-						troublesome, but most probably it would be handled in the similar way. Modifiers
-						would not be handled separately in the handler class. Controller vibration feedback
-						would be handled by <code>ControllerManager</code> or another class instead, but
-						controller detection and management are certainly handled by the manager class.
 					</p>
 					<p>
 						<code>SaveManager</code> or a similar class would handle what the upper part of
@@ -601,44 +765,6 @@
 						discussed later. There may not need the <code>refresh</code> function for updating
 						the menu frame. The description menu may be later made as a tooltip or a separate
 						menu aside.
-					</p>
-					<p>
-						Dropping a full stack may be handled by using sneaking modifier with the drop
-						hotkey. So, if the configured key for item dropping contain the keys to sneak,
-						it would be regarded as a conflict. Actually, hotkey configuration could be
-						made as the way that for each mapping, a permitted set of keys which is probably
-						set in a constant, would be passed. Available sets:
-						<list>
-							<li>
-								<b>Typing Keys</b>: letters, numbers, punctuations on the main keypad without
-								any modifiers
-							</li>
-							<li>
-								<b>Control Keys</b>: <kbd>Ctrl</kbd>, <kbd>Alt</kbd>, <kbd>Shift</kbd>,
-								<kbd>Tab</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Enter</kbd>,
-								<kbd>Backspace</kbd>, <kbd>Pause/Break</kbd>, <kbd>Insert</kbd>,
-								<kbd>Delete</kbd>
-							</li>
-							<li><b>Function Keys</b>: <kbd>F1</kbd> to <kbd>F12</kbd></li>
-							<li>
-								<b>Navigation Keys</b>: <kbd>Home</kbd>, <kbd>End</kbd>,
-								<kbd>Page Up</kbd>, <kbd>Page Down</kbd>
-							</li>
-							<li>
-								<b>Numpad Keys</b>: all the keys on the numpad except <kbd>Num Lock</kbd>
-							</li>
-							<li>
-								<b>Forbidden Keys</b>: the keys usually used system-widely, including
-								lock keys, <kbd>Win</kbd>, <kbd>Context</kbd>, <kbd>Print Screen</kbd>
-							</li>
-						</list>
-						Note that in fact, <kbd>Tab</kbd> could also be a navigation key, but excluded
-						from the set to prevent duplication across sets. Unlisted keys may be ignored.
-						Mapped hotkeys would not be used when input fields are activated in the design,
-						so printed keys could be used, but hardcoded keys like the escape key and enter
-						key may be handled specially, especially in one-line field or with an Input
-						Method Editor (IME). While checking conflicts, hardcoded ones would be taken
-						into account.
 					</p>
 					<p>
 						Each menu may handle the content in a different way. There may not be entries,
@@ -1935,14 +2061,6 @@
 					</p>
 				</content>
 			</section>
-			<section title="Other Assets">
-				<content>
-					All the assets would be reviewed, including the content and structures. There might
-					be internal assets for the ones that are not designed to be modularized and
-					customizable. Unless needed, resources would not be in another folder but in the root
-					level, including logos.
-				</content>
-			</section>
 			<section title="Extra Notes">
 				<content>
 					<p>
@@ -1982,7 +2100,7 @@
 						are well-designed.
 					</p>
 					<p>
-						Visibilities of entities should be handled well and logical enough. If there
+						Visibilities of code entities should be handled well and logical enough. If there
 						exist some functions or constants that are general, they could be considered
 						being moved out of the class. Also, if some members are designed to be used in
 						a specific scope, they should not be highly visible to prevent breaking mechanisms.
@@ -2004,34 +2122,20 @@
 						general. This is to prevent unnecessary verbosity and ensure simplicity,
 						organization and readability of class structures.
 					</p>
+					<p>
+						Extension functions should be used wisely to prevent unnecessary pollutions. This may
+						greatly affect coding experience.
+					</p>
 				</content>
 			</section>
 		</section>
 		<section title="Feature Implementation">
 			<content>
 				<p>
-					There would be a <code>Main.kt</code> file, made for client and server respectively.
-					The file contains the entry point <code>main</code> function, which initializes the
-					application along with the arguments proceeded and major handler(s) launched.
-				</p>
-				<p>
 					Errors, would be popped up with information only when the errors occurred before
 					the completion of rendering initialization or the error is in or out of the scope
 					of the application. For error catching, only documented errors should be included,
 					unless it is in the major catch block or the error handler.
-				</p>
-				<p>
-					The window would be launched very early once very basic elements have been
-					initialized, so that a splash screen without window would not be needed. The window
-					is always centered on launch.
-				</p>
-				<p>
-					For the launching arguments, all the options would be named, with kebab cases starting
-					with double hyphens. Hardware acceleration is enabled by default, but a launching option
-					to disable it would also be available. The fullscreen option is just the toggle to
-					whether to launch the window in fullscreen on start. The window size option would always
-					be used regardless of the option. There would be default dimensions for the case when the
-					window size is not specified.
 				</p>
 				<p>
 					Everything would be logged regardless of the levels, so there would be no extra launching
@@ -2040,55 +2144,14 @@
 					could be disabled in some parts. This is because it is easy to create user-created
 					content, debugging should also be easy-to-access. When each class is organized and
 					has only single responsibility, logging target with the qualified class names would
-					then be clear, without the need to specify "title names" of the behavior. Log4j 2
-					would be responsible for the logging utility. A top-level helper function would be
-					added like mentioned in <a href="https://stackoverflow.com/a/34462577">this answer</a>.
-					It is not recommended to add the extension functions due to pollutions.
-				</p>
-				<p>
-					For key inputs, the handler receives the events triggered by GLFW. Text inputs are
-					used <i>only on text inputs</i>; keyboard inputs are always used. The events are
-					queued to the main ticking thread. Every keystroke, has 3 states, just pressed, down
-					and just released, with each a boolean value. A press event turns just pressed true and
-					down true; a release event turns down false, just released true. At each input tick from
-					the beginning, both just pressed and just released states are reset to false. After that,
-					the queued input events are proceeded and the key states are updated correspondingly.
-					Then, other window ticking which may take inputs would proceed. The ticking
-					frequency would be 1.5 times of the maximum FPS. There might be another ticking
-					thread with a constant frequency if needed.
-				</p>
-				<p>
-					Input mapping is another manager than the input handler. It may be configured by
-					preferences, but some are hardcoded. This includes the F3 debug key and some advanced
-					mechanisms related to the <kbd>Shift</kbd>, <kbd>Ctrl</kbd> and <kbd>Alt</kbd> modifiers.
-					In-game inputs are handled by this too. Controllers are also handled in the similar way,
-					and also in the same classes. Also, the fields would be used instead of strings, in
-					which they would be static final fields if in Java. The mapping is just for the logics
-					to use, so there would not be the "string keys" of the keys, but surely a mapping to
-					display strings for displaying only. The mapping would be hardcoded, so a loop would not
-					be used. The final states resulted by the input events are simply just "piped" (logical
-					or), so the usages of the states should be mindful enough. This way, it could ensure
-					that all the inputs are taken into account as much as possible. No sticky key is
-					realized for this.
+					then be clear, without the need to specify "title names" of the behavior. Log4j 2,
+					SLF4J and kotlin-logging would be responsible for the logging utility.
 				</p>
 				<p>
 					When it is possible to not use string keys, they should be avoided. Instead, constants
 					or enums would be used. It is because any errors caused with the strings could only
 					sometimes be known in runtime, thus there could be potential bugs. It could also
 					cause extra performance overheads in runtime by string representation and parsing.
-				</p>
-				<p>
-					The controller management should be improved by GLFW. So, it is possible to choose
-					the controller to use. It is configurable in settings, but not saved to disk. There
-					would still be the OSK for controller, but the mechanisms could be significantly
-					improved.
-				</p>
-				<p>
-					For key mapping configuration, at the moment of the first key pressed released, all
-					the keys pressed are recorded as the key combination. However, some keys are prohibited
-					for configurations, like the escape, menu and Windows keys. This is enforced for
-					context compatibility. The escape key is also used to cancel key detection. Note that
-					the escape key is hardcoded for menu controls.
 				</p>
 				<p>
 					The audio system would be remade with using OpenAL. Several features would be
