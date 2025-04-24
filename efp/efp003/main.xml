@@ -168,11 +168,11 @@
 						queues would be processed only upon request and reset at the start of each tick
 						cycle. A regex filter could be implemented for validation, and backspace key
 						operations would follow the same structured processing method. The
-						<code>releaseAll</code> method would be omitted, while key hints, despite being
-						complex, would likely follow a similar implementation method. Modifier keys would
-						not be handled separately within the handler class. Controller vibration feedback
-						would be managed by <code>ControllerManager</code> or another dedicated class, but
-						controller detection and management would remain within
+						<code>releaseAll</code> method would be omitted, while key hints or hotkeys, despite
+						being complex, would likely follow a similar implementation method. Modifier keys
+						would not be handled separately within the handler class. Controller vibration
+						feedback would be managed by <code>ControllerManager</code> or another dedicated
+						class, but controller detection and management would remain within
 						<code>ControllerManager</code>.
 					</p>
 				</content>
@@ -482,6 +482,400 @@
 					</p>
 				</content>
 			</section>
+			<section title="Error Handling and Management">
+				<content>
+					<p>
+						To ensure robust error management, the default uncaught exception handler
+						should be initialized as early as possible. This approach guarantees that any
+						uncaught exceptions are properly handled and users receive relevant notifications.
+						Instead of referencing a separate function, a lambda expression should be
+						used, allowing for greater flexibility in error processing. The error message
+						content should be distinct from other caught exceptions to facilitate clear
+						differentiation.
+					</p>
+					<p>
+						Errors should trigger informational pop-ups only under specific conditions:
+						if they occur before rendering initialization is complete, or if they fall
+						within or outside the scope of the application. For error catching mechanisms,
+						only documented errors should be considered, unless they are managed within
+						the primary exception handler or a designated error processing block.
+					</p>
+				</content>
+			</section>
+			<section title="Screen System and UI Management">
+				<content>
+					<p>
+						<p>
+							The <code>RenderingLimitingModel</code> is an ineffective implementation,
+							as scaling the UI and managing menus more efficiently would eliminate the
+							need for excessive stretching and scrolling of entries. Components such
+							as <code>ScreenEntry</code> and <code>EntryRenderingUnit</code> function
+							more as workarounds rather than solutions, making them visually and
+							structurally inadequate. A more refined approach using OpenGL should be
+							pursued.
+						</p>
+						<p>
+							The <code>screen</code> package, excluding its subclasses, originally
+							contained only <code>Display</code>, <code>Menu</code>, <code>Toast</code>,
+							<code>TutorialDisplayHandler</code>, and <code>RelPos</code>. The term
+							"display" by definition in dictionary refers to a monitor display, whereas
+							"screens" typically denote sets of visual components presented on the
+							window canvas.
+						</p>
+						<p>
+							The title screen should be enhanced with a background, with selectable
+							entries featuring highlights rather than arrow-based indicators. It
+							should include a logo, menu entries, a version string and customizable
+							title texts via asset packs instead of hardcoded conditions. "Splashes"
+							may be renamed to "title texts" as they may no longer visually <i>splash</i>.
+							A help message at the bottom would be unnecessary when mouse support is
+							enabled by default. The version string would be expanded with additional
+							details. Converting UI elements into distinct components, similar to Java
+							Abstract Window Toolkit (AWT) or Swing, would eliminate redundant position
+							recalculations each frame, improving code quality and scope management.
+							The <code>init</code>function in <code>TitleDisplay</code> should not
+							handle elements related to screen appearance. The "Play" menu entry should
+							be replaced with separate "Singleplayer" and "Multiplayer" options, followed
+							by "Settings". Achievements would not be included at this stage. The compact
+							"Help" menu, with only four entries, should function as a dialog menu for
+							simplicity. Any layout that completely replaces or overlays existing canvas
+							components should be categorized as a screen with content as menus and
+							components, while entry-based structures should be grouped within a menu.
+							The title screen entries should include "Help" and "Quit". The
+							<code>PlayDisplay</code>has already been deprecated, with its two entries
+							merged into the<code>TitleDisplay</code> as aforementioned.
+						</p>
+						<p>
+							Many screen menus should restrict the <kbd>Esc</kbd> key from returning
+							to the previous screen. When screens permit navigation back to prior
+							screens, a dedicated return button should be provided to prevent users
+							from unintentionally losing progress.
+						</p>
+						<p>
+							Only the top-most screen should be interactive. If an upper screen fully
+							covers lower screens, those lower screens would not be rendered. The
+							gameplay canvas should also function as a <code>Screen</code> to allow
+							for unified management via <code>ScreenManager</code>. When the gameplay
+							screen is instantiated, it should become the base screen, with all other
+							screens removed. Similarly, initiating a world-loading screen should clear
+							all other screens.
+						</p>
+					</p>
+				</content>
+			</section>
+			<section title="Screen Structure and Component-Based Menu Redesign">
+				<content>
+					<p>
+						<code>Display</code> should be redefined as an abstract class and renamed
+						<code>Screen</code>. However, the <code>parent</code> reference should not
+						be managed within this class but by the screen manager. Additional
+						functionality should be introduced to enhance menu-related features.
+						<code>clearScreen</code> would be removed, and <code>canExit</code> should
+						be replaced by an overridable function or a callable screen handle for the
+						screen. The class structure would resemble a panel rather than a conventional
+						<code>Display</code>. Menu <code>selection</code> should primarily support
+						keyboard controls, but tab-based navigation would likely suffice.
+						Arrow-key-based selection should align with layout structures, such as
+						AWT-style grid or border layouts, rather than relying on manual position
+						adjustments. <code>onSelectionChange</code> may not be necessary, except
+						in cases where it facilitates access to hidden menus through key selection
+						or mouse hovering when only selectable components are involved. The rendering
+						mechanism would be revised, removing dependencies on selection index for
+						rendering depth.
+					</p>
+					<p>
+						Each menu should have a distinct content structure. Instead of
+						<code>ListEntry</code>, component-based implementations would be adapted,
+						making <code>removeSelectedEntry</code> obsolete. The system should adopt
+						a model similar to AWT or Swing. The stack-handling approach in
+						<code>InventoryMenu</code> requires further refinement.
+					</p>
+					<p>
+						As <code>ItemListMenu</code> transitions to slot-based design, display length
+						constraints would no longer be necessary. Likewise, cutting and aligning
+						entries manually would become obsolete, allowing the removal of the
+						positioning parameter. The menu construction process should prioritize
+						flexibility through component-based design, including padding adjustments.
+					</p>
+					<p>
+						<code>Menu</code> should evolve into a generalized component container rather
+						than an entry-based structure. It would not contain entries by default, and
+						container-like components managing entries (such as <code>ListEntry</code>)
+						should be handled separately. A foundational abstract menu should exclude
+						properties such as size, position, title, spacing, frame, selectability,
+						rendering, and searching, maintaining minimal structural dependencies. The
+						menu should encapsulate a container, passed as a protected final parameter
+						via constructor delegation. Components should be managed independently of menus,
+						which can exclusively handle components. <code>Screen</code> would follow a
+						similar concept but would extend its functionality to directly accommodate both
+						components and menus. The builder and copy constructor patterns currently in
+						use are inefficient and should be reconsidered.
+					</p>
+					<p>
+						The searching functionality should be independent of <code>Menu</code>,
+						incorporated only when a container requires it. This mechanism should be
+						powered by an input field and contextual filtering logic rather than fragile
+						highlighting and excessive scrolling adjustments. Searching should be performed
+						only upon <kbd>Enter</kbd> activation and should deactivate upon
+						<kbd>Escape</kbd>. Component rendering should be based on relative positioning,
+						eliminating the need for additional translation functions. Visibility states may
+						be introduced, and some containers may support listeners. Scrolling animations
+						introduce unnecessary complexity and should be removed, along with dynamic
+						entry updates, builders, and <code>MenuListEntry</code>.
+					</p>
+				</content>
+			</section>
+			<section title="Input Masking and Interactivity Management">
+				<content>
+					<p>
+						An input masking session should be introduced for each tick to regulate input
+						state checking in menus. This session should be managed by
+						<code>MenuManager</code>, allowing specific menu interactions to suppress or
+						fully override queued inputs dynamically. Such modifications should occur on
+						demand without affecting physical key detection outside the menu ticking session.
+						While its necessity and practicality need further evaluation, this system could
+						improve interaction consistency across menus and screens.
+					</p>
+					<p>
+						Components should not reference a menu or screen handle when ticking, while
+						menus should always receive the screen handle upon screen ticking. Handles
+						and functionality should be managed within screens and menus, even for locally
+						defined components. Some menus may require fixed frames, though not all would.
+						Rendering functions should be consistently present across screens, menus, and
+						components.
+					</p>
+				</content>
+			</section>
+			<section title="Inventory System and Menu Organization">
+				<content>
+					<p>
+						An abstract <code>InventoryScreen</code> class should be introduced, serving
+						as the foundation for all menu screens incorporating player inventory
+						functionality. This class would encompass player inventory menus, crafting
+						interfaces, and container menus, but not book-related screens. Every inventory
+						menu would include an item counter, distinct from the item list menu, which
+						should remain designated for the creative mode item list. Additionally, the OSK
+						menu should be controlled by an input field rather than parent menus, enabling
+						flexible dynamic menu additions with prioritized handling.
+					</p>
+					<p>
+						For screens such as <code>ContainerDisplay</code> with dual-sided menus,
+						directional controls should be used without any cyclic traversal across menus.
+						Vertical menus, however, may require different handling due to their inherent
+						connectivity, potentially using <kbd>Tab</kbd> for navigation. Notably, slot
+						selection and stack transfers between menus should be available exclusively when
+						the mouse is disabled, preventing conflicts with mouse-driven interactions, similar
+						to tile selection via keyboard controls. The <code>getOtherIdx</code> function
+						lacks relevance under this system, and determining control behavior based on
+						cursor position introduces unnecessary complexity. A standardized control
+						mechanism should be implemented, with a refined naming convention replacing
+						"heaviness". Additionally, color fading should be implemented via the alpha channel.
+					</p>
+				</content>
+			</section>
+			<section title="Crafting and Recipe System">
+				<content>
+					<p>
+						The <code>CraftingDisplay</code> would be integrated into
+						<code>PlayerInvDisplay</code>, which would subsequently be renamed
+						<code>PlayerInventoryScreen</code>. Depending on the implementation approach,
+						further specialization may be introduced via subclasses such as
+						<code>SurvivalPlayerInventoryScreen</code> and
+						<code>CreativePlayerInventoryScreen</code>, ensuring logical consistency with
+						the overall code style. While the recipe system remains undecided, relevant
+						crafting menus and recipe unlocking mechanics would be addressed in conjunction
+						with its development. The achievement acquisition method should be revised, as
+						the current implementation is excessively hardcoded. Additionally, inventory
+						change listeners could be introduced if necessary to refine the refresh
+						functionality.
+					</p>
+					<p>
+						A new recipe system should be introduced, recipe menus and crafting menus
+						would be greatly changed, since all the crafting mechanisms are too similar.
+						Most critically, crafting menus should integrate player storage visibility to
+						enhance inventory interaction.
+					</p>
+				</content>
+			</section>
+			<section title="Inventory Structure and Management">
+				<content>
+					<p>
+						The <code>InventoryMenu</code> should accommodate a holder, though not
+						necessarily limited to an entity. Inventory contents should be linked to the
+						holder’s inventory, ensuring bidirectional synchronization of updates. Slot
+						alignment should not be enforced, allowing menu slots to correspond directly
+						with inventory slots without rigid structuring. The creative inventory would
+						not be managed within this system, as previously discussed. Inventory menu slots
+						should register listeners at either the inventory or menu level, depending on
+						their nature: temporary slots, such as those in crafting interfaces, should be
+						handled within the menu, whereas persistent slots (i.e., inventory slots) should
+						be registered within the inventory. Since inventory modifications can occur
+						outside direct menu interactions, listener registration at the inventory level,
+						potentially via the holder, would be necessary.
+					</p>
+					<p>
+						Item stack operations should be managed by the item list menu, with a
+						well-defined structure supporting both non-inventory item collections and
+						inventory-based stacks. A wrapper class may be introduced for streamlined
+						handling, though further implementation details remain to be determined. The
+						<code>refresh</code> function may be unnecessary for menu frame updates, while
+						the description menu would become a tooltip or a separate menu aside.
+					</p>
+				</content>
+			</section>
+			<section title="Inventory Screen and Slot Interaction">
+				<content>
+					<p>
+						Some aspects of <code>PlayerInvDisplay</code> align with previously discussed
+						elements. The creative mode item list should be accessible through an
+						independent menu or a tab. The selected slot should be bordered or highlighted,
+						with item stacks appearing at the cursor while hovering over inventory menus,
+						leaving the source slot empty, or remaining in the source slot as a reference
+						for interaction. No help text should be shown, eliminating the method used to
+						hide the item list menu.
+					</p>
+					<p>
+						The <code>RepairBenchDisplay</code> should retain its inventory menu structure,
+						though storage slots would be preferable to temporary ones, replacing
+						<code>RepairBenchCarrier</code>. While this approach introduces a new paradigm
+						within the codebase, <code>SlotEntry</code> should transition from an entry-based
+						system to a direct slot representation. Menus managing stack transfers currently
+						follow repetitive processes, which could be simplified through an optimized
+						transfer model. Each slot component should maintain an association with its
+						backing inventory slot instance. Disabled buttons and empty slots should remain
+						selectable but non-interactive. Storage spaces should feature attributes or
+						properties defining their slot types, such as crafting input slots, product slots,
+						and other specialized configurations. Fishing rod durability tracking could be
+						simplified to simplify tool mechanisms. The functionalities of slot entries should
+						predominantly depend on their associated backing slots. <code>RepairInfo</code>
+						should be regarded as a context generated by the input items, while the carrier
+						component primarily delineates operational scope within the display class. The
+						current method of using leading spaces for positioning within strings is
+						problematic but common within the codebase; replacing slot labels with intuitive
+						graphical elements would improve clarity. The <code>onAction</code> function,
+						currently used only once within a specific scope, could be refactored into a
+						lambda. The redundant "checking again" mechanism should be converted into
+						assertions, as its execution is intentional. Stack movement should primarily
+						target destination slots, though additional interactions such as mouse scrolling
+						or L1-R1 slot switching should also be supported, behaving similarly to
+						<code>addToCarrier</code> operations. If slots are storage-based, stacks should
+						persist on exit without being automatically dropped. The code structure of
+						<code>RepairBench</code> is actually neat, and there could be slots stored in
+						the entity.
+					</p>
+				</content>
+			</section>
+			<section title="Inventory and Item Management">
+				<content>
+					<p>
+						The inventory system, while well-structured, should be moved to a distinct
+						package separate from <code>item</code>. If inventories incorporate slots,
+						they should use mapped slot structures instead of generic lists, potentially
+						featuring distinct slot sets per storage unit. To support stacking, item
+						metadata excluding quantity must remain consistent, ensuring compatibility
+						with a slot-count-driven inventory model. If slots originate from underlying
+						storage mechanisms, primary inventory capacities should be derived from these
+						foundational quantity limits.
+					</p>
+					<p>
+						Item picking functionalities should be generalized for all mobs using
+						inventory slots.
+					</p>
+					<p>
+						Item stacks should be managed through an inventory provider responsible for
+						constructing inventories and item managers. Item configurations should align
+						with provider specifications, including stacking criteria and limitations.
+						Consequently, stack size should not be hardcoded within individual items or
+						stacks. While items themselves should not be cloned, stacks should retain this
+						capability. Item depletion should be validated upon each interaction, invoking
+						the inventory manager listener upon stack modifications. Interaction methods
+						should return <code>true</code> upon successful interactions, potentially
+						reflecting state changes accordingly.
+					</p>
+					<p>
+						The <code>RewardChestInventory</code> could be generalized to a class next
+						to the <code>UnlimitedInventory</code>.
+					</p>
+				</content>
+			</section>
+			<section title="Recipe System and Resource Handling">
+				<content>
+					<p>
+						The recipe system should be relocated into a separate package. Recipe
+						instantiation should originally be handled through constructors or factory
+						methods, eliminating the need for string parsing during initialization. Direct
+						instance referencing should be used instead of strings or names, ensuring
+						efficiency and reliability. Recipes must be unlocked prior to usage,
+						maintaining integration with the advancement system.
+					</p>
+					<p>
+						The main recipe processing method should be replaced with script-based
+						execution. However, due to the inherent complexity of scripts, their
+						implementation must align with standardized execution environments rather
+						than directly mirroring the core code structure. Recipes should be treated
+						as resources rather than being hardcoded within the system.
+					</p>
+				</content>
+			</section>
+			<section title="Miscellaneous Message Displaying Screens">
+				<content>
+					<p>
+						The <code>InfoDisplay</code> would be removed, with statistics integrated
+						into the pause menu. Each player would maintain their own set of statistics,
+						as a part of the server or world data, but not as a unit of server or world,
+						although it is still possible to have server or world statistics. World-related
+						information may not be presented here but could be displayed elsewhere as needed.
+					</p>
+					<p>
+						The <code>MessageDisplay</code> class serves only two purposes: displaying link
+						error messages and resource pack descriptions. The former should be replaced
+						with standard application notifications, while the latter could be merged into
+						the main menu layout or incorporated via tooltips. As a result, this class
+						would become obsolete and should be deprecated.
+					</p>
+					<p>
+						The <code>TempDisplay</code> component offers little functionality. When
+						opening an Internet address in a browser, a confirmation popup should always be
+						displayed, but there is no need to automatically close the screen indicating the
+						browser action. Instead, only the confirmation popup should close immediately.
+					</p>
+				</content>
+			</section>
+			<section title="Popup Management and Option Dialogs">
+				<content>
+					<p>
+						Several functionalities currently handled by <code>PopupDisplay</code> could
+						be streamlined through tooltips or full-canvas options menus. Submenus with
+						limited components may be implemented as simplified panes, akin to anonymous
+						classes, possibly replacing this class. Popups containing only informational
+						messages could transition into notifications, while those featuring basic
+						button options could be refactored into a dedicated class, such as
+						<code>OptionMenu</code>. This structure would consist of a display message
+						alongside defined options with names and fallback settings.
+					</p>
+					<p>
+						Confirmation popups for quitting may not be necessary. Options dialogs that
+						do not exit or transition screens could be full-canvas, while those requiring
+						menu changes could incorporate a frame. Full-canvas screens should feature a
+						lightly dimmed and blurred background or a dedicated background image,
+						complementing the components. When listening for key sequences in the settings
+						menu, a non-full-canvas banner should display active key inputs, ensuring
+						clarity before any key is released. For instance, the confirmation dialog
+						menu for resetting key bindings should include a frame, with its style
+						determined later.
+					</p>
+					<p>
+						Buttons should not rely on hotkeys, and this structure should be removed
+						entirely, even for Keyboard-Only controls, with a simplified set of selectable
+						options. Additionally, screen resolution should be leveraged for better
+						horizontal arrangement of options, improving usability. Selection entries
+						or button would provide a more intuitive alternative to direct key-listening
+						mechanisms. The options dialog menu should not support <kbd>Esc</kbd> for
+						exiting; users must choose an available option instead. The OSK would not
+						require specific handling within this system.
+					</p>
+				</content>
+			</section>
 			<section title="Basic Code Structures">
 				<content>
 					<p> =01=
@@ -602,12 +996,6 @@
 						The exceptions used in world loading are quite reasonable. It is clear that when
 						these rare exceptions occur, the entire operation must be interrupted or cancelled.
 						This example is quite practical, despite the unorganized class structures.
-					</p>
-					<p> =08=
-						The default uncaught exception handler should be set as early as possible. Then, when
-						there is any uncaught exception, they could be handled well, and users could be
-						informed properly. A lambda would be used instead of simply referring to a function.
-						The content would be unique to distinguish from other caught errors or exceptions.
 					</p>
 					<p> =16=
 						Resources or assets would not be loaded early as before canvas initialization, but packs would be loaded
@@ -747,15 +1135,6 @@
 						sprite rendering and inverted color line rendering ones have not taken the advantages
 						of <code>Graphics2D</code>, which could be optimized by hardware acceleration.
 					</p>
-					<p> =11=
-						The <code>RenderingLimitingModel</code> is not a good implementation, actually. If
-						the UI could be scaled and menus could be managed in a better system, there is no
-						really need to stretch the menus or scroll the entries that hard. So, including
-						<code>ScreenEntry</code> and <code>EntryRenderingUnit</code>, it is more like
-						coding around the problem but not solving the problem, though it is just a badly
-						looking workaround in the system. There should be a better way to do all these
-						things in OpenGL.
-					</p>
 					<p> =09=
 						As for <code>Sprite</code>, there would probably be a high level wrapper of the
 						low level sprite instances. When sprites are loaded into the centralized texture
@@ -789,36 +1168,6 @@
 						positions of them in a sprite? It is probably just because there is no a
 						well-made filtering mechanism in the rendering system. OpenGL has these
 						functionalities.
-					</p>
-					<p> =11=
-						If ignoring all the subclasses, there are originally actually just <code>Display</code>,
-						<code>Menu</code>, <code>Toast</code>, <code>TutorialDisplayHandler</code>,
-						<code>RelPos</code> in the package of <code>screen</code> without subpackages.
-						Display is literally monitor display, but not the screens which commonly mean
-						the sets of pictures being shown on the window canvas.
-					</p>
-					<p> =11=
-						Not too much to note on the title screen, but there could really be a background.
-						For all the selectable entries, there could be highlights, but not using the
-						arrows to simplify the appearance. On the title screen, there could be the logo,
-						the menu entries, the version string, the splashes, the background. The splashes
-						would not be hardcoded and conditioned, and thus fully customizable by assets
-						packs. There would not be the need to show the help message on the bottom when
-						mouse is supported, and enabled by default. The version string would be longer
-						to add some more text. Probably the splash text does not splash, so named just
-						"title texts". It is true that if they are made into components like how we do
-						with AWT or Swing, there is no need to recalculate the positions or lengths
-						again and again every frame, and the values would not be out of scope, for
-						code quality it is beneficial. The code in the <code>init</code> function
-						of <code>TitleDisplay</code> is not something should show up for the screen.
-						The "Play" entry would become "Singleplayer" and "Multiplayer" 2
-						entries, then "Settings"; achievements would not be there yet, so the entry
-						would not be added. The simple screen like the 4 entries of the "Help" menu
-						could just be a dialog menu, for simplicity. If the layout involves "clearing"
-						the entire canvas or fully covering all the components in the back, it would be
-						made as a screen, with all the content made as menus and/or components. When it
-						involves a set of entries, the entries should be included within a menu. Then,
-						the entries would be "Help" and "Quit".
 					</p>
 					<p> =12=
 						If achievements become account-based, all the data would come from server instead
@@ -854,57 +1203,6 @@
 						should be discussed later. Books without the title and page count are not books and
 						should never use this class.
 					</p>
-					<p> =14=
-						There would be an abstract class of <code>InventoryScreen</code>. All the menu
-						screens containing the player inventory should extend the class. It includes the
-						player inventory menu, crafting menus, container menus, but not the book screens.
-						All the inventory menus would have the item counter, but different from the item
-						list menu, which should really be used by the creative mode item list. The on-screen
-						keyboard menu would be controlled by an input field instead of the parent menus, it
-						also means flexible dynamic menu addition with certain priority should be supported.
-					</p>
-					<p> =14=
-						For the screens like the <code>ContainerDisplay</code> with 2-sided menus, a better
-						way is to use directional controls without "looping" through menus. However, if they
-						are top-bottom menus, it would be different since they are likely more connected;
-						still, tabs may still be enough. Note that the controls to select slots or move
-						stacks across slots and menus would be available only when mouse is disabled to
-						prevent conflicts with mouse controls, just like selecting tiles by keyboard. There
-						would still be better layouts for these menus to work, but decided later. So,
-						<code>getOtherIdx</code> does not really make sense here. Plus, determining controls
-						by checking which menu the cursor is at, does not at all make this logical sense.
-						It could also bother functionality changes. A standardized way should be supported.
-						It should not be called "heaviness", but a better name or mechanism should be made.
-						That color fading could later be realized by using the alpha channel.
-					</p>
-					<p> =14=
-						It has been noted that the <code>CraftingDisplay</code> would be integrated into
-						<code>PlayerInvDisplay</code>, which would later be renamed to
-						<code>PlayerInventoryScreen</code>. Depending on implementation, there could also
-						be subclasses of <code>SurvivalPlayerInventoryScreen</code> and
-						<code>CreativePlayerInventoryScreen</code> or something, but surely to make the
-						system more logically aligned with the code style. The recipe system would later
-						be decided, so as the related crafting menus and recipe unlocking functionality.
-						The way to get achievements is too hardcoded. The refreshing function is quite
-						odd, but listening to inventory changes could be made if needed.
-					</p>
-					<p> =11=
-						<code>Display</code> should surely be an abstract class renamed as
-						<code>Screen</code>. However, <code>parent</code> should not be handled here
-						and instead by the manager only. Some several functionalities would be supported
-						to enhance the features used by other menus associated with the menus. There
-						would not be <code>clearScreen</code>, and <code>canExit</code> may be replaced
-						by an overridable function, or probably a screen handle callable by the screen.
-						This class would become like a panel or something. <code>selection</code> of
-						menu would only be useful for keyboard controls, but likely tabbing would do
-						this. For components to be selectable by using arrow keys, they could be aligned
-						using layouts like AWT does or relative positions, like grid layout and border
-						layout. There may not be the need for <code>onSelectionChange</code>, but it
-						may be used if it is used for accessing hidden menus which could also be
-						accessible with mouse hovering, only if it contains only selectable component.
-						This rendering function is no longer applicable, and rendering depth should not
-						depend on selection index.
-					</p>
 					<p> =12=
 						There could still be the <code>HowToPlayDisplay</code> screen. Firstly, the
 						rendering of keys could be enhanced with using images, which are the mapped
@@ -922,45 +1220,6 @@
 						gameplay guides should be put into general guides. However, advanced guides
 						would not be placed here, but instead other places, like with a wiki. The
 						layout of this screen may refer to the one in Minecraft: Bedrock Edition.
-					</p>
-					<p> =15=
-						There would not be the <code>InfoDisplay</code>, but there could be statistics
-						in the pause menu. Each player would have their own set of statistics, but not
-						for the server or the world. The world information may not be seen here, but
-						perhaps other places.
-					</p>
-					<p> =14=
-						The <code>InventoryMenu</code> could have the holder, but not limited to entity.
-						The inventory content would be linked or associated to the holder's inventory.
-						Any update made in either place would be reflected to the another. However, the
-						content alignment would not be needed, thus the <code>slot</code>. Each slot in
-						the menu would correspond to a slot of the actual inventory. There would not be
-						the creative inventory handled here as mentioned previously. A listener would be
-						registered to the inventory if they are inventory slots. If they are temporary
-						slots, like in the crafting menu, the listener would be registered in the menu.
-						However, since inventory slots may still be updated without interacting with the
-						menus, the listener related to the inventory would probably be registered directly
-						into the inventories, by the holder or something. Item stack operations could be
-						handled by the item list menu, but well-formed structure to handle both the items
-						in the non-inventories and the stacks in the inventory slots should be both handled.
-						There might be a wrapper handling this, but the detailed implementation should be
-						discussed later. There may not need the <code>refresh</code> function for updating
-						the menu frame. The description menu may be later made as a tooltip or a separate
-						menu aside.
-					</p>
-					<p> =11=
-						Each menu may handle the content in a different way. There may not be entries,
-						<code>ListEntry</code>, but components, so there would also not be
-						<code>removeSelectedEntry</code>. However, the implementation might be similar
-						to AWT or Swing. The way to handle stacks in <code>InventoryMenu</code> is not
-						perfect.
-					</p>
-					<p> =11=
-						When <code>ItemListMenu</code> becomes using slots, there would not need the
-						display length thing. Also, there is no longer the need to "cut" or align the
-						entries, so the positioning parameter could be dropped. The way to build the
-						menu would be more flexible as components than using like this way, including
-						the padding.
 					</p>
 					<p> =02=
 						The <code>LevelTransitionDisplay</code> would just act as the UI. The process
@@ -985,49 +1244,6 @@
 						it would be handled directly in loading schemas, as they would be assumed to
 						be bugs previously reported and resolved. The message popups could instead be
 						application notifications. The progress handling would be quite special.
-					</p>
-					<p> =11=
-						<code>Menu</code> would become more general, as a component container. It
-						would not contain any entry by default. If there is any container-like
-						component managing entries like <code>ListEntry</code>, they would be other
-						cases and handled in another way. Importantly, an abstract menu would basically
-						not have any property like size, position, title, spacing, frame, selectability,
-						rendering and searching, even no content. Better may be making the menu
-						containing a container passed into the constructor as final and protected, with
-						delegations, and menus are managed as a separate system than components. Then,
-						<code>Screen</code> would be the similar case, with a difference that only
-						<code>Screen</code> could contain any <code>Menu</code>, but not class itself.
-						The copy constructor and builder patterns are quite messy here. The searching
-						function would be provided separately when the container needs it, which would
-						be powered by a input field and the searching context, working together to
-						give the filtered result, without that fragile highlighting and meaningless
-						scrolling functions. Searching is performed when <kbd>Enter</kbd> is pressed,
-						but not every time the field is updated, and pressing <kbd>Escape</kbd>
-						deactivates the field without performing searching, <kbd>Enter</kbd> also
-						deactivates the field. Rendering of components and such things would be based
-						on relative positions, so there is no need for the translating functions.
-						There might be "visibility". Some containers may have listeners supported.
-						Scrolling animation really complicates the code. There would be no need to
-						update and remove entries, as well as the builder and <kbd>MenuListEntry</kbd>.
-					</p>
-					<p> =11=
-						Only the top-most screen is interacted. Moreover, if the upper screen intends
-						to cover the lower screen(s), rendering of the lower screens is skipped. The
-						gameplay canvas would also be a screen, so that it could also be managed by
-						the <code>ScreenManager</code>. When the gameplay screen is added, it would
-						be placed as the lowest screen, and all other screens are dropped. Also, when
-						any of the world loading screens are initiated, other screens are also dropped.
-						Components may not take the menu or screen handle when ticking, but menus would
-						always take the screen handle passed to screen ticking. The handles and the
-						functioning would be handled directly in the screens and menus, even locally
-						defined components. Some menus may be with definite frames, but not all.
-						Rendering functions are all present in both menus, screens and components.
-					</p>
-					<p> =15=
-						For the other usages of <code>MessageDisplay</code>, there are only the link
-						error message and resource pack description. The former could be replaced by
-						application notification and the latter could be combined into the main menu
-						layout or replaced by tooltips, so this class could be dropped.
 					</p>
 					<p> =04=
 						For <code>MultiplayerDisplay</code>, there is nothing valuable for reference.
@@ -1062,10 +1278,6 @@
 						gameplay screen would not be interacted, though rendering continues, even clicking
 						mouse on the dimmed screen would not close the menu.
 					</p>
-					<p> =11=
-						The <code>PlayDisplay</code> has already been deprecated. The 2 entries would directly
-						be merged into the title screen as mentioned.
-					</p>
 					<p> =04=
 						For the <code>PlayerDeathDisplay</code>, it would be <code>PlayerDeathScreen</code>
 						with the dimmed gameplay screen, similar to the pause menu. However, the gameplay
@@ -1078,39 +1290,6 @@
 						and the player respawns. The quit button is the same as the one in the pause menu.
 						Player could not open any other menu while on this screen and there would not be any
 						other information shown.
-					</p>
-					<p> =14=
-						Some details of <code>PlayerInvDisplay</code> may have already been mentioned
-						previously. The creative mode item list menus would be accessed in another way,
-						either tabbed or made into other menus aside. For the other parts, it would be
-						as what mentioned. Anyway, the selected slot would be bordered or highlighted,
-						and the selected stack of item would be at the cursor, hovering above the
-						inventory menu(s), with the original slot being empty or as a reference of the
-						source slot. There would not be the help text. Then, it would not be using this
-						way to hide the item list menu.
-					</p>
-					<p> =15=
-						For other usages of <code>PopupDisplay</code>, some of them could be replaced by
-						tooltips or full-canvas options dialogs or screens. Some as submenus would be
-						implemented like simple panes with just a few components added, similar to anonymous
-						classes. The ones with just messages could be replaced by notifications. Some with
-						just simple buttons of options could be made by a class named <code>OptionMenu</code>
-						or something else composited of a display message content and options with name and
-						fallback. There may not be the need to have a confirmation popup on quit. As for the
-						options dialog menu, if it would not exit or change the current screen, it could be
-						full-canvas; otherwise it could be with a menu frame. Full-canvas screens could be
-						with lightly dimmed and blurred original screen or with a background image, along
-						with its components. As for listening key sequences in the settings, a non-full-canvas
-						menu or a banner could be shown to indicate that it is listening key inputs and what
-						keys are currently pressed. The resultant sequence would be at the moment before any
-						key has just been released. For example, the confirmation dialog menu of resetting
-						all key bindings would be framed. The styles or appearance of the frame would be
-						decided later. When there are buttons, it would not rely on hotkeys and this structure
-						could be discarded, even for keyboard-only controls, with just a few simple options.
-						It could also make use of the screen resolution by fitting options horizontally.
-						Even using select entries would be easier to use than listening keys. Note that the
-						options dialog menu would not be exited by <kbd>Esc</kbd>, and the options must be
-						used instead. The on-screen keyboard (OSK) would not be handled specifically here.
 					</p>
 					<p> =12=
 						For <code>QuestsDisplay</code>, the management part could be separated like how
@@ -1156,11 +1335,6 @@
 						probably a select dropdown for showing all, only unlocked or only completed series, and
 						the display menu on the right would be empty if no series is selected in the tab.
 					</p>
-					<p> =14=
-						A new recipe system would be made. The recipe menu and crafting menus would differ a lot.
-						The most important part is that it would become an inventory menu with the player storage
-						space shown on the screen.
-					</p>
 					<p> =01=
 						There may be different sets of directions or positions, but they should be managed in a
 						standardized way, with their enum classes. For example, there would be sets of 2, 4, 5,
@@ -1171,31 +1345,6 @@
 						avoided, and <code>getOpposite</code> would use switch-case or when instead. If there
 						must be a value of anchor based on <code>Point</code> and <code>RelPos</code> specified,
 						a dedicated class of <code>Anchor</code> could exist.
-					</p>
-					<p> =14=
-						The <code>RepairBenchDisplay</code> would still be an inventory menu. Actually, if
-						possible, storage slots would be recommended over temporary slots, which are what
-						<code>RepairBenchCarrier</code> is using. This style and approach is quite new to
-						this codebase, but the <code>SlotEntry</code> would not be an entry later, just
-						simply be a slot. Every menus handling stack transfers in their places, it is quite
-						repetitive whilst could be simplified by an improved model in fact. The component
-						of a slot would associate with a backing slot instance. If they are just buttons
-						and slots, disabled buttons and empty slots may still be selected, but just could
-						not be interacted. Storage spaces may have attributes or properties, that could
-						define what kind of slots they are, like crafting inputs, products, and so on. The
-						durability of fishing rod could really be implemented to simplify the situation.
-						The functionalities of slot entries would mostly depend on the natures of the
-						backing slots. The <code>RepairInfo</code> is actually a context generated by the
-						input items. The existence of the carrier is just to draw the scope within the
-						display class. Having a leading space in the string for positioning is somehow
-						problematic, but common in this codebase. The slot labels could actually be
-						replaced by intuitive graphics. The function of <code>onAction</code> is used
-						only once in a specific scope, so it could instead be a lambda. That "checking
-						again" may be turned into assertions since it is intentional. Although stack
-						movement would primarily be specified for the destination, mouse scrolling or
-						L1-R1 switching on a slot may still be supported and act like
-						<code>addToCarrier</code>, probably directly operating on the stack. If they
-						are storage slots, the stacks would not need to be dropped on exit.
 					</p>
 					<p> =16=
 						The resource packs and similar things would no longer rely on the directory
@@ -1281,12 +1430,6 @@
 						comparison would be done on the client side. The watcher thread would no longer be
 						needed. The Mob Sprite would be a huge difference.
 					</p>
-					<p> =15=
-						The <code>TempDisplay</code> is quite useless. If a URL is being opened in browser,
-						a confirmation popup would always be shown. There is no actual need to automatically
-						close the screen noting opening in browser, but immediately close the confirmation
-						popup menu.
-					</p>
 					<p> =12=
 						Tutorials should be reworked. However, they could just be in the How to Play screen
 						or as guides configured in the menus, which could be referred from RimWorld. As for
@@ -1349,11 +1492,6 @@
 						data of the selected entry would be sent as argument, without using the static fields.
 						Too much duplicate code in the ticking method, but many parts could be separated and
 						simplified.
-					</p>
-					<p> =11=
-						Many screen menus would not allow using <kbd>Esc</kbd> to return to the previous screen.
-						In such cases, if the screens are allowed to be returned, a dedicated button would be
-						available. This could prevent user losing any progress easily.
 					</p>
 					<p> =07=
 						The process to load world information would differ a lot from the original one. Also,
@@ -1559,9 +1697,6 @@
 						still depend on the direction of the game, but most likely, everything could be harder
 						and more complex.
 					</p>
-					<p> =14=
-						All the crafting mechanisms are too similar, and more differences could be made.
-					</p>
 					<p> ====
 						Also,
 						this string analysing way is too error-prone. In fact, we should rather let compiler
@@ -1576,18 +1711,10 @@
 						done. The way to if-else chain the enums could be changed into switch-cases if the JDK
 						version could be raised, but in Kotlin, <code>when</code> could be used.
 					</p>
-					<p> =14=
-						The code structure of <code>RepairBench</code> is actually neat. There could be slots
-						stored in the entity.
-					</p>
 					<p> ====
 						Actually, in the structure of Kotlin, some constructor parameters could be simplified
 						to abstract properties. Also, not everything has to be in the constructors but the
 						factor helper methods.
-					</p>
-					<p> =14=
-						Still, the <code>RewardChestInventory</code> could be
-						generalized to a class next to the <code>UnlimitedInventory</code>.
 					</p>
 					<p> =18=
 						The mechanisms of <code>Spawner</code> are quite "<i>reflective</i>". However, this thing
@@ -1699,9 +1826,6 @@
 					<p> =25=
 						All fishing-related code should all be handled in the item class.
 					</p>
-					<p> =14=
-						Item picking feature would be generalized to all mobs with slots.
-					</p>
 					<p> =17=
 						<code>DamageSource</code> should take an argument with type inferred by the
 						<code>DamageType</code>. The argument may contain one or more data, that could be
@@ -1733,16 +1857,6 @@
 						When items are linked by
 						resource keys, there would not be the need to associate the sprites or models
 						manually one by one.
-					</p>
-					<p> =14=
-						Item stacks would be supported by an inventory provider that handles and constructs
-						inventories and item managers. Items would have to configure based on the providers
-						and managers, including the stacking criteria and limitations. It means that stacking
-						size would not be directly hardcoded into items or stacks. Solely items could not be
-						cloned, but the stacks. Depletion of items may be checked each time the stack is being
-						handled; when there is change in the stack, the listener of the inventory manager
-						would be invoked; interaction methods may return <code>true</code> for successful
-						interactions, which may change the states of the stack.
 					</p>
 					<p> =23=
 						Some attributes of items may be hardcoded for an item, but some may be dynamic.
@@ -1846,25 +1960,6 @@
 						The working mechanisms of this are actually quite magical, but could be rewritten.
 						Also, it should not take the tile player selected as the target but the area of
 						tiles close to the player.
-					</p>
-					<p> =14=
-						The inventory system has actually organized quite neatly, but they should be placed
-						in another package than <code>item</code>. However, if inventories tend to have
-						slots, they should be using maps of slots than general lists; there might also be
-						different sets of slots in an inventory storage. For an item to be stacked, all the
-						metadata except counts of item should be same for the model of the simplified
-						slot-counting-driven inventory system to work. If slots are supplied by the underlying
-						storages, which would give the maximum sizes for the primary inventory.
-					</p>
-					<p> =14=
-						The entire recipe system could actually be put into a separate package. If recipes
-						are created using constructors or factor methods, there is completely no need to
-						parse any string during constructions. Also, using references of instances is far
-						more efficient than strings or names, even safer. All recipes would still have to
-						be unlocked before being used, so the advancement system would still be used for
-						this. The main method should be replaced by scripts, but due to the nature of
-						scripts, they have a higher requirement than using the same environment as the
-						code; recipes should be handled as resources than being coded.
 					</p>
 					<p> =23=
 						All the tiles may have a list of properties,
@@ -2306,12 +2401,6 @@
 		</section>
 		<section title="Feature Implementation">
 			<content>
-				<p> =08=
-					Errors, would be popped up with information only when the errors occurred before
-					the completion of rendering initialization or the error is in or out of the scope
-					of the application. For error catching, only documented errors should be included,
-					unless it is in the major catch block or the error handler.
-				</p>
 				<p>
 					When it is possible to not use string keys, they should be avoided. Instead, defined constants
 					or enums would be used. It is because any errors caused with the strings could only
@@ -2353,14 +2442,6 @@
 					the <code>Mutex</code> or <code>ReadWriteLock</code> in Rust. A similarly favored class
 					could be made for generic instances holding internally by the constructor with the new
 					instances. This could only be ensured by the developer writing the code, though.
-				</p>
-				<p> =11=
-					A input masking session could be made for each tick for input state checking for menus.
-					This could be managed by the <code>MenuManager</code>. This way, when the processing
-					menu requires the specific inputs which may be mappings, to be hidden for the queued
-					menus, even fully hidden, it could be done dynamically and on demand. It would also
-					not affect global checking for a physical key outside the menu ticking session, though
-					it might not be necessary or practical.
 				</p>
 				<p> =04=
 					The time enums for each part of a day may not be that regular as quarters, especially
