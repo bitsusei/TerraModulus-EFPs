@@ -876,6 +876,379 @@
 					</p>
 				</content>
 			</section>
+			<section title="Entity System and Interaction Model">
+				<content>
+					<p>
+						The player entity is categorized as a living entity, distinct from mobs due
+						to its unique control implementation. The primary distinction lies in the
+						control system, allowing entity behaviors to be generalized without requiring
+						excessive subclassing or repetitive implementations. Since player <i>take</i>
+						action would be governed by specific abilities, such functionality should not
+						be integrated into general entities. A revised classification of entity types
+						will be proposed at a later stage.
+					</p>
+					<p>
+						Entity interactions follow structured event-based processing:
+						<list>
+							<li>
+								<b>Actors</b> initiate actions on targets, which receive those actions
+								as events
+							</li>
+							<li>
+								<b>Targets</b> represent entities affected by an actor's interaction
+							</li>
+							<li>
+								<b>Controllers</b> regulate entity behavior based on triggered events,
+								with multiple controllers potentially managing a single entity
+							</li>
+							<li>
+								<b>Events</b> dictate method execution within the code
+							</li>
+							<li>
+								<b>Global states</b> refer to the collective conditions across the
+								entire world
+							</li>
+						</list>
+					</p>
+					<p>
+						All actions are event-driven, meaning that interactions occur only when events
+						are emitted and processed. This includes regular ticking events and discrete updates.
+						Unlike spontaneous occurrences of attacking or using, entities operate through
+						receiver interfaces responsible for damage and usage handling. When a mob or entity
+						initiates an attack or use event against a target, this event is registered within
+						the main event, forming a hierarchical structure of linked actions. Passive
+						consequences stemming from primary events leverage their provided parameters
+						alongside commonly observed global states.
+					</p>
+					<p>
+						Attack events initiated by controllers should be structured efficiently. They must
+						focus solely on responding to the primary event with predefined arguments and
+						contextual global states. Attack initialization should remain minimal, calculating
+						only the foundational aspects of an attack, while relevant parameters should be
+						assigned by the controller. The main entity structure should not directly manage
+						event responses. Attack actions may instead be managed through independent
+						controllers, with the corresponding attack response solely processing the event
+						rather than managing indirect state changes by the event. Thus, only the damage
+						reception interface should reside within an entity's main structure.
+					</p>
+					<p>
+						Similarly, use interactions require clarification. Events related to "use" actions
+						may involve tiles or entities as subjects, while "used on" events primarily concern
+						items as subjects. The subject may shift based on the specific event type, but by
+						default, the target would be the subject. Until a refined solution resolves this
+						ambiguity, usage actions should not be split into separate categories. Using the
+						middle mouse button may provide an alternative interaction mechanism, with further
+						details subject to future discussion.
+					</p>
+				</content>
+			</section>
+			<section title="Mob Intelligence and Damage Handling">
+				<content>
+					<p>
+						Movement capabilities, including swimming and traversal across surfaces, should be
+						dictated by AI-driven mov controls, ensuring proper contextual application.
+						Additionally, the "on fire" visual effect should be treated as a transient metadata
+						attribute, with entities retaining the ability to reject such properties upon
+						assignment. Fire and burn damage should be processed through the damage source,
+						acting as an argument within the damage-handling system. For the controls, there
+						might be a method that even mods could add by the interface with the default values;
+						this may require Typed Anchor Dynamic Mapping, which will be proposed later.
+					</p>
+					<p>
+						Damage evaluation should be managed by controls, eliminating redundant checks such
+						as <code>isAttackable</code>. Since entities block interactions regardless of their
+						nature, preliminary validation steps should be omitted, allowing actions to proceed
+						without additional verification layers. Similar simplifications should apply to
+						<code>isInvulnerableTo</code> and <code>isUsable</code>, reducing inconsistencies
+						and streamlining API usage.
+					</p>
+					<p>
+						Interactive box sizing should be adjusted with greater precision, rather than
+						relying on approximate sprite dimensions. The current implementation using
+						<code>tickTime</code> should be deprecated. Temporary timers for event-driven
+						effects, such as burning damage, should be pooled within dedicated tick-based
+						handlers per entity, minimizing unnecessary class-level bloat while retaining
+						separation of responsibilities. Death detection should reside within health-related
+						systems, while speed modifications should be managed via move controls,
+						particularly when factoring in speed-altering effects.
+					</p>
+					<p>
+						The <code>MobAi</code> subclass should be dismantled, with individual components
+						such as despawning mechanisms, intelligent behaviors, automation logic, rendering,
+						and loot processing transferred to specialized controls and handlers.
+					</p>
+					<p>
+						For <code>EnemyMob</code>, behavioral intelligence should be dictated by control
+						mechanisms. The tracking system requires refinement to enhance targeting efficiency.
+						The attack range should extend beyond direct physical contact, ensuring broader
+						interaction capacity. All attack-related methods should be consolidated into a
+						single function, accepting a damage source parameter for streamlined execution.
+					</p>
+				</content>
+			</section>
+			<section title="Player-Specific Considerations">
+				<content>
+					<p>
+						Several exposed fields in <code>Player</code> should be concealed behind dedicated
+						handlers, including delay counters and GUI-related elements, which should not
+						reside within a general mob class. Potion effects should be managed via
+						specialized control structures. Tile condition validation for event handling
+						should be processed within tile logic rather than mob systems unless explicitly
+						tied to mob behaviors.
+					</p>
+					<p>
+						Target selection for interactions should prioritize proximity-based
+						identification. If no valid target is within range, no interaction should be
+						initiated. Cursor-based selection should allow for enhanced precision. If an
+						entity obstructs selection within the active range, the tile beneath should
+						not be selectable, even the entity gives no interaction.
+					</p>
+				</content>
+			</section>
+			<section title="Damage System and Tile Interaction">
+				<content>
+					<p>
+						The <code>DamageSource</code> class should incorporate an argument inferred
+						from <code>DamageType</code>. The argument should support multiple data
+						structures applicable across different scenarios. <code>DamageType</code>
+						should transition into a standard class rather than an enumerated type to
+						facilitate extensibility and improve interface accessibility.
+					</p>
+					<p>
+						Tile interactions, including effects triggered upon stepping or collision,
+						should be processed through predefined standard methods within tile classes.
+						If interactions require continuous updates, associated tile entities should
+						be returned. Factory methods such as <code>onTileSet</code> should be
+						contained within relevant initialization scopes where tiles are set and
+						defined. Additional configurations should be determined by tile properties.
+					</p>
+					<p>
+						Fluid tiles should be categorized separately, incorporating dedicated fluid
+						mechanics. Tile connection-based texture rendering should be exclusively
+						handled within texture definitions rather than within tile logic. Tile
+						destruction callbacks, such as those triggered by mining or explosions,
+						should follow a standardized method structure, accepting destruction sources
+						or types as parameters.
+					</p>
+					<p>
+						Finally, <code>getData</code> methods in tile implementations should be
+						eliminated, as relevant data should be processed through chunk or tile managers.
+					</p>
+				</content>
+			</section>
+			<section title="Furniture and Tile System">
+				<content>
+					<p>
+						The movement mechanics for <code>Furniture</code> should be reconsidered in
+						light of the decimal coordinate system. Lightweight objects may remain entities,
+						whereas heavier objects, such as <code>Furnace</code> and <code>Oven</code>,
+						should transition into tile-based structures. Additionally, item sprites should
+						not be stored within entity instances, ensuring separation of visual assets from
+						entity logic. The use of reflection for copying remains fragile and should be
+						avoided.
+					</p>
+					<p>
+						The inclusion of a <code>die</code> function within furniture structures is
+						conceptually awkward and should be restructured.
+					</p>
+					<p>
+						Furniture item implementation should align with furniture mechanisms. If all
+						furniture can be held, players might be able to pick them up using bare hands
+						or a specialized item. However, selectively allowing only certain furniture
+						items to be held would introduce inconsistencies. If furniture items associate
+						data via properties, a corresponding resource key must be registered explicitly,
+						rather than through dynamic registration. Furthermore, furniture without item
+						representations should remain unregistered for its item form unless explicitly
+						required. As a result, not all furniture may be freely accessible to players.
+					</p>
+					<p>
+						The <code>PowerGloveItem</code> currently serves as a placeholder for furniture
+						pickup. Its removal or revision should be determined based on future inventory
+						system developments.
+					</p>
+				</content>
+			</section>
+			<section title="Tile Management and Placement Behavior">
+				<content>
+					<p>
+						The <code>TileItem</code> class should persist, maintaining its function as the
+						intermediary for direct tile placement. However, the approach depends on broader
+						decisions regarding tile mechanics. Tiles could transition into items reserved
+						for creative mode, facilitating expedited placements. <code>TileModel</code>
+						should act as a default data structure rather than preserving original tile data,
+						as stacked tiles do not require retained tile data. If tiles lack item-based
+						representations, an item type containing a single resource key with metadata
+						encapsulating tile attributes should be introduced. The primary determinant for
+						placement eligibility should be the tile type.
+					</p>
+				</content>
+			</section>
+			<section title="Tile Classification and Logical Consistency">
+				<content>
+					<p>
+						If <code>TorchTile</code> remains an item that can be picked up, classifying it
+						as furniture may be more appropriate. Furniture is inherently designed for
+						mobility, allowing players to relocate lightweight objects easily, whereas tiles
+						are fixed structural components. This misalignment in mechanisms creates
+						inconsistencies in both logical behavior and expected interactions. Additionally,
+						small decorative tiles such as wall-mounted torches should be designed explicitly
+						for placement on wall tiles, reinforcing logical coherence within the system.
+					</p>
+				</content>
+			</section>
+			<section title="Inventory Drop Handling">
+				<content>
+					<p>
+						The mechanisms governing item drops upon player death remain undecided, with
+						various implementation approaches offering distinct properties. Ultimately,
+						the chosen method should align with the game's thematic direction. If the
+						design philosophy prioritizes realism, the system may resemble Rust, where a
+						fallen player's body retains inventory items. In such a case, the
+						<code>DeathChest</code> concept would become unnecessary.
+					</p>
+				</content>
+			</section>
+			<section title="Loot System">
+				<content>
+					<p>
+						Inventory randomization should be managed within generation-handling systems
+						rather than being embedded in <code>Chest</code>. Container inventories should
+						remain publicly accessible as standardized public interfaces. Since dungeon
+						mechanisms are no longer relevant, previous implementations can be disregarded
+						despite potential improvements.
+					</p>
+					<p>
+						Tile loot drops may be regulated via tile properties. Damage multipliers
+						should be controlled through game rules, ensuring they affect players in
+						appropriate scenarios. The concept of automatic damage revival lacks logical
+						coherence, particularly for tiles without health attributes, as they are
+						primarily influenced by interactions such as mining.
+					</p>
+					<p>
+						Resource tiles like <code>OreTile</code> and other rock formations should
+						yield loot upon each mining action or complete destruction. Their visual
+						design should avoid exaggerated spiky appearances, adhering to a more
+						natural aesthetic.
+					</p>
+				</content>
+			</section>
+			<section title="World System and Dimension Management">
+				<content>
+					<p>
+						The <code>World</code> class should be instantiated independently rather
+						than residing within <code>core</code>. Additionally, level management should
+						be delegated to world instances rather than being handled by unrelated classes.
+						Several configurations, including dimensions, should be defined within assets
+						rather than hardcoded into the program. World settings such as the seed and
+						world name should be encapsulated within a dedicated configuration object.
+					</p>
+					<p>
+						All world-related randomization processes should be specific to instances
+						and potentially replaceable by the backend engine as needed. Certain fields,
+						such as the level change listener, last world entry and exit timestamps, lack
+						practical utility. Dimension transitions should be governed by actual
+						implementations rather than relying on an unused listener. Moreover, tracking
+						entry and exit times through direct comparisons are unnecessary when
+						initialization and termination can be managed via instance creation and
+						destruction. The approach of resetting sprite animations within these processes
+						is flawed; sprite animations should instead be handled separately. Maintaining
+						instances remains more effective than invoking <code>resetGame</code>.
+						Additionally, the logic involving <code>Player#respawn</code> and
+						<code>Level#add</code> within the same block introduces unnecessary complexity;
+						a more semantic and logically structured code approach should be adopted. While
+						<code>WorldSettings</code> aligns conceptually with this logic, the broader
+						implementation still requires improvement.
+					</p>
+					<p>
+						Under the new entity system, an entity cannot simply be removed from a dimension;
+						it must be eliminated entirely. However, entities may transition to a different
+						dimension by modifying coordinates, ensuring no null entries. The
+						<code>getClosestPlayer</code> function should be maintained as a general-purpose
+						helper method, accessible across various processes including commands. Other
+						relevant methods may also be retained.
+					</p>
+				</content>
+			</section>
+			<section title="Difference in Tile System">
+				<content>
+					<p>
+						There would be several differences due to the new tile system to be proposed.
+					</p>
+					<p>
+						<code>FenceTile</code> serves merely as an overlay for ground tiles, but
+						the simplified tile system resulted in verbose code that should be optimized.
+					</p>
+					<p>
+						Since <code>HoleTile</code> lacks functional significance, it should be removed.
+						Instead, an "air tile" designation should be introduced, also applicable to
+						<code>InfiniteFallTile</code>.
+					</p>
+					<p>
+						Both <code>DirtTile</code> and <code>SandTile</code> would require foundational
+						support. In the absence of underlying tiles or in cases where only air tiles are
+						present, these tiles would collapse. Additionally, footsteps on such tiles would
+						generate extra dust particle effects.
+					</p>
+					<p>
+						Since the conventional depth-based <i>level</i> system would be retired in
+						favor of independent dimensions with no direct geographical continuity,
+						<code>StairsTile</code> would be deprecated. However, stair-like tiles
+						could still be incorporated as mobility aids for mobs. These tiles could be
+						composed of various materials and may exist as fragments or incomplete sections.
+					</p>
+				</content>
+			</section>
+			<section title="Chunk-Based Dimension System">
+				<content>
+					<p>
+						The original fixed-size level structure would evolve into an unlimited world
+						consisting of chunk-based dimensions. Given that world generation would be no
+						longer constrained by predefined size limitations, structure generation would
+						operate independently of world size constraints. Each dimension would retain
+						a display name and receive a seed derived from the overarching world seed but
+						would not possess specific size parameters. Even if the generator produces a
+						finite world size, additional chunks should remain accessible, albeit empty.
+					</p>
+					<p>
+						During dimension construction, essential metadata including mob count limits,
+						would be defined. Entity container management would be confined within dimensions
+						and chunks, overseeing entity counts, additions, removals, and transfers.
+						Server-side entity queues for additions and removals would use linked lists
+						within the entity manager. Chunk-level entity managers may be synchronized
+						with dimension-level managers, ensuring consistency across modifications.
+						Entities might be organized within a quadtree structure to facilitate efficient
+						chunk management.
+					</p>
+					<p>
+						As part of the proposed world system rework, depth indices for dimensions would
+						be eliminated. The notion of "levels" would be discarded in favor of a pure
+						dimension-based structure. The concept of "level" does not currently exist
+						within the revised framework.
+					</p>
+				</content>
+			</section>
+			<section title="Entity Indexing and Searching Mechanisms">
+				<content>
+					<p>
+						Entities would be stored across two distinct mappings. Each chunk would
+						manage its entities using either a quadtree or k-d tree structure. Dimensions
+						would oversee all loaded chunks, featuring an indexing mechanism for querying
+						entities within chunks. The world would handle all loaded dimensions,
+						implementing an indexing system for querying entities across dimensions while
+						maintaining a global map that associates entity classes with collections of
+						entities.
+					</p>
+					<p>
+						For nearest-entity searches within a specified range, only selected chunks
+						would be considered. Nearest-neighbor search algorithms would be employed,
+						or entities would be filtered by type using a mapped collection before looping
+						through results. Additionally, when selecting all entities within a given range,
+						including those positioned atop a tile, temporary geometries in the physics
+						engine may be used to identify collided objects rather than exclusively relying
+						on centers of entities.
+					</p>
+				</content>
+			</section>
 			<section title="Basic Code Structures">
 				<content>
 					<p> =01=
@@ -956,29 +1329,6 @@
 						because menu interactions are handled in the entity ticking function, but it is
 						not practical. Such parts should instead be handled by the <code>MenuManager</code>
 						class or a similar class. This could also ensure class isolation and responsibility.
-					</p>
-					<p> =06=
-						<code>World</code> would be instantiated and not a part of <code>core</code>.
-						Also, levels would be managed by the world instances instead of being handled
-						by other unrelated classes. Many several configurations and behaviors would not be
-						hardcoded within program code, but with the assets, including the dimensions. Also,
-						the world configurations like the seed and world name would be stored in an object.
-					</p>
-					<p> =06=
-						All world-related randoms would belong to instances. These instances may also be
-						replaced by the backend engine if necessary. Also, The fields for the level change
-						listener, last world enter and exit time are not quite practical. The actual
-						realization of dimension change would depend on the actual implementation, but not
-						likely with a listener not implemented to do anything. Moreover, there is no need
-						to compare and check the time when they could just be the initialization and
-						termination, which could be handled by instantiations and instance destroys.
-						Still, resetting sprite animations by this may not be a good way, but sprite
-						animations should be handled in another way. Having instances would still be
-						simpler than having the function of <code>resetGame</code>. Also, the logic
-						is also problematic when both <code>Player#respawn</code> and
-						<code>Level#add</code> are in the same block, so obviously the code should be
-						more semantic, straightforward and logical. <code>WorldSettings</code> matches
-						the logic, but the entire code is still not, unfortunately.
 					</p>
 					<p> =02=
 						There should be a better way to handle world loading. For example, loading assets
@@ -1502,59 +1852,6 @@
 						the user could enter a different name than the default given name in a similar dialog
 						like the one in IntelliJ.
 					</p>
-					<p> =17=
-						The Player entity is actually a living entity, but different from mobs (or a different
-						name for accuracy). The only general difference is that the controls are handled and
-						implemented differently. This way, the entity system could be more generalized into
-						various elements without having to bothering to making more subclasses of entities and
-						implementing similar behaviors. Since the take action would be handled by a player
-						ability, this would not be an available part of a general entity. A new tree of entity
-						types would be proposed later after this report. However, there are some general concepts
-						should have been noted:
-						<list>
-							<li>
-								In the following context, the details will be explained by: "actor", who act or
-								apply an action on the target; "target", who received an action from the actor
-								as an event; "controller", which controls and decides the behaviors of an entity
-								depending on various events, different controllers may exist in the same entity;
-								methods in code will be described as respective events; the context of all the
-								states in a world will be described as the global states.
-							</li>
-							<li>
-								Since anything is processed on events, all the related actions are acted only
-								when the events are emitted and started being processed, including the regular
-								ticking and the occasional updating events. While there are no such spontaneous
-								events of attacking and using, but the receiver interface of hurting or damage
-								receiving events. If an entity or a mob actor likes to emit an attack or use
-								event on the target, the event is then emitted during the main event, forming
-								a tree-linked relationship between the events. The passive outcomes initiated by
-								the master event, relying on its provided arguments, along with the common states
-								seen by the most parts.
-							</li>
-							<li>
-								If the attack event is a passive event triggered by the controller, the event
-								should only take its responsible part to respond to the master event with provided
-								arguments and the given global states. The more important part is that an attack
-								initializing event is simple and only calculates the basic elements of an attack,
-								while the precedent parameters are given by the controller, so there should not be
-								the general event responsive in the main body of an entity. The attack action may
-								however be managed by a separate controller, and the counterpart of the initialized
-								attack action should only handle and response to the event only, but not limited
-								to the indirect states affected by the event. Thus, there may only be just the
-								hurt receiver event in the main body of an entity to be triggered by the damage
-								source.
-							</li>
-							<li>
-								Also, for use actions, there might be something to note. There could be "use" event
-								with the subject of a tile or entity, and the "used on" event with the subject of
-								an item. By default, the target is the subject, but the subject may change depending
-								on which one is the subject depending on the event. Unless there comes to a new
-								solution solving the ambiguity, this use action could still not be split. However,
-								the middle mouse button could indeed be used for this, detailed resolution may
-								be discussed later.
-							</li>
-						</list>
-					</p>
 					<p> =18=
 						When an entity is added into the world, an identifier would be passed into the constructor
 						of the entity. The identifier would be unique to the world and thus readonly. Since the
@@ -1580,24 +1877,6 @@
 						collision conditions. A better way may still be having only <code>blocks</code> and
 						assessing entity data on collision if necessary.
 					</p>
-					<p> =17=
-						The properties of whether the entity can swim or walk on anything should only be handled
-						by the AI moving controls, given to their usages. Also, visual "on fire" would be a
-						special temporary metadata property of an entity, but the entity may reject the property
-						when appending. For the damages of fire or burning, they are handled by the damage
-						sources as the arguments. For the controls, there might be a method that even mods could
-						add by the interface with the default values; this may require Typed Anchor Dynamic
-						Mapping, which will be proposed later.
-					</p>
-					<p> =17=
-						For the <code>isAttackable</code> methods, since an entity still blocks the interaction
-						no matters what, there should be no necessity for the extra checking method before the
-						actual functioning method. In fact, if they are the entities that are not supposed to be
-						interacted, the action should act like there is nothing interacted. The similar concepts
-						are also applicable on both <code>isInvulnerableTo</code> and <code>isUsable</code>, so
-						it could eliminate the risk of check-and-use inconsistencies and
-						simplify the API for callers. Damage handling should also be handled by controls.
-					</p>
 					<p> =19=
 						Movement would mostly be tackled by the physics engine, so there is no need to worry about
 						the <code>move</code> methods for entities. However, the velocity and acceleration
@@ -1614,12 +1893,6 @@
 						could be dynamically added, so the scopes and ranges of them could not be limited. The
 						same as <code>ItemHolder</code>. Control classes may also add extension functions to
 						master classes like <code>Entity</code>.
-					</p>
-					<p> =06=
-						With the new entity system, an entity cannot be barely removed from a dimension but killed.
-						However, the entity could move to another dimension by altering the coordinates, which
-						cannot be empty. The <code>getClosestPlayer</code> method should be a helper method that
-						generally could be used, so even commands may use that. Other methods may be kept.
 					</p>
 					<p> =01=
 						Both <code>Tickable</code> and <code>ClientTickable</code> have no use. There is no point
@@ -1656,21 +1929,6 @@
 						direction and velocities of the entities should not be determined within the
 						constructor but with factor methods that handle differently for dropping items and loots.
 					</p>
-					<p> =20=
-						It is still an uncertainty of how items should be dropped when the player died. A
-						discussion has been held for this topic, but different implementations come with
-						different properties. The actual implementation would eventually be considered by the
-						theme of the game. When the game's goal is to make the mechanisms more realistic, death
-						drops would likely be implemented like in Rust, with a dead player body included with
-						inventories. Then, the idea of <code>DeathChest</code> could be dropped.
-					</p>
-					<p> =22=
-						Pushing of <code>Furniture</code> should be handled more wisely when there is the
-						decimal coordinate system. Light thing may still be entities, but heavier things like
-						<code>Furnace</code> and <code>Oven</code> would become tiles. The item sprite should
-						not be stored in its entity instance. Using reflection in copying could be a fragile
-						design.
-					</p>
 					<p> ====
 						If there is something that runtime lists may not do much, static fields may actually
 						more debugging-friendly.
@@ -1682,24 +1940,13 @@
 						given in their constructors, but the translation keys and registry keys. Moreover,
 						removing the player entity from level when sleeping is quite an illogical design.
 					</p>
-					<p> =22=
-						Also, having <code>die</code> in Furniture is quite awkward.
-					</p>
-					<p> =20=
-						Inventory randomization should not be put in <code>Chest</code>, but the places that
-						handle generations. The container inventory would be publicly visible as it would be
-						a public interface access.
-						When there is no longer the dungeon, the mechanisms of the entire dungeon could be
-						ignored, since they could be better written.
-					</p>
 					<p> =18=
 						As for <code>Composter</code>, there could be more details in the mechanisms. It may
 						still depend on the direction of the game, but most likely, everything could be harder
 						and more complex.
 					</p>
 					<p> ====
-						Also,
-						this string analysing way is too error-prone. In fact, we should rather let compiler
+						The string analysing and parsing way is too error-prone. In fact, we should rather let compiler
 						complain than allow runtime errors or subtle bugs to occur, and reducing the amount of
 						code does not mean improving runtime performance, even using loops to reduce the parts
 						of code does not mean the method is wise or the developer is smart.
@@ -1760,16 +2007,6 @@
 						<code>noActionTime</code> in <code>Mob</code> is just for despawning check, and the
 						<code>speed</code> field is also not useful.
 					</p>
-					<p> =17=
-						The interactive box size is quite casual,
-						the sizes may differ, while they may look similar in sprites. There is also no need to
-						counter as <code>tickTime</code>. For temporary timers of events such as burning damages,
-						there could be a pool of ticked handlers for each entity to tackle such work, without
-						the need to bloat the code in the entity class while there is no much responsibility
-						for the main class itself. Dead detection should be done in the health object;
-						speed tweaking should be done in the move control, especially special treatment for
-						speed effects.
-					</p>
 					<p> =09=
 						For mob sprites, the compilation would be generalized into a kind of
 						models.
@@ -1782,22 +2019,11 @@
 						The burn command to a mob could become a dynamic property of a mob, as a
 						property assignment.
 					</p>
-					<p> =17=
-						<code>MobAi</code> being a subclass does not make much sense. Several components of
-						despawning, intelligent behaviors, automation, rendering, loots could be separated
-						into different controls and handlers.
-					</p>
 					<p> =18=
 						The level of mob is another mechanism, but unlikely to be generally implemented.
 					</p>
 					<p> =18=
 						The generation of mobs should be handled in world generation.
-					</p>
-					<p> =17=
-						For <code>EnemyMob</code>, the intelligent behavior would also be handled by the
-						controls. The target tracking algorithm could be enhanced. The attacking range should
-						also be larger than only touching. All the attacking methods should be combined into
-						only one method taking a damage source as the parameter.
 					</p>
 					<p> =18=
 						There is actually no need to have a field of <code>color</code> in
@@ -1812,25 +2038,8 @@
 						and item holding, even falling, but item holding might but clearer, not only when
 						they are being used.
 					</p>
-					<p> =17=
-						<code>Player</code>: There are quite a number of exposed field
-						when they are not hidden by using handlers, including the delay counters. The GUI-related parts
-						should not be handled in the mob class. Potions effects could also be generalized
-						into controls. Tile-related events by condition checking should be handled in tiles
-						but not mobs when they are not mob-specific behaviors. Interactions would always pick
-						the closest target within the range, or there would not be any interaction, especially
-						when cursor could be supported, the target selection could be more precise; when there
-						is entity blocking the target selection, the tile would never be selected even the
-						entity has not reacted.
-					</p>
 					<p> =25=
 						All fishing-related code should all be handled in the item class.
-					</p>
-					<p> =17=
-						<code>DamageSource</code> should take an argument with type inferred by the
-						<code>DamageType</code>. The argument may contain one or more data, that could be
-						used for various cases. <code>DamageType</code> should be changed into a regular
-						class instead of enum for extensibility and public interface.
 					</p>
 					<p> =21=
 						For particles, each particle entity should represent one unit of sprite for
@@ -1902,35 +2111,10 @@
 						fewer attributes as they are similar item type. Eating food would still cost stamina
 						anyway.
 					</p>
-					<p> =22=
-						The implementation of furniture item depends on the mechanism of furniture eventually.
-						If all furniture could be held, players may be able to take them with bare hands or
-						a helper item; if only certain furniture could be held, it would be inconsistent.
-						On the other hand, if a furniture item associates the data with property, there must
-						be a resource key registered without dynamic registration. Eventually, there could be
-						furniture without having an item form if it is not automatically registered.
-						Players would only be allowed to hold certain furniture, so it is possible that not
-						all furniture may be normally accessible by player.
-					</p>
 					<p> =23=
 						If there would be potion effects supported, they would be generally supported as an
 						interface for all living mobs. Also, there would be a registry for storing all the
 						potion effect types and the handlers, so that it could be a public interface.
-					</p>
-					<p> =22=
-						<code>PowerGloveItem</code> still act as a placeholder for taking furniture. It could
-						either be removed or rewritten depending on the future plans of the inventory
-						system.
-					</p>
-					<p> =22=
-						<code>TileItem</code> would still exist, that the items are placed tiles directly.
-						However, it depends on the plans about how tiles should be done. It is still possible
-						that they would just become the items to be used in creative mode only for fast
-						placements of tiles. For <code>TileModel</code>, basically would be default data, but
-						not keeping data, there is no reason to keep data in general when tiles could be
-						stacked. If tiles may not be in item form, there might be a item type that with only
-						one resource key but storing everything about tile in the metadata. The major factor
-						for the places to be placed would be the type of tiles.
 					</p>
 					<p> =25=
 						For <code>ToolType</code>, it would not be an enum, but a typical class, with all the
@@ -1973,26 +2157,6 @@
 						of this enum should be replaced by tile properties or metadata. Also, having this
 						as argument may have limited the variations of tiles.
 					</p>
-					<p> =17=
-						For tile interactions like the reactions when being stepped on or collided, they
-						could be handled by standard methods in tiles and returning tile entities if they
-						involve continuous followups. Factory method, like <code>onTileSet</code>, should
-						be handled inside the scope where the tiles are set and initialized; certain
-						initialization may also be set by the tile properties. Fluid tiles would be a
-						special type of tiles, that there would be fluid mechanisms with these tiles.
-						For the texture appearance of tile connections, they should be done in textures
-						only. For the callbacks of tile destruction like mining and explosion, they should
-						be made into a standard method accepting the destruction source or type. There is
-						actually no need to have <code>getData</code> methods in tiles, when they should
-						already be handled by chunk or tile managers.
-					</p>
-					<p> =20=
-						Loots of tiles after breaking could be standardized by tile properties; damage
-						multiplication should be managed by game rules, so it could be applied when
-						there are damages acted on players. Automatic damage reviving actually makes
-						no sense, while some tiles have no health, only handled by other interactions
-						like mining.
-					</p>
 					<p> =07=
 						<code>ConnectTile</code> should be removed. With a theoretically infinitely
 						large world, there should be no boundaries visible or discoverable by players
@@ -2009,26 +2173,8 @@
 						The mechanisms of having variants of tiles in <code>DirtTile</code> do not obey
 						this.
 					</p>
-					<p> =06=
-						<code>FenceTile</code> is just an overlay tile over the ground tile, but parts
-						of the code due to this simplified tile system are verbose.
-					</p>
-					<p> =06=
-						Since <code>HoleTile</code> means nothing, it would be removed. Instead, there
-						might be "<i>air tile</i>". This includes <code>InfiniteFallTile</code>.
-					</p>
-					<p> =20=
-						<code>OreTile</code> and other rock tiles may drop loots for each mining action
-						or when the tile is destroyed. The appearance would not be spiky.
-					</p>
 					<p> =07=
 						There might also be some rocks tiles with little or more content of ores or other minerals.
-					</p>
-					<p> =06=
-						Both <code>DirtTile</code> and <code>SandTile</code> would be the tiles that
-						need support underneath. If there is no tile or just air tile, the tiles
-						collapse. While walking on those tiles, there would be additional dust particles
-						generated.
 					</p>
 					<p> =27=
 						Some systems like plants may not purely rely on the tile instances but the classes
@@ -2039,22 +2185,8 @@
 						there might still be some differences in the details for different types of plants.
 						This includes fertilization.
 					</p>
-					<p> =06=
-						Since there would no longer be direct "level" by depths, but dimensions without
-						obvious or close geographic relationships, <code>StairsTile</code> would be
-						deprecated, but other stair-like tiles could be added for mob movement assistance.
-						Those stair tiles could be made from various materials, but they could be as
-						fragments or sections, even incomplete.
-					</p>
 					<p> =26=
 						The approaches in <code>Tiles</code> and <code>Items</code> are quite low level and chaotic.
-					</p>
-					<p> =22=
-						If <code>TorchTile</code> is a tile that could be picked up, it might better to
-						be furniture. In fact, furniture is designed to be mobile, so player can pick them
-						up if they are light enough, but tiles are not designed into this way, this design
-						eventually causes inconsistencies in both logics and senses. This kind of tiles
-						should be able to be put on wall tiles, as they are small decorative things logically.
 					</p>
 					<p> =28=
 						<code>canWool</code> is actually a mechanism that does not really make sense. For the
@@ -2073,21 +2205,6 @@
 						fantasy species, like the heavenly berries and hellish berries. Mechanisms like
 						harvesting, growing stages, diseases, nutrition, etc., would all be implemented for
 						all kinds of plants.
-					</p>
-					<p> =06=
-						The original system of fixed-sized levels would become dimensions of chunks. When
-						world generation is unlimited by world size, structural generation should be
-						independent of world size limitation. Each dimension would still have a display
-						name. Each dimension would be assigned a seed generated by the world seed,
-						but there would not be sizes. Even if the generator generates with a limited size
-						of a world, other chunks would be empty but still accessible. Some metadata would
-						be set during dimension construction, including maximum count of mobs. The container
-						management for entities would be enclosed within a dimension and chunks, including
-						counts, additions, removals and movements. The queues on the server side for entity
-						additions and removals would be using linked lists and also enclosed in the entity
-						manager. The entity managers for chunks may be associated with that of the dimension,
-						so any change could be in synchronization. Entities may be grouped in a quadtree,
-						so the chunks may manage them efficiently.
 					</p>
 					<p> =07=
 						Only the chunk generator in the dimension would take the dimension seed as argument.
@@ -2108,20 +2225,6 @@
 						coordinates with stages to efficiently manage them. If parallel processing of
 						entities has to be implemented, certain ticking-related events should be separated
 						and queued instead of being executed immediately for state synchronization.
-					</p>
-					<p> =06=
-						All entities would be stored in two different maps. Each chunk would manage a single
-						quadtree or k-d tree for all entities within the chunk; each dimension would manage
-						all loaded chunks, with an indexer to query entities in the chunks within the
-						dimension; each world would manage all loaded dimensions, with an indexer to query
-						entities in the dimension, but also a global map mapping entity classes to the
-						collections of entities. When searching nearest entity target, if a range is
-						specified, only the selected chunks would be in consideration, nearest neighbor
-						searching would be used; or entities would be filtered by the desired types using
-						the map, then the collection would be looped through. However, for the selections
-						that include all entities within a range, including ones on top of a tile, temporary
-						geometries in the physics engine may be used to examine the collided objects,
-						which do not only count in the centers of entities.
 					</p>
 					<p> =10=
 						Background of the world would be handled by shaders, so the scene may not be static.
@@ -2450,11 +2553,6 @@
 					a day. The way Minecraft handles may be taken as reference, although the day time tick
 					does not align with the actual real world time system on which how 0 is defined. Detailed
 					implementation would be discussed and decided later.
-				</p>
-				<p> =06=
-					According to the future plan of implementation of the world system, there would be
-					no the depth indices for each dimension, and there are no levels but dimensions.
-					There is not yet the concept of "level" in the proposed ideas actually.
 				</p>
 				<p> =04=
 					As for client IDs, UUIDs with special tricks would be used. On the server side, all the
