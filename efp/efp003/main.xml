@@ -65,7 +65,7 @@
 					</p>
 					<p>
 						Ticking operations would be centrally managed within the <code>TerraModulus</code>
-						class. Specifically, menu ticking should be executed there, necessitating that
+						class. Specifically, menu ticking would be executed there, necessitating that
 						<code>MenuManager</code> be placed outside <code>RenderSystem</code>, although
 						rendering would still take it as a parameter. World ticking would be handled by
 						its respective manager, while audio processing would operate in a separate thread
@@ -135,7 +135,7 @@
 			<section title="Input Handling and Management Architecture">
 				<content>
 					<p>
-						The <code>ClipboardHandler</code> should be managed within the broader
+						The <code>ClipboardHandler</code> would be managed within the broader
 						<code>InputHandler</code>, as all input interactions, including keyboard and
 						mouse operations, would be handled via GLFW (Graphics Library Framework).
 						Consequently, there would be no necessity to implement separate interfaces for
@@ -144,9 +144,9 @@
 						a prioritized approach.
 					</p>
 					<p>
-						The <code>InputHandler</code> oversees numerous functionalities, including input
+						The <code>InputHandler</code> oversees several functionalities, including input
 						processing, key mapping, controller states, and key state handling. However,
-						controller management should be separated into a dedicated
+						controller management would be separated into a dedicated
 						<code>ControllerManager</code>. The capability of the originally used gamepad library
 						is relatively limited, necessitating enhancements in controller support. The abstract
 						<code>Key</code> class and its subclasses provide essential functionality, and
@@ -161,7 +161,7 @@
 						on the <code>Key</code> class.
 					</p>
 					<p>
-						To improve organization and efficiency, input handling should be structured into
+						To improve organization and efficiency, input handling would be structured into
 						four distinct classes: <code>KeyInputHandler</code>, <code>TextInputHandler</code>,
 						<code>GamepadInputHandler</code>, and <code>MouseInputHandler</code>. Among these,
 						<code>TextInputHandler</code> would also manage clipboard operations. Text input
@@ -189,12 +189,12 @@
 						At the start of each input tick, both "just pressed" and "just released" states
 						would be reset to <code>false</code>. Subsequently, queued input events would be
 						processed, updating key states accordingly, followed by window ticking operations
-						that handle input. The ticking frequency should be set to 1.5 times the maximum FPS.
+						that handle input. The ticking frequency might be set to 1.5 times the maximum FPS.
 						If necessary, an additional ticking thread operating at a constant frequency could
 						be introduced.
 					</p>
 					<p>
-						For events such as controller port interactions, listener callbacks should be
+						For events such as controller port interactions, listener callbacks would be
 						used instead of polling events each tick. These events occur infrequently and would
 						be best handled asynchronously to prevent unnecessary processing overhead.
 						Furthermore, GLFW-generated controller events inherently include the target
@@ -207,12 +207,12 @@
 			<section title="Input Mapping and Key Assignments">
 				<content>
 					<p>
-						Input mapping should be managed separately from the input handler, allowing
+						Input mapping would be managed separately from the input handler, allowing
 						configurations based on user preferences while keeping certain mappings hardcoded.
 						This includes the F3 debug key and advanced modifier functionalities involving
 						<kbd>Shift</kbd>, <kbd>Ctrl</kbd>, and <kbd>Alt</kbd> modifiers. In-game inputs
 						and controllers would follow similar processing principles and be handled within
-						the same class structure. Mapped hotkeys should remain inactive when input fields
+						the same class structure. Mapped hotkeys would remain inactive when input fields
 						are engaged, allowing standard printed key inputs while ensuring hardcoded keys
 						such as escape and enter receive the appropriate handling, especially in one-line
 						field or with an Input Method Editor (IME).
@@ -245,7 +245,7 @@
 			<section title="Controller Management and On-Screen Keyboard Integration">
 				<content>
 					<p>
-						Controller management should be enhanced through GLFW, allowing users to select
+						Controller management would be enhanced through GLFW, allowing users to select
 						their preferred controller. This configuration option would be adjustable via
 						settings but would not be stored persistently on disk. Additionally, the On-Screen
 						Keyboard (OSK) for controllers would remain available, with notable improvements to
@@ -263,19 +263,19 @@
 						linking as components rather than predefined layouts. If a key reference is
 						<code>null</code>, it would indicate that no accessible keys exist in that direction.
 						Navigation would still be managed via the D-Pad, ensuring seamless controller-based
-						interaction. The sticky key's state should be stored within the key object itself,
+						interaction. The sticky key's state would be stored within the key object itself,
 						which would also be linked to its final property. A grid layout may be employed to
 						organize key positioning efficiently.
 					</p>
 					<p>
-						All key states including whether a key is pressed or selected, should be maintained
+						All key states including whether a key is pressed or selected, would be maintained
 						within the key object. The OSK would operate independently of traditional keyboard
-						input and should automatically hide itself whenever no controller is detected during
-						a tick cycle. Key event triggers from the OSK should be directed to the associated
+						input and would automatically hide itself whenever no controller is detected during
+						a tick cycle. Key event triggers from the OSK would be directed to the associated
 						input field for processing.
 					</p>
 					<p>
-						To ensure flexibility, an abstract class should be introduced, eliminating the need
+						To ensure flexibility, an abstract class would be introduced, eliminating the need
 						for <code>\0</code> as a placeholder for sticky keys. This structure would also allow
 						for specialized keys that perform actions beyond text entry, such as the switch key
 						to the layout of numeric and symbolic keys. Positioning would not rely on x and y
@@ -303,7 +303,7 @@
 					<p>
 						Dropping an entire item stack would be executed using the sneaking modifier
 						alongside the drop hotkey. If the configured drop key sequence includes the
-						sneak key, it would be considered a conflict. Each mapping should define a set
+						sneak key, it would be considered a conflict. Each mapping would define a set
 						of permitted keys within a predefined constant.
 					</p>
 					<p>
@@ -379,7 +379,7 @@
 						eliminating the need for separate logging, debugging, or tracing launch options.
 						Debugging functionality would be universally available, with selective toggling
 						permitted in specific areas. Given the ease of creating user-generated content,
-						debugging should be equally accessible. By structuring each class with a single
+						debugging would be equally accessible. By structuring each class with a single
 						responsibility, logging targets would be clearly identifiable via fully
 						qualified class names, eliminating the necessity for arbitrary behavior-specific
 						"title names". Log4j 2, SLF4J, and kotlin-logging would serve as the primary
@@ -412,7 +412,7 @@
 						languages would not require additional loading processes.
 					</p>
 					<p>
-						Language settings should be structured as an inner class within the main settings
+						Language settings would be structured as an inner class within the main settings
 						system, aligning with preferences. With the debug locale removed, sorting would
 						be further simplified. GUI improvements would eliminate the need for entry
 						highlighting; instead, selected options could be bordered, bolded, or tinted in a
@@ -433,9 +433,9 @@
 						Additionally, all settings would be structured as type-specified property entries
 					</p>
 					<p>
-						The settings screen should be unified as <code>SettingsScreen</code> rather than
+						The settings screen would be unified as <code>SettingsScreen</code> rather than
 						maintaining separate <code>OptionsMainMenuDisplay</code> and
-						<code>OptionsWorldDisplay</code>. There should be no functional distinction
+						<code>OptionsWorldDisplay</code>. There would be no functional distinction
 						between the settings accessible from the main menu and those available during
 						gameplay. Each option would store both its original and current values, allowing
 						for comparison during saving and providing a notification if changes have been
@@ -511,7 +511,7 @@
 							need for excessive stretching and scrolling of entries. Components such
 							as <code>ScreenEntry</code> and <code>EntryRenderingUnit</code> function
 							more as workarounds rather than solutions, making them visually and
-							structurally inadequate. A more refined approach using OpenGL should be
+							structurally inadequate. A more refined approach using OpenGL would be
 							pursued.
 						</p>
 						<p>
@@ -523,9 +523,9 @@
 							window canvas.
 						</p>
 						<p>
-							The title screen should be enhanced with a background, with selectable
+							The title screen would be enhanced with a background, with selectable
 							entries featuring highlights rather than arrow-based indicators. It
-							should include a logo, menu entries, a version string and customizable
+							would include a logo, menu entries, a version string and customizable
 							title texts via asset packs instead of hardcoded conditions. "Splashes"
 							may be renamed to "title texts" as they may no longer visually <i>splash</i>.
 							A help message at the bottom would be unnecessary when mouse support is
@@ -534,30 +534,30 @@
 							Abstract Window Toolkit (AWT) or Swing, would eliminate redundant position
 							recalculations each frame, improving code quality and scope management.
 							The <code>init</code>function in <code>TitleDisplay</code> should not
-							handle elements related to screen appearance. The "Play" menu entry should
+							handle elements related to screen appearance. The "Play" menu entry would
 							be replaced with separate "Singleplayer" and "Multiplayer" options, followed
 							by "Settings". Achievements would not be included at this stage. The compact
-							"Help" menu, with only four entries, should function as a dialog menu for
+							"Help" menu, with only four entries, would function as a dialog menu for
 							simplicity. Any layout that completely replaces or overlays existing canvas
-							components should be categorized as a screen with content as menus and
-							components, while entry-based structures should be grouped within a menu.
-							The title screen entries should include "Help" and "Quit". The
+							components would be categorized as a screen with content as menus and
+							components, while entry-based structures would be grouped within a menu.
+							The title screen entries would include "Help" and "Quit". The
 							<code>PlayDisplay</code>has already been deprecated, with its two entries
 							merged into the<code>TitleDisplay</code> as aforementioned.
 						</p>
 						<p>
-							Many screen menus should restrict the <kbd>Esc</kbd> key from returning
+							Many screen menus would restrict the <kbd>Esc</kbd> key from returning
 							to the previous screen. When screens permit navigation back to prior
-							screens, a dedicated return button should be provided to prevent users
+							screens, a dedicated return button would be provided to prevent users
 							from unintentionally losing progress.
 						</p>
 						<p>
-							Only the top-most screen should be interactive. If an upper screen fully
+							Only the top-most screen would be interactive. If an upper screen fully
 							covers lower screens, those lower screens would not be rendered. The
-							gameplay canvas should also function as a <code>Screen</code> to allow
+							gameplay canvas would also function as a <code>Screen</code> to allow
 							for unified management via <code>ScreenManager</code>. When the gameplay
-							screen is instantiated, it should become the base screen, with all other
-							screens removed. Similarly, initiating a world-loading screen should clear
+							screen is instantiated, it would become the base screen, with all other
+							screens removed. Similarly, initiating a world-loading screen would clear
 							all other screens.
 						</p>
 					</p>
@@ -566,16 +566,16 @@
 			<section title="Screen Structure and Component-Based Menu Redesign">
 				<content>
 					<p>
-						<code>Display</code> should be redefined as an abstract class and renamed
-						<code>Screen</code>. However, the <code>parent</code> reference should not
+						<code>Display</code> would be redefined as an abstract class and renamed
+						<code>Screen</code>. However, the <code>parent</code> reference would not
 						be managed within this class but by the screen manager. Additional
-						functionality should be introduced to enhance menu-related features.
-						<code>clearScreen</code> would be removed, and <code>canExit</code> should
+						functionality would be introduced to enhance menu-related features.
+						<code>clearScreen</code> would be removed, and <code>canExit</code> could
 						be replaced by an overridable function or a callable screen handle for the
 						screen. The class structure would resemble a panel rather than a conventional
-						<code>Display</code>. Menu <code>selection</code> should primarily support
+						<code>Display</code>. Menu <code>selection</code> would primarily support
 						keyboard controls, but tab-based navigation would likely suffice.
-						Arrow-key-based selection should align with layout structures, such as
+						Arrow-key-based selection would align with layout structures, such as
 						AWT-style grid or border layouts, rather than relying on manual position
 						adjustments. <code>onSelectionChange</code> may not be necessary, except
 						in cases where it facilitates access to hidden menus through key selection
@@ -584,9 +584,9 @@
 						rendering depth.
 					</p>
 					<p>
-						Each menu should have a distinct content structure. Instead of
+						Each menu would have a distinct content structure. Instead of
 						<code>ListEntry</code>, component-based implementations would be adapted,
-						making <code>removeSelectedEntry</code> obsolete. The system should adopt
+						making <code>removeSelectedEntry</code> obsolete. The system would adopt
 						a model similar to AWT or Swing. The stack-handling approach in
 						<code>InventoryMenu</code> requires further refinement.
 					</p>
@@ -594,33 +594,33 @@
 						As <code>ItemListMenu</code> transitions to slot-based design, display length
 						constraints would no longer be necessary. Likewise, cutting and aligning
 						entries manually would become obsolete, allowing the removal of the
-						positioning parameter. The menu construction process should prioritize
+						positioning parameter. The menu construction process would prioritize
 						flexibility through component-based design, including padding adjustments.
 					</p>
 					<p>
-						<code>Menu</code> should evolve into a generalized component container rather
+						<code>Menu</code> would evolve into a generalized component container rather
 						than an entry-based structure. It would not contain entries by default, and
 						container-like components managing entries (such as <code>ListEntry</code>)
-						should be handled separately. A foundational abstract menu should exclude
+						would be handled separately. A foundational abstract menu would exclude
 						properties such as size, position, title, spacing, frame, selectability,
 						rendering, and searching, maintaining minimal structural dependencies. The
-						menu should encapsulate a container, passed as a protected final parameter
-						via constructor delegation. Components should be managed independently of menus,
+						menu would encapsulate a container, passed as a protected final parameter
+						via constructor delegation. Components would be managed independently of menus,
 						which can exclusively handle components. <code>Screen</code> would follow a
 						similar concept but would extend its functionality to directly accommodate both
 						components and menus. The builder and copy constructor patterns currently in
-						use are inefficient and should be reconsidered.
+						use are inefficient and would be reconsidered.
 					</p>
 					<p>
-						The searching functionality should be independent of <code>Menu</code>,
-						incorporated only when a container requires it. This mechanism should be
+						The searching functionality would be independent of <code>Menu</code>,
+						incorporated only when a container requires it. This mechanism would be
 						powered by an input field and contextual filtering logic rather than fragile
-						highlighting and excessive scrolling adjustments. Searching should be performed
-						only upon <kbd>Enter</kbd> activation and should deactivate upon
-						<kbd>Escape</kbd>. Component rendering should be based on relative positioning,
+						highlighting and excessive scrolling adjustments. Searching would be performed
+						only upon <kbd>Enter</kbd> activation and would deactivate upon
+						<kbd>Escape</kbd>. Component rendering would be should on relative positioning,
 						eliminating the need for additional translation functions. Visibility states may
 						be introduced, and some containers may support listeners. Scrolling animations
-						introduce unnecessary complexity and should be removed, along with dynamic
+						introduce unnecessary complexity and would be removed, along with dynamic
 						entry updates, builders, and <code>MenuListEntry</code>.
 					</p>
 				</content>
@@ -628,18 +628,18 @@
 			<section title="Input Masking and Interactivity Management">
 				<content>
 					<p>
-						An input masking session should be introduced for each tick to regulate input
-						state checking in menus. This session should be managed by
+						An input masking session would be introduced for each tick to regulate input
+						state checking in menus. This session would be managed by
 						<code>MenuManager</code>, allowing specific menu interactions to suppress or
-						fully override queued inputs dynamically. Such modifications should occur on
+						fully override queued inputs dynamically. Such modifications would occur on
 						demand without affecting physical key detection outside the menu ticking session.
 						While its necessity and practicality need further evaluation, this system could
 						improve interaction consistency across menus and screens.
 					</p>
 					<p>
-						Components should not reference a menu or screen handle when ticking, while
+						Components would not reference a menu or screen handle when ticking, while
 						menus should always receive the screen handle upon screen ticking. Handles
-						and functionality should be managed within screens and menus, even for locally
+						and functionality would be managed within screens and menus, even for locally
 						defined components. Some menus may require fixed frames, though not all would.
 						Rendering functions should be consistently present across screens, menus, and
 						components.
@@ -649,12 +649,12 @@
 			<section title="Inventory System and Menu Organization">
 				<content>
 					<p>
-						An abstract <code>InventoryScreen</code> class should be introduced, serving
+						An abstract <code>InventoryScreen</code> class would be introduced, serving
 						as the foundation for all menu screens incorporating player inventory
 						functionality. This class would encompass player inventory menus, crafting
 						interfaces, and container menus, but not book-related screens. Every inventory
 						menu would include an item counter, distinct from the item list menu, which
-						should remain designated for the creative mode item list. Additionally, the OSK
+						would remain designated for the creative mode item list. Additionally, the OSK
 						menu should be controlled by an input field rather than parent menus, enabling
 						flexible dynamic menu additions with prioritized handling.
 					</p>
@@ -663,13 +663,14 @@
 						directional controls should be used without any cyclic traversal across menus.
 						Vertical menus, however, may require different handling due to their inherent
 						connectivity, potentially using <kbd>Tab</kbd> for navigation. Notably, slot
-						selection and stack transfers between menus should be available exclusively when
-						the mouse is disabled, preventing conflicts with mouse-driven interactions, similar
-						to tile selection via keyboard controls. The <code>getOtherIdx</code> function
-						lacks relevance under this system, and determining control behavior based on
-						cursor position introduces unnecessary complexity. A standardized control
-						mechanism should be implemented, with a refined naming convention replacing
-						"heaviness". Additionally, color fading should be implemented via the alpha channel.
+						selection and stack transfers between menus would be available exclusively when
+						the mouse is disabled for ketboard controls, preventing conflicts with
+						mouse-driven interactions, similar to tile selection via keyboard controls.
+						The <code>getOtherIdx</code> function lacks relevance under this system, and
+						determining control behavior based on cursor position introduces unnecessary
+						complexity. A standardized control mechanism would be implemented, with a
+						refined naming convention replacing "heaviness". Additionally, color fading
+						should be implemented via the alpha channel.
 					</p>
 				</content>
 			</section>
@@ -684,15 +685,15 @@
 						<code>CreativePlayerInventoryScreen</code>, ensuring logical consistency with
 						the overall code style. While the recipe system remains undecided, relevant
 						crafting menus and recipe unlocking mechanics would be addressed in conjunction
-						with its development. The achievement acquisition method should be revised, as
+						with its development. The achievement acquisition method would be revised, as
 						the current implementation is excessively hardcoded. Additionally, inventory
 						change listeners could be introduced if necessary to refine the refresh
 						functionality.
 					</p>
 					<p>
-						A new recipe system should be introduced, recipe menus and crafting menus
+						A new recipe system would be introduced, recipe menus and crafting menus
 						would be greatly changed, since all the crafting mechanisms are too similar.
-						Most critically, crafting menus should integrate player storage visibility to
+						Most critically, crafting menus would integrate player storage visibility to
 						enhance inventory interaction.
 					</p>
 				</content>
@@ -700,21 +701,21 @@
 			<section title="Inventory Structure and Management">
 				<content>
 					<p>
-						The <code>InventoryMenu</code> should accommodate a holder, though not
-						necessarily limited to an entity. Inventory contents should be linked to the
+						The <code>InventoryMenu</code> would accommodate a holder, though not
+						necessarily limited to an entity. Inventory contents would be linked to the
 						holder’s inventory, ensuring bidirectional synchronization of updates. Slot
-						alignment should not be enforced, allowing menu slots to correspond directly
+						alignment would not be enforced, allowing menu slots to correspond directly
 						with inventory slots without rigid structuring. The creative inventory would
 						not be managed within this system, as previously discussed. Inventory menu slots
-						should register listeners at either the inventory or menu level, depending on
-						their nature: temporary slots, such as those in crafting interfaces, should be
-						handled within the menu, whereas persistent slots (i.e., inventory slots) should
+						would register listeners at either the inventory or menu level, depending on
+						their nature: temporary slots, such as those in crafting interfaces, would be
+						handled within the menu, whereas persistent slots (i.e., inventory slots) would
 						be registered within the inventory. Since inventory modifications can occur
 						outside direct menu interactions, listener registration at the inventory level,
 						potentially via the holder, would be necessary.
 					</p>
 					<p>
-						Item stack operations should be managed by the item list menu, with a
+						Item stack operations would be managed by the item list menu, with a
 						well-defined structure supporting both non-inventory item collections and
 						inventory-based stacks. A wrapper class may be introduced for streamlined
 						handling, though further implementation details remain to be determined. The
@@ -727,38 +728,38 @@
 				<content>
 					<p>
 						Some aspects of <code>PlayerInvDisplay</code> align with previously discussed
-						elements. The creative mode item list should be accessible through an
-						independent menu or a tab. The selected slot should be bordered or highlighted,
+						elements. The creative mode item list would be accessible through an
+						independent menu or a tab. The selected slot would be bordered or highlighted,
 						with item stacks appearing at the cursor while hovering over inventory menus,
 						leaving the source slot empty, or remaining in the source slot as a reference
 						for interaction. No help text should be shown, eliminating the method used to
 						hide the item list menu.
 					</p>
 					<p>
-						The <code>RepairBenchDisplay</code> should retain its inventory menu structure,
+						The <code>RepairBenchDisplay</code> would retain its inventory menu structure,
 						though storage slots would be preferable to temporary ones, replacing
 						<code>RepairBenchCarrier</code>. While this approach introduces a new paradigm
-						within the codebase, <code>SlotEntry</code> should transition from an entry-based
+						within the codebase, <code>SlotEntry</code> would transition from an entry-based
 						system to a direct slot representation. Menus managing stack transfers currently
 						follow repetitive processes, which could be simplified through an optimized
-						transfer model. Each slot component should maintain an association with its
-						backing inventory slot instance. Disabled buttons and empty slots should remain
-						selectable but non-interactive. Storage spaces should feature attributes or
+						transfer model. Each slot component would maintain an association with its
+						backing inventory slot instance. Disabled buttons and empty slots would remain
+						selectable but non-interactive. Storage spaces would feature attributes or
 						properties defining their slot types, such as crafting input slots, product slots,
 						and other specialized configurations. Fishing rod durability tracking could be
-						simplified to simplify tool mechanisms. The functionalities of slot entries should
+						simplified to simplify tool mechanisms. The functionalities of slot entries would
 						predominantly depend on their associated backing slots. <code>RepairInfo</code>
-						should be regarded as a context generated by the input items, while the carrier
+						would be regarded as a context generated by the input items, while the carrier
 						component primarily delineates operational scope within the display class. The
 						current method of using leading spaces for positioning within strings is
 						problematic but common within the codebase; replacing slot labels with intuitive
 						graphical elements would improve clarity. The <code>onAction</code> function,
 						currently used only once within a specific scope, could be refactored into a
 						lambda. The redundant "checking again" mechanism should be converted into
-						assertions, as its execution is intentional. Stack movement should primarily
+						assertions, as its execution is intentional. Stack movement would primarily
 						target destination slots, though additional interactions such as mouse scrolling
-						or L1-R1 slot switching should also be supported, behaving similarly to
-						<code>addToCarrier</code> operations. If slots are storage-based, stacks should
+						or L1-R1 slot switching would also be supported, behaving similarly to
+						<code>addToCarrier</code> operations. If slots are storage-based, stacks would
 						persist on exit without being automatically dropped. The code structure of
 						<code>RepairBench</code> is actually neat, and there could be slots stored in
 						the entity.
@@ -770,11 +771,11 @@
 					<p>
 						The inventory system, while well-structured, should be moved to a distinct
 						package separate from <code>item</code>. If inventories incorporate slots,
-						they should use mapped slot structures instead of generic lists, potentially
+						they would use mapped slot structures instead of generic lists, potentially
 						featuring distinct slot sets per storage unit. To support stacking, item
 						metadata excluding quantity must remain consistent, ensuring compatibility
 						with a slot-count-driven inventory model. If slots originate from underlying
-						storage mechanisms, primary inventory capacities should be derived from these
+						storage mechanisms, primary inventory capacities would be derived from these
 						foundational quantity limits.
 					</p>
 					<p>
@@ -782,11 +783,11 @@
 						inventory slots.
 					</p>
 					<p>
-						Item stacks should be managed through an inventory provider responsible for
-						constructing inventories and item managers. Item configurations should align
+						Item stacks would be managed through an inventory provider responsible for
+						constructing inventories and item managers. Item configurations would align
 						with provider specifications, including stacking criteria and limitations.
-						Consequently, stack size should not be hardcoded within individual items or
-						stacks. While items themselves should not be cloned, stacks should retain this
+						Consequently, stack size would not be hardcoded within individual items or
+						stacks. While items themselves would not be cloned, stacks should retain this
 						capability. Item depletion should be validated upon each interaction, invoking
 						the inventory manager listener upon stack modifications. Interaction methods
 						should return <code>true</code> upon successful interactions, potentially
@@ -856,21 +857,21 @@
 					<p>
 						Confirmation popups for quitting may not be necessary. Options dialogs that
 						do not exit or transition screens could be full-canvas, while those requiring
-						menu changes could incorporate a frame. Full-canvas screens should feature a
+						menu changes could incorporate a frame. Full-canvas screens would feature a
 						lightly dimmed and blurred background or a dedicated background image,
 						complementing the components. When listening for key sequences in the settings
-						menu, a non-full-canvas banner should display active key inputs, ensuring
+						menu, a non-full-canvas banner would display active key inputs, ensuring
 						clarity before any key is released. For instance, the confirmation dialog
-						menu for resetting key bindings should include a frame, with its style
+						menu for resetting key bindings would include a frame, with its style
 						determined later.
 					</p>
 					<p>
 						Buttons should not rely on hotkeys, and this structure should be removed
 						entirely, even for Keyboard-Only controls, with a simplified set of selectable
-						options. Additionally, screen resolution should be leveraged for better
+						options. Additionally, screen resolution may be leveraged for better
 						horizontal arrangement of options, improving usability. Selection entries
 						or button would provide a more intuitive alternative to direct key-listening
-						mechanisms. The options dialog menu should not support <kbd>Esc</kbd> for
+						mechanisms. The options dialog menu would not support <kbd>Esc</kbd> for
 						exiting; users must choose an available option instead. The OSK would not
 						require specific handling within this system.
 					</p>
@@ -945,40 +946,40 @@
 			<section title="Mob Intelligence and Damage Handling">
 				<content>
 					<p>
-						Movement capabilities, including swimming and traversal across surfaces, should be
+						Movement capabilities, including swimming and traversal across surfaces, would be
 						dictated by AI-driven mov controls, ensuring proper contextual application.
-						Additionally, the "on fire" visual effect should be treated as a transient metadata
+						Additionally, the "on fire" visual effect would be treated as a transient metadata
 						attribute, with entities retaining the ability to reject such properties upon
-						assignment. Fire and burn damage should be processed through the damage source,
+						assignment. Fire and burn damage would be processed through the damage source,
 						acting as an argument within the damage-handling system. For the controls, there
 						might be a method that even mods could add by the interface with the default values;
 						this may require Typed Anchor Dynamic Mapping, which will be proposed later.
 					</p>
 					<p>
-						Damage evaluation should be managed by controls, eliminating redundant checks such
+						Damage evaluation would be managed by controls, eliminating redundant checks such
 						as <code>isAttackable</code>. Since entities block interactions regardless of their
 						nature, preliminary validation steps should be omitted, allowing actions to proceed
-						without additional verification layers. Similar simplifications should apply to
+						without additional verification layers. Similar simplifications also apply to
 						<code>isInvulnerableTo</code> and <code>isUsable</code>, reducing inconsistencies
 						and streamlining API usage.
 					</p>
 					<p>
-						Interactive box sizing should be adjusted with greater precision, rather than
+						Interactive box sizing would be adjusted with greater precision, rather than
 						relying on approximate sprite dimensions. The current implementation using
-						<code>tickTime</code> should be deprecated. Temporary timers for event-driven
-						effects, such as burning damage, should be pooled within dedicated tick-based
+						<code>tickTime</code> would be deprecated. Temporary timers for event-driven
+						effects, such as burning damage, would be pooled within dedicated tick-based
 						handlers per entity, minimizing unnecessary class-level bloat while retaining
-						separation of responsibilities. Death detection should reside within health-related
-						systems, while speed modifications should be managed via move controls,
+						separation of responsibilities. Death detection would reside within health-related
+						systems, while speed modifications would be managed via move controls,
 						particularly when factoring in speed-altering effects.
 					</p>
 					<p>
-						The <code>MobAi</code> subclass should be dismantled, with individual components
+						The <code>MobAi</code> subclass would be dismantled, with individual components
 						such as despawning mechanisms, intelligent behaviors, automation logic, rendering,
 						and loot processing transferred to specialized controls and handlers.
 					</p>
 					<p>
-						For <code>EnemyMob</code>, behavioral intelligence should be dictated by control
+						For <code>EnemyMob</code>, behavioral intelligence would be dictated by control
 						mechanisms. The tracking system requires refinement to enhance targeting efficiency.
 						The attack range should extend beyond direct physical contact, ensuring broader
 						interaction capacity. All attack-related methods should be consolidated into a
@@ -989,9 +990,9 @@
 			<section title="Player-Specific Considerations">
 				<content>
 					<p>
-						Several exposed fields in <code>Player</code> should be concealed behind dedicated
-						handlers, including delay counters and GUI-related elements, which should not
-						reside within a general mob class. Potion effects should be managed via
+						Several exposed fields in <code>Player</code> would be concealed behind dedicated
+						handlers, including delay counters and GUI-related elements, which would not
+						reside within a general mob class. Potion effects would be managed via
 						specialized control structures. Tile condition validation for event handling
 						should be processed within tile logic rather than mob systems unless explicitly
 						tied to mob behaviors.
@@ -1009,40 +1010,40 @@
 				<content>
 					<p>
 						The <code>DamageSource</code> class should incorporate an argument inferred
-						from <code>DamageType</code>. The argument should support multiple data
+						from <code>DamageType</code>. The argument would support multiple data
 						structures applicable across different scenarios. <code>DamageType</code>
-						should transition into a standard class rather than an enumerated type to
+						would transition into a standard class rather than an enumerated type to
 						facilitate extensibility and improve interface accessibility.
 					</p>
 					<p>
 						Tile interactions, including effects triggered upon stepping or collision,
-						should be processed through predefined standard methods within tile classes.
-						If interactions require continuous updates, associated tile entities should
+						would be processed through predefined standard methods within tile classes.
+						If interactions require continuous updates, associated tile entities would
 						be returned. Factory methods such as <code>onTileSet</code> should be
 						contained within relevant initialization scopes where tiles are set and
-						defined. Additional configurations should be determined by tile properties.
+						defined. Additional configurations would be determined by tile properties.
 					</p>
 					<p>
-						Fluid tiles should be categorized separately, incorporating dedicated fluid
-						mechanics. Tile connection-based texture rendering should be exclusively
+						Fluid tiles would be categorized separately, incorporating dedicated fluid
+						mechanisms. Tile connection-based texture rendering should be exclusively
 						handled within texture definitions rather than within tile logic. Tile
 						destruction callbacks, such as those triggered by mining or explosions,
-						should follow a standardized method structure, accepting destruction sources
+						would follow a standardized method structure, accepting destruction sources
 						or types as parameters.
 					</p>
 					<p>
-						Finally, <code>getData</code> methods in tile implementations should be
-						eliminated, as relevant data should be processed through chunk or tile managers.
+						Finally, <code>getData</code> methods in tile implementations would be
+						eliminated, as relevant data would be processed through chunk or tile managers.
 					</p>
 				</content>
 			</section>
 			<section title="Furniture and Tile System">
 				<content>
 					<p>
-						The movement mechanics for <code>Furniture</code> should be reconsidered in
+						The movement mechanisms for <code>Furniture</code> would be reconsidered in
 						light of the decimal coordinate system. Lightweight objects may remain entities,
 						whereas heavier objects, such as <code>Furnace</code> and <code>Oven</code>,
-						should transition into tile-based structures. Additionally, item sprites should
+						would transition into tile-based structures. Additionally, item sprites should
 						not be stored within entity instances, ensuring separation of visual assets from
 						entity logic. The use of reflection for copying remains fragile and should be
 						avoided.
@@ -1071,15 +1072,15 @@
 			<section title="Tile Management and Placement Behavior">
 				<content>
 					<p>
-						The <code>TileItem</code> class should persist, maintaining its function as the
+						The <code>TileItem</code> class would persist, maintaining its function as the
 						intermediary for direct tile placement. However, the approach depends on broader
 						decisions regarding tile mechanics. Tiles could transition into items reserved
 						for creative mode, facilitating expedited placements. <code>TileModel</code>
-						should act as a default data structure rather than preserving original tile data,
+						would act as a default data structure rather than preserving original tile data,
 						as stacked tiles do not require retained tile data. If tiles lack item-based
 						representations, an item type containing a single resource key with metadata
-						encapsulating tile attributes should be introduced. The primary determinant for
-						placement eligibility should be the tile type.
+						encapsulating tile attributes would be introduced. The primary determinant for
+						placement eligibility would be the tile type.
 					</p>
 				</content>
 			</section>
@@ -1091,7 +1092,7 @@
 						mobility, allowing players to relocate lightweight objects easily, whereas tiles
 						are fixed structural components. This misalignment in mechanisms creates
 						inconsistencies in both logical behavior and expected interactions. Additionally,
-						small decorative tiles such as wall-mounted torches should be designed explicitly
+						small decorative tiles such as wall-mounted torches would be designed explicitly
 						for placement on wall tiles, reinforcing logical coherence within the system.
 					</p>
 				</content>
@@ -1101,7 +1102,7 @@
 					<p>
 						The mechanisms governing item drops upon player death remain undecided, with
 						various implementation approaches offering distinct properties. Ultimately,
-						the chosen method should align with the game's thematic direction. If the
+						the chosen method would align with the game's thematic direction. If the
 						design philosophy prioritizes realism, the system may resemble Rust, where a
 						fallen player's body retains inventory items. In such a case, the
 						<code>DeathChest</code> concept would become unnecessary.
@@ -1119,15 +1120,15 @@
 					</p>
 					<p>
 						Tile loot drops may be regulated via tile properties. Damage multipliers
-						should be controlled through game rules, ensuring they affect players in
+						could be controlled through game rules, ensuring they affect players in
 						appropriate scenarios. The concept of automatic damage revival lacks logical
 						coherence, particularly for tiles without health attributes, as they are
 						primarily influenced by interactions such as mining.
 					</p>
 					<p>
-						Resource tiles like <code>OreTile</code> and other rock formations should
+						Resource tiles like <code>OreTile</code> and other rock formations would
 						yield loot upon each mining action or complete destruction. Their visual
-						design should avoid exaggerated spiky appearances, adhering to a more
+						design would avoid exaggerated spiky appearances, adhering to a more
 						natural aesthetic.
 					</p>
 				</content>
@@ -1138,9 +1139,10 @@
 						The <code>World</code> class should be instantiated independently rather
 						than residing within <code>core</code>. Additionally, level management should
 						be delegated to world instances rather than being handled by unrelated classes.
-						Several configurations, including dimensions, should be defined within assets
-						rather than hardcoded into the program. World settings such as the seed and
-						world name should be encapsulated within a dedicated configuration object.
+						Several generator configurations, including dimensions, would be defined
+						within assets rather than hardcoded into the program. World settings such as
+						the seed and world name would be encapsulated within a dedicated configuration
+						object.
 					</p>
 					<p>
 						All world-related randomization processes should be specific to instances
@@ -1167,6 +1169,12 @@
 						helper method, accessible across various processes including commands. Other
 						relevant methods may also be retained.
 					</p>
+					<p>
+						The execution of world events, activities, and commands must be carefully
+						evaluated to avoid bypassing critical processes. Improper handling could lead
+						to unintended execution omissions. This includes aspects such as teleportation
+						across dimensions; all necessary unprocessed events should be considered.
+					</p>
 				</content>
 			</section>
 			<section title="Difference in Tile System">
@@ -1179,8 +1187,8 @@
 						the simplified tile system resulted in verbose code that should be optimized.
 					</p>
 					<p>
-						Since <code>HoleTile</code> lacks functional significance, it should be removed.
-						Instead, an "air tile" designation should be introduced, also applicable to
+						Since <code>HoleTile</code> lacks functional significance, it would be removed.
+						Instead, an "air tile" designation would be introduced, also applicable to
 						<code>InfiniteFallTile</code>.
 					</p>
 					<p>
@@ -1249,6 +1257,400 @@
 					</p>
 				</content>
 			</section>
+			<section title="Game Time Management and Ticking System">
+				<content>
+					<p>
+						The in-game ticks per second (TPS) would be adjusted to 20 instead of 60.
+						Additionally, the length of a full-day cycle would be set to 20 minutes
+						rather than 18, ensuring a reasonable duration while maintaining alignment
+						with 60-minute mechanism. To preserve performance consistency, the game
+						speed should remain constant and may not be subject to pausing. Several
+						fields would be introduced for tracking game time values:
+						<list>
+							<li>
+								<code>dayTime</code>: Represents the total number of ticks (time) elapsed
+								during a single game day
+							</li>
+							<li>
+								<code>dayCount</code>: Tracks the number of days that have passed within
+								the game world
+							</li>
+							<li>
+								<code>gameTime</code>: Records the cumulative ticks (time) elapsed
+								throughout gameplay
+							</li>
+						</list>
+						A backup routine may be implemented to replace auto-saving, requiring a
+						temporary suspension of game ticking for data synchronization. However,
+						this would not constitute an actual pause in gameplay.
+					</p>
+					<p>
+						Time enums representing different phases of the day may not follow uniform
+						quarter divisions, particularly since "0" would correspond to either midnight
+						or midday. Seasonal cycles and variable day lengths may be introduced in
+						future updates, requiring definitive constants to define distinct time phases.
+						Minecraft's approach could serve as a reference, though its daytime ticking
+						structure does not strictly conform to real-world time conventions for "0".
+						Further implementation details would be discussed and finalized later.
+					</p>
+				</content>
+			</section>
+			<section title="Entity Ticking and UI Separation">
+				<content>
+					<p>
+						Player entity ticking should be entirely independent of UI ticking, as
+						entities exist within the world system, whereas UI elements function solely
+						on the client side. Current implementations may handle menu interactions
+						within entity ticking functions, which is impractical. Instead, such
+						operations should be delegated to the <code>MenuManager</code> or a similar
+						management class, ensuring proper class isolation and separation of
+						responsibilities.
+					</p>
+				</content>
+			</section>
+			<section title="Sleeping Mechanisms">
+				<content>
+					<p>
+						With the introduction of the new sleeping mechanisms, tracking sleeping
+						player counts would no longer be necessary. Additionally, <code>Bed</code>
+						instances would not store color enums; item, entity, and tile display names
+						managed via translation keys and registry keys rather than defined within
+						constructors. Removing the player entity from the level upon sleeping is an
+						illogical design choice and should be revised accordingly.
+					</p>
+					<p>
+						Future sleeping mechanisms would be reconsidered to maintain consistent game
+						speed and ensure continuous events are not disrupted by time-skipping or
+						acceleration. However, extended nighttime durations may be problematic under
+						certain circumstances. To mitigate this, an alternate <i>dream world</i>
+						dimension could be introduced during sleep, functioning as a single-player
+						environment. If a player sustains significant damage or dies within this
+						dimension, they would instantly wake up in bed. Correspondingly, a biological
+						health system would be developed to integrate this mechanism.
+					</p>
+					<p>
+						Players would be able to sleep at any time, provided their character reaches
+						a fatigue threshold. This approach allows gameplay to continue seamlessly
+						while preserving in-game consistency. Detailed implementation specifics would
+						be determined later. Additionally, this method avoids performance inefficiencies
+						that could arise from artificially accelerating game ticks.
+					</p>
+				</content>
+			</section>
+			<section title="Ticking Order and Parallel Processing">
+				<content>
+					<p>
+						The sequence in which tick events are executed within a world is crucial. Since
+						tick events can affect entity positions and even their existence, entity
+						existence-related events should be processed at the end of a ticking cycle.
+						Furthermore, players include both local and remote participants, meaning tick
+						operations must rely on signal transmissions while maintaining synchronized
+						entity management. All entities, including their controls and existence states,
+						should be processed simultaneously to ensure consistency.
+					</p>
+					<p>
+						Chunk managers would refresh entity positions according to updated coordinates,
+						following structured stages for optimized management. If parallel processing
+						of entities is introduced, tick-dependent events should be segregated and
+						queued instead of being executed immediately, allowing for accurate state
+						synchronization.
+					</p>
+				</content>
+			</section>
+			<section title="Client and Server System Considerations">
+				<content>
+					<p>
+						Users would be assigned unique client IDs, though detailed implementation
+						specifics are yet to be determined.
+					</p>
+					<p>
+						The server architecture requires comprehensive planning, encompassing
+						serialization, routing, and network communication. Safeguards must be
+						implemented to mitigate non-synchronization issues and data loss. For
+						consistency and compatibility, there should be no fundamental distinction
+						in implementation between single-player and multiplayer, particularly
+						within the server-client framework. Transmission data may be identified
+						using numeric IDs, though the protocol would not support forward or
+						backward compatibility.
+					</p>
+				</content>
+			</section>
+			<section title="Server Analytics and Data Collection">
+				<content>
+					<p>
+						Server-side analytics could track active clients based on Launcher activity
+						and periodic pings, similar to Minicraft+. However, this process should not
+						be classified as general telemetry, which collects device information and
+						usage reports. Data collection must occur <i>only with user consent</i>, and users
+						should retain the ability to enable or disable tracking via preferences after
+						the initial launch (as identified by local save data).
+					</p>
+					<p>
+						Both data collection methods are entirely optional, with accompanying user
+						agreements and terms. Server-side counting would be managed via database
+						records, whereas pings would remain anonymous. Descriptive telemetry and automatic
+						crash reporting, however, may not be anonymous, as they could include device
+						details or account identifiers. Implementation specifics are yet to be finalized,
+						but they represent an important consideration.
+					</p>
+				</content>
+			</section>
+			<section title="Multiplayer Management and Account System">
+				<content>
+					<p>
+						The <code>MultiplayerDisplay</code> offered little meaningful reference.
+						However, login authentication should be managed by the Launcher, with
+						client ID, user ID, authorization token, and session ID transmitted via
+						launch arguments. Additional data may be retrieved by the application
+						based on these parameters.
+					</p>
+					<p>
+						Since skins would be managed by the platform’s account system, they should
+						<i>not</i> be processed within the application. Consequently, there would be no
+						in-game preview or customization screen for skins. Instead, skin data would
+						be transmitted <i>only</i> from the server to the client, where local comparison
+						would occur. The watcher thread for skin tracking would no longer be
+						necessary. The Mob Sprite handling process would differ significantly under
+						this structure.
+					</p>
+					<p>
+						Client IDs would rely on <i>Universally Unique IDs</i> (UUIDs) <i>with specialized
+						modifications</i>. On the server side, all client IDs would be recorded and
+						associated with account IDs. Account IDs, unique UUIDs maintained by the server
+						database, would serve as <i>server player entity IDs</i> (EIDs). These EIDs would
+						be distinct within the server or world, appended with identifiers differentiating
+						players from other entities.
+					</p>
+					<p>
+						Client IDs would remain unique, permitting multiple Launcher instances across
+						various client devices. However, two clients <i>cannot</i> connect to the same
+						server using identical client IDs, if attempted, a new client ID would be
+						generated. Additionally, multiple clients <i>cannot</i> access the same server
+						under a single account.
+					</p>
+					<p>
+						In <i>single-player mode</i>, offline gameplay would be supported via a default
+						hardcoded player EID, mapped to account IDs to facilitate <i>guest modes</i>
+						without requiring an account. Although guest mode simplifies implementation,
+						maintaining a system where account-based player EIDs are universally used
+						ensures that server worlds remain playable offline. These safeguards assumed
+						ideal data integrity, with unauthorized modifications ignored.
+					</p>
+					<p>
+						While EIDs are not strictly <i>network-related</i>, they were originally
+						categorized under <code>Network</code>. Instead, they should be reorganized
+						into utility functions or a dedicated classification.
+					</p>
+					<p>
+						Client synchronization decisions would be dictated by the <i>server</i>,
+						meaning any invalid player actions could be <i>ignored</i> or <i>reversed</i>
+						at the server’s discretion.
+					</p>
+				</content>
+			</section>
+			<section title="Pause Menu and Player Death Screen">
+				<content>
+					<p>
+						The pause menu structure would introduce <code>SingleplayerPauseScreen</code>
+						and <code>MultiplayerPauseScreen</code>, with respective versions allocated
+						based on game mode. Single-player sessions and LAN hosts would use the
+						single-player version, whereas multiplayer participants would engage the
+						multiplayer variant. The menu title would be "Game Menu", featuring:
+						<list>
+							<li>
+								<b>Universal options</b>: "Back to Game", "Settings", "Statistics"
+								and "Advancements"
+							</li>
+							<li>
+								<b>Singleplayer exclusive options</b>: "Open to LAN", "World Options"
+								and "Save and Quit"
+							</li>
+							<li>
+								<b>Multiplayer exclusive options</b>: "Disconnect", with additional
+								functionalities extendable via plugins or mods
+							</li>
+						</list>
+						A potential "Save" or "Backup" option for single-player remains undecided.
+						Implementing these features via commands would be simpler, though both actions
+						require suspending gameplay for synchronized data storage. Game saving and
+						backups should occur only when all server-side ticking threads are suspended,
+						rendering them internal server operations rather than in-game commands.
+					</p>
+					<p>
+						Dedicated servers have predefined server commands, whereas single-player mode
+						lacks such functionality. The scope of in-game commands is subject to future
+						discussion. The most possible implementation method would be within the pause
+						menu, pending further review.
+					</p>
+					<p>
+						The background of the pause menu would display a dimmed gameplay screen, which
+						would remain interactive in terms of rendering but not input, clicking the
+						dimmed screen would <i>not</i> close the menu.
+					</p>
+					<p>
+						The <code>PlayerDeathDisplay</code> would transition into
+						<code>PlayerDeathScreen</code>, visually similar to the pause menu but with
+						the gameplay screen <i>frozen</i> at the last frame before death. The header
+						"<i>You Died!</i>" would accompany the death message. Upon death, the player
+						entity ceases to exist in the world, yet the player remains present, albeit
+						in an unspawned state, preventing any interaction with world events.
+					</p>
+					<p>
+						At this stage, the player may either <i>respawn</i> or <i>quit</i>, with the
+						world continuing to function normally. If <i>instant respawn</i> is enabled,
+						the death screen would be bypassed, and the player would respawn immediately.
+						The quit button functions identically to its counterpart in the pause menu.
+						No additional menus or information would be accessible during this screen.
+					</p>
+				</content>
+			</section>
+			<section title="Save System and World Loading Management">
+				<content>
+					<p>
+						A <code>SaveManager</code> or equivalent class would assume the upper-level
+						functionalities previously managed by <code>FileHandler</code>. Basic file
+						helper functions, such as folder deletion and copying, are already available
+						in Kotlin through <code>Path.deleteRecursively</code> and
+						<code>File.copyRecursively</code>, eliminating the need for additional
+						implementations. Future asset management should not rely on filesystem-based
+						listing, as an advanced asset system would be expected to replace this approach.
+					</p>
+					<p>
+						World loading would be optimized to provide a structured and visually informative
+						process. For instance, loading sessions should incorporate progress bars for
+						both asset loading and world loading. Since resource loading logic operates
+						outside menus, the interface operations should reside within a dedicated
+						loading menu rather than the actual loading operations being embedded in the
+						interface elements. The loading screen should be instantiated alongside the
+						loading session, dynamically updating and refreshing progress as resources are
+						processed. Additionally, logging world names is redundant when proper class
+						structure organization provides sufficient clarity. Resetting the world before
+						initialization is unnecessary when instances are properly instantiated; once
+						loaded, reset values should be disregarded.
+					</p>
+					<p>
+						The exceptions encountered during world loading are generally justified, as
+						rare failures require immediate termination or cancellation of the process.
+						While existing code structures may be somewhat disorganized, the fundamental
+						approach remains practical.
+					</p>
+					<p>
+						The save and load system should operate as independent components rather than
+						existing as direct <code>Save</code> and <code>Load</code> classes. Each aspect,
+						including timing, system handling, and individual responsibilities, should be
+						distinctly isolated. Preference management should remain autonomous, with no
+						direct association with world save data.
+					</p>
+					<p>
+						If a loader fails to locate the intended object, an explicit error should be
+						generated, signaling the absence of the requested resource. As a result, unknown
+						objects <i>should not</i> be loaded. The <code>UnknownItem</code> class should
+						be deprecated for consistency. Additionally, strict mode should <i>always</i>
+						enforce immediate loading termination upon encountering errors.
+					</p>
+				</content>
+			</section>
+			<section title="Level Transition and Loading Screen">
+				<content>
+					<p>
+						The <code>LevelTransitionDisplay</code> should function purely as a UI component,
+						delegating the actual dimension transition process to a dedicated manager. Since
+						precise progress tracking may not always be possible, the loading screen should
+						display a standard background alongside status messages. Moreover, dimensions
+						might not be preloaded in advance; at a minimum, the target chunk must be fully
+						generated before transition completion.
+					</p>
+					<p>
+						The <code>LoadingDisplay</code> would be renamed as<code>WorldLoadingScreen</code>,
+						preventing users from bypassing it via the escape key. Given that world loading
+						occurs chunk by chunk, progress tracking would be segmented accordingly,
+						reflecting the individual status of each chunk. Corrupted chunks and regions
+						should be regenerated, with automatic backups created before deletion from the
+						loaded pool. Missing spawn-area chunks should be dynamically generated and
+						monitored by <code>WorldCreatingScreen</code>, which would also handle new world
+						creation via <code>WorldCreateScreen</code>. The existing
+						<code>LoadingDisplay</code> implementation was somewhat disorderly. Loading
+						operations should be managed by a dedicated <i>manager class</i>, ensuring
+						exception handling is properly delegated to menu-driven dialogs rather than the
+						loading screen itself.
+					</p>
+					<p>
+						Automatic data fixing would occur within structured loading schemas, assuming
+						previously reported and resolved issues. Instead of menu-based message popups,
+						application notifications would relay relevant alerts. Progress would be
+						handled specially.
+					</p>
+				</content>
+			</section>
+			<section title="Compatibility with Legacy Save Formats">
+				<content>
+					<p>
+						Both <code>LegacyLoad</code> and <code>HistoricLoad</code> were introduced
+						to maintain compatibility with older world save formats. Initially,
+						<code>LegacyLoad</code> facilitated handling of old save data, whereas
+						<code>HistoricLoad</code> was subsequently introduced to distinguish
+						between the period when version tracking was not originally considered and the
+						time when versioning became included among old versions. Significant structural
+						shifts following the legacy phase warranted this separation.
+					</p>
+					<p>
+						Additionally, <code>HistoricLoad</code> introduced a stricter conditional checking
+						methodology in the codebase, moving away from previous implementations that relied
+						predominantly on the simple if-else statements and switch-case logics. This change
+						was driven by the reliance on text-based comma-separated values (CSV) format, which
+						required extensive string parsing, while the following approach of using JavaScript
+						Object Notation (JSON) also conforms to this. By using this approach, potential
+						errors could be minimized while maintaining essential support for older saves.
+					</p>
+				</content>
+			</section>
+			<section title="Schema-Based Save System">
+				<content>
+					<p>
+						Future iterations of the save system would adhere to <i>a schema-driven
+						framework</i>, ensuring robust backward compatibility. This approach would
+						enable progressive fixes for outdated saves, applying predefined schemas that
+						gradually improve structural integrity. These data fixers should be <i>static
+						and immutable</i>, implemented as singletons within the codebase. Exception
+						management would incorporate contextual detail, offering <i>different
+						behaviors</i> based on operational mode:
+						<list>
+							<li>
+								<b>Compatible mode</b> permits special accommodations for older
+								formats and corrupted data.
+							</li>
+							<li>
+								<b>Strict mode</b> enforces immediate failure upon encountering
+								inconsistencies.
+							</li>
+						</list>
+						There is a potential possibility for recovery mode for corrupted data,
+						but such functionality may be provided by the Launcher instead of game.
+						File parsing and format handling would reside within low-level components,
+						particularly when processing custom serialization formats. Where applicable,
+						Java Virtual Machine (JVM) objects would be instantiated in Rust parts via
+						parsed Rust objects, though <i>preference settings may remain exempt</i>
+						from this approach. Serialization functionalities may also be integrated
+						systematically.
+					</p>
+					<p>
+						Save operations should be independently structured rather than housed within
+						a unified <code>Save</code> class. Serialization would be <i>modular</i>,
+						tailored to different data objects such as entities, ensuring all dynamic tags
+						are properly processed during save operations. A dedicated <code>WorldSave</code>
+						class would be introduced to oversee world-specific save data, facilitating
+						logical and structural serialization processes. Preference settings could
+						use <i>general serialization</i>, given their inherent key-value structure.
+						The Rust component would oversee encoding of serialized objects into save files.
+					</p>
+					<p>
+						It is important to distinguish <i>save versioning</i> from <i>game or public
+						interface versions</i>. Instead of aligning with standard game updates, world saves
+						would be tracked through an independent version number, incremented sequentially
+						for identification.
+					</p>
+				</content>
+			</section>
 			<section title="Basic Code Structures">
 				<content>
 					<p> =01=
@@ -1257,14 +1659,6 @@
 						<code>Condition</code>, which could instead be <code>() -> Boolean</code>
 						or a functional interface with advanced features. However,
 						<code>MonoCondition</code> could be replaced by <code>Predicate</code>.
-					</p>
-					<p> =02=
-						<code>SaveManager</code> or a similar class would handle what the upper part of
-						what <code>FileHandler</code> used to handle. For other file helper functions for
-						folder deletion and copying, they are already handled in Kotlin by
-						<code>Path.deleteRecursively</code> and <code>File.copyRecursively</code>
-						respectively. There is no need to list assets with the filesystem when we would
-						have an advanced asset system implemented in the future.
 					</p>
 					<p> =03=
 						No class would extend the major game class <code>TerraModulus</code>. The
@@ -1292,27 +1686,6 @@
 						screen. All notifications would be replaced by chat (in game for world events) or
 						toasts (any client event in game). The toasts would have their own lifetime.
 					</p>
-					<p> =04=
-						In-game TPS would be 20 instead if 60. The length of a day would become 20 minutes
-						instead of 18 so that it could be a reasonably long time and a multiple of 60, as
-						the number of minutes in an hour. The game speed should be constant for several
-						performance considerations, so it should not be paused. Several fields would be
-						available for several values:
-						<list>
-							<li>
-								<code>dayTime</code>: total time (number of ticks) elapsed for the game day
-							</li>
-							<li><code>dayCount</code>: number of days elapsed in world during gameplay</li>
-							<li>
-								<code>gameTime</code>: total time (number of ticks) played (elapsed) in
-								world during gameplay
-							</li>
-						</list>
-						There might be a backup routine however,
-						to replace auto saving, which requires full pause of the gameplay ticking for
-						game data synchronization across each part, but not allowed to pause the game
-						due to the above restriction.
-					</p>
 					<p> =03=
 						Fullscreen and screenshots would be handled instead by the render system.
 					</p>
@@ -1322,30 +1695,6 @@
 						fields. They should either be separate classes or subclasses, or even in the same
 						system. It depends on actually how they would be implemented. The behaviors of the
 						toasts may be different by this, so it could not be said in simple words just now.
-					</p>
-					<p> =04=
-						Ticking of player entity should be entirely independent of UI ticking. The entity
-						<i>is</i> a world object, but UI is a client side-only system. This is probably
-						because menu interactions are handled in the entity ticking function, but it is
-						not practical. Such parts should instead be handled by the <code>MenuManager</code>
-						class or a similar class. This could also ensure class isolation and responsibility.
-					</p>
-					<p> =02=
-						There should be a better way to handle world loading. For example, loading assets
-						would have a progress bar, so as loading world. There would be loading sessions
-						specified when starting the progress. Resource loading logic is outside the menus,
-						so the loading code does not need to be inside the menus, but the loading menu.
-						The loading screen is instantiated with the loading session, then the progress
-						would then be updated and refreshed during the loading progress. There is no really
-						need for the logger with the world name as it is already clear with just the
-						reorganized class structures. Resetting world before initialization would not be
-						needed if it is instantiated; when the world is loaded, the reset values would be
-						even not used.
-					</p>
-					<p> =02=
-						The exceptions used in world loading are quite reasonable. It is clear that when
-						these rare exceptions occur, the entire operation must be interrupted or cancelled.
-						This example is quite practical, despite the unorganized class structures.
 					</p>
 					<p> =16=
 						Resources or assets would not be loaded early as before canvas initialization, but packs would be loaded
@@ -1363,39 +1712,6 @@
 						would be set only after the initialization, so the necessary resources would be
 						ready first. If it is set to fullscreen on start, the window would be set to
 						fullscreen when initialized, not that separated.
-					</p>
-					<p> =04=
-						Users would have their client IDs, but detailed implementation would
-						be decided later.
-					</p>
-					<p> =02=
-						The entire save and load system would be separate, not simply just <code>Save</code>
-						and <code>Load</code>. Every part is isolated, so as the timings, systems, and
-						responsibilities of them. Preferences would be handled alone, without associated
-						with other saves.
-					</p>
-					<p> =04=
-						For server, the entire system would have to be planned. This includes serialization,
-						routing and network communication. However, activities would have some treatments to
-						prevent non-synchronization and data loss. There would be no really difference in
-						implementation between single player and multiplayer for consistency and
-						compatibility, especially in the server side or the server-client relationship.
-						Actually, it may work like using numeric ID to identify the transmission data, but
-						the protocol would neither be forward- nor backward-compatible.
-					</p>
-					<p> =04=
-						When there is a server, analytics could be done. It includes counting active clients
-						by the Launcher activities and the pings like in Minicraft+. Note that this is not
-						telemetry, which collects even device information and usage reports. However, these
-						data could still be collected <i>only when the user agrees</i>. Even the user decided
-						to agree or not during the first launch (identified by local save data) of the
-						application, the user could still toggle it in preferences. Both of these are
-						optional, and there would be the corresponding terms made. Counting would be done
-						on the server since it is just the database record, but pings would be kept
-						anonymous. Both telemetry and automatic crash report transfers may not be anonymous,
-						and some device information or account identifier would be included in the
-						transmissions. Detailed implementation would be discussed later, but it is certainly
-						something.
 					</p>
 					<p> =24=
 						Colors, there is entirely no need to care about old-formatted color values. However,
@@ -1571,75 +1887,10 @@
 						would not be placed here, but instead other places, like with a wiki. The
 						layout of this screen may refer to the one in Minecraft: Bedrock Edition.
 					</p>
-					<p> =02=
-						The <code>LevelTransitionDisplay</code> would just act as the UI. The process
-						of dimension change would be handled in the manager. There is likely not the
-						definite progress, so seemingly the loading screen would appear a standard
-						background with a message. Also, the "level" which then be dimension may not
-						be loaded in advance, it needs to wait for the loading completed at least for
-						the targeted chunk.
-					</p>
-					<p> =02=
-						The <code>LoadingDisplay</code> would become <code>WorldLoadingScreen</code>,
-						which is not controllable by the escape key. Since the world is loaded chunk
-						by chunk, the progress would be separated into segments with each corresponding
-						to the state of a chunk. Corrupted chunks and regions would be regenerated with
-						backups of original data made, such chunks are deleted from the loaded chunks.
-						If there is any missing chunk at or around the spawn point, they are created
-						and monitored by <code>WorldCreatingScreen</code>, which would also be used
-						by the <code>WorldCreateScreen</code>. The current implementation of
-						<code>LoadingDisplay</code> is quite messy. Loading would not be handled by
-						the screen but the manager class, so the exceptions would not be caught there,
-						and thus the menu dialog would be launched by the manager. About auto fixing,
-						it would be handled directly in loading schemas, as they would be assumed to
-						be bugs previously reported and resolved. The message popups could instead be
-						application notifications. The progress handling would be quite special.
-					</p>
-					<p> =04=
-						For <code>MultiplayerDisplay</code>, there is nothing valuable for reference.
-						However, it is worth noting that logging in should be done by the Launcher,
-						and the client ID, user ID, authorization token and ID are all sent by launching
-						arguments. Some more data would be fetched by the application by these data.
-					</p>
 					<p> =13=
 						There is no the real need of <code>PagedDisplay</code>. It could really be replaced
 						by using a scroll pane, which is even more easy-to-use than pages, unless they
 						are really books, but not the case. Not much to notice, this class could be dropped.
-					</p>
-					<p> =04=
-						For the <code>PauseDisplay</code>, there would be <code>SingleplayerPauseScreen</code>
-						and <code>MultiplayerPauseScreen</code>. A singleplayer game or the host of a LAN world
-						would use the singleplayer version while a multiplayer game would use the multiplayer
-						version. A client connected to a LAN world is also regarded as multiplayer game. The
-						title of the menu would be "Game Menu". Basically, there would be "Back to Game",
-						"Settings", "Statistics", "Advancements". For singleplayer one, there would be "Open
-						to LAN", "World Options" and "Save and Quit"; for multiplayer, there would be
-						"Disconnect", but more functionalities may be added by plugins or mods. There is an
-						uncertainty that there would be a "Save" or "Backup" option for singleplayer, but a
-						more convenient-to-implement way is only using commands, just a problem that either
-						saving or backup would require a complete suspend of gameplay for synchronized game
-						data being saved well. Saving and backup could be performed only when all the game
-						ticking threads are suspended on the server side, so this should be handled by the
-						server internal part, but not what should be handled by the in-game commands. For
-						dedicated servers, there are server commands, but there are no such things in
-						singleplayer. As for the scope of in-game commands, the topic would be discussed
-						later. The only way to implement is only via the pause menu, so discussed later.
-						The background of the pause screen would be the dimmed gameplay screen, but the
-						gameplay screen would not be interacted, though rendering continues, even clicking
-						mouse on the dimmed screen would not close the menu.
-					</p>
-					<p> =04=
-						For the <code>PlayerDeathDisplay</code>, it would be <code>PlayerDeathScreen</code>
-						with the dimmed gameplay screen, similar to the pause menu. However, the gameplay
-						screen would be frozen to the last frame the player died. The title would be "You
-						Died!" in addition to the death message. When the player died, the entity does not
-						exist in the world, but the player <i>is still in the world</i>, with the status of
-						not being spawned. Therefore, the player could not receive any activity from the
-						world. In that status, the died player could only either respawn or quit while the
-						world is still running. If immediate respawning is enabled, this screen is skipped
-						and the player respawns. The quit button is the same as the one in the pause menu.
-						Player could not open any other menu while on this screen and there would not be any
-						other information shown.
 					</p>
 					<p> =12=
 						For <code>QuestsDisplay</code>, the management part could be separated like how
@@ -1771,14 +2022,6 @@
 						would only take for a single pack, but the entire loading process would be stopped for
 						strict mode. Also, the compatible mode would skip some unimportant exceptions and allow
 						loading old versions.
-					</p>
-					<p> =04=
-						Since skins would be handled by the account system on the platform, they would not be
-						handled by the application. There would also not be the screen to preview or configure
-						skin in game. Then, they would not be stored as associated textures, and thus directly
-						as player data. The skin data would be sent only from the server to the client side,
-						comparison would be done on the client side. The watcher thread would no longer be
-						needed. The Mob Sprite would be a huge difference.
 					</p>
 					<p> =12=
 						Tutorials should be reworked. However, they could just be in the How to Play screen
@@ -1932,13 +2175,6 @@
 					<p> ====
 						If there is something that runtime lists may not do much, static fields may actually
 						more debugging-friendly.
-					</p>
-					<p> =04=
-						If the new sleeping mechanics is implemented, there would be
-						no need to count players sleeping. Also, there is no need to store the color enum in
-						<code>Bed</code> instances. Items, entities and tiles would not have display names
-						given in their constructors, but the translation keys and registry keys. Moreover,
-						removing the player entity from level when sleeping is quite an illogical design.
 					</p>
 					<p> =18=
 						As for <code>Composter</code>, there could be more details in the mechanisms. It may
@@ -2131,13 +2367,6 @@
 						attacker and attack targets as parameters, and eventually sent to the collection
 						for the specific tool; the entire collection would then be registered to the tool.
 					</p>
-					<p> =02=
-						Generally, if the loader cannot find the target object to be loaded for, an error
-						should be emitted, indicating that the target resource is not found. Thus, there
-						should not be an unknown object eventually loaded. <code>UnknownItem</code> would
-						be discarded for consistency. When there is loading error, loading should be aborted
-						in strict mode.
-					</p>
 					<p> =21=
 						The glint particle in <code>WateringCanItem</code> should be registered. Besides,
 						the splashing particles could be handled better, to a more generalized extent.
@@ -2214,18 +2443,6 @@
 						recommended to generate structures at a certain location on a world without any
 						major pattern.
 					</p>
-					<p> =04=
-						The order of ticking in a world is important. Any tick event may affect the
-						positions and even the existence of entities, so all the entity existence events
-						should be handled at the end of the entire ticking period. Also, since players
-						consist of local players and remote players, ticking of them would depend on the
-						transmissions of signals, but all the entities should be handled at the same time,
-						including controls and existence, for synchronization and consistency. Then, the
-						chunk managers would refresh the positions of the entities depending on their new
-						coordinates with stages to efficiently manage them. If parallel processing of
-						entities has to be implemented, certain ticking-related events should be separated
-						and queued instead of being executed immediately for state synchronization.
-					</p>
 					<p> =10=
 						Background of the world would be handled by shaders, so the scene may not be static.
 						Entity rendering would be controlled by rendering distance configured by the client.
@@ -2300,64 +2517,6 @@
 						and structure definitions may come with scripting. This should be able to ensure
 						that the supports are extensive, flexible, customizable, modularized and
 						standardized enough.
-					</p>
-					<p> =02=
-						Both <code>HistoricLoad</code> and <code>LegacyLoad</code> were developed to
-						ensure compatibility with older versions of world saves. The former was initially
-						implemented to support older save formats, but as the system evolved, the latter
-						was subsequently introduced to further delineate the transition between the period
-						when version tracking was not originally considered and the time when versioning
-						became included. This distinction was necessary due to significant structural
-						changes following the "legacy" phase, requiring a dedicated approach for handling
-						older saves. <code>HistoricLoad</code> was specifically made to separate the difference between the stages when the save
-						system did not yet support versioning and when it was supported. However, since
-						there was also a big change after the "legacy" times, the code was separated to
-						handle the older saves. Note that the new code of <code>HistoricLoad</code>
-						realized the new approach in this codebase, with a brand-new style of strict
-						conditional checking, which had never been used before, when mostly simple if-else
-						and switch-case were used. The main factor was that most of the formats were simply
-						text-based, comma-separated, or JSON, requiring a lot of string parsing. This was a
-						new trial to reduce potential errors while providing as much minimal support as
-						possible for old saves.
-					</p>
-					<p> =02=
-						Additionally, <code>HistoricLoad</code> introduced a stricter conditional checking
-						methodology in the codebase, moving away from previous implementations that relied
-						predominantly on the simple if-else statements and switch-case logics. This change
-						was driven by the reliance on text-based comma-separated values (CSV) format, which
-						required extensive string parsing, while the following approach of using JSON also
-						conforms to this. By using this approach, potential errors could be minimized while
-						maintaining essential support for older saves.
-					</p>
-					<p> =02=
-						Despite these refinements, the forthcoming comprehensive save system would adopt
-						a scheme-driven approach to ensure robust backward compatibility. This framework
-						would allow data fixing to be systematically integrated into the loading process,
-						with older saves undergoing progressively more extensive fixes based on predefined
-						schemes. These data fixers, expected to remain static and rigid, could be
-						instantiated as singletons within the codebase. Loading exceptions would be managed
-						with greater contextual detail, offering improved variations and information when
-						errors or warnings arise. Exception behavior would vary depending on the mode: special
-						accommodations in compatible mode and immediate failure in strict mode. File loading
-						and format parsing would be assigned to lower-level components, particularly for
-						custom formats. In such cases, JVM objects would be instantiated within the Rust
-						part by the constructed Rust objects from parsing, though this would not apply to
-						user preference settings. Serialization functionality could also be integrated
-						within the system.
-					</p>
-					<p> =02=
-						Save utilities would be managed independently rather than consolidated into a single
-						<code>Save</code> class. Serialization would be implemented separately for different
-						data objects, such as entities, ensuring that all dynamic tags being saved and
-						included could be processed effectively. A dedicated class, <code>WorldSave</code>,
-						would be introduced to specifically handle world save data, enabling a logical and
-						structured serialization process. Regarding preference settings, general
-						serialization could be applied since such configurations would already be structured
-						in a key-value format based on the implementation. The Rust component would
-						facilitate the encoding of serialized objects into the saves. It is important to note
-						that save versioning would not correspond to the game or interface version; instead,
-						it would be represented by a dedicated world save version number incremented
-						sequentially as a standalone identifier.
 					</p>
 					<p> =12=
 						Advancements and quests share similar properties and natures, so a common superclass
@@ -2440,12 +2599,6 @@
 						so the above rules apply. Also, the resultant syntax of the usages should be
 						idiomatic in Kotlin or even practical according to the code patterns.
 					</p>
-					<p> =02=
-						The way to handle world events, activities and commands should be carefully studied.
-						It may skip the desired code if not handled properly. It includes teleporting
-						entities across dimensions. The necessary unprocessed events should not be ignored
-						if there exists any.
-					</p>
 					<p>
 						Listeners must be handled well. They are registered when they are set up, but they
 						should be unregistered when the holders of the event listeners are destroyed, or
@@ -2526,60 +2679,12 @@
 					compatibility and usages, but it is still worth finding an existing meshing, modelling or
 					sprite library for backing.
 				</p>
-				<p> =04=
-					Sleeping mechanisms would be updated later. Actually, a compromise way ensuring
-					consistency for both game time speed and continuous game events is to not skip or
-					acceleration the time. However, a problem here is that the nighttime could be too
-					long for some intentions. To solve this, <i>a world of dream</i> could be implemented
-					during sleeping, with each world a single player dimension, that if the player received
-					a large amount of damage or died, the player wakes up immediately from bed. The
-					corresponding biological health system would be made for this. The player would be
-					allowed to sleep at any time, only when the character is tired enough. This way,
-					various consistencies could be attained while the player could still be in the gameplay.
-					Detailed implementation would be discussed later. This could also avoid performance
-					issues that may be caused by speeding up game ticking during the time period.
-				</p>
 				<p> =01=
 					Some utility classes could be made for synchronization. For some places, synchronized
 					maps and collections are needed, but the syntax should be more straightforward, like
 					the <code>Mutex</code> or <code>ReadWriteLock</code> in Rust. A similarly favored class
 					could be made for generic instances holding internally by the constructor with the new
 					instances. This could only be ensured by the developer writing the code, though.
-				</p>
-				<p> =04=
-					The time enums for each part of a day may not be that regular as quarters, especially
-					when 0 would be set as the midnight or midday. As seasons and seasonal day length may
-					be implemented in the future, there might be definite constants specifying the part of
-					a day. The way Minecraft handles may be taken as reference, although the day time tick
-					does not align with the actual real world time system on which how 0 is defined. Detailed
-					implementation would be discussed and decided later.
-				</p>
-				<p> =04=
-					As for client IDs, UUIDs with special tricks would be used. On the server side, all the
-					client IDs are recorded, and associated to account IDs. Account IDs would be unique
-					UUIDs guaranteed by the server database, also used as server player entity IDs (EIDs).
-					These EIDs would be unique within the server, or the world, in which the player EIDs
-					would be appended with an identifier for players, distinguished from other entities.
-					The client IDs would be unique, so it is allowed to launch instances of the Launcher
-					on different client devices at the same time, but not allowed to have 2 client instances
-					connected to the server with the same client ID, or a new client ID would be regenerated.
-					However, no 2 or more clients could be connected to the sane server with the same
-					account. Also, in single player, to be allowed in offline gameplay, the player EID would
-					be the default ID hardcoded in the game, but translated to player EID by the account ID,
-					allowing guest modes without accounts. Although it could be more convenient to implement
-					if guest mode is not implemented that the account player EID is always used in the game,
-					so no worry that server worlds could not be played offline. Of course all these things
-					would assume that no one edited the information in an unideal way.
-				</p>
-				<p> =04=
-					Certainly, EIDs are not something really "network", but it is originally placed in
-					<code>Network</code>. This would probably be handled as utils or with a dedicated
-					category instead.
-				</p>
-				<p> =04=
-					As for synchronization between clients, the decisions of changes would be made by
-					the server, so if the server decide that the player acts are invalid, they could
-					be ignored or just reversed.
 				</p>
 				<p> =03=
 					The way to handle the toggle of hardware acceleration is still a question. In
