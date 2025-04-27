@@ -1651,6 +1651,197 @@
 					</p>
 				</content>
 			</section>
+			<section title="World Naming and Filesystem">
+				<content>
+					<p>
+						World names should remain unrestricted, requiring an alternate approach for
+						directory naming. This would involve generating unique identifiers using a
+						randomized alphanumeric character table indexed by an incrementing counter.
+						Both the table and counter would be maintained as <i>internal</i> data within the
+						client application. Under normal operation, world directories should remain
+						unmodified, as an internal lookup table stores directory names for
+						preference-related local user data, such as the last played world. Since
+						unexpected name collisions are possible, warnings would be issued when duplicates
+						arise, prompting the system to skip conflicting identifiers. The identifier
+						format would be <i>base-36 and may be randomized</i>. Server-related data would
+						not be stored on the client side but transmitted on demand, with only primary
+						metadata and configurations retained locally. Given this approach, there would
+						be no need for regular expression-based name validation.
+					</p>
+					<p>
+						Players should primarily manage worlds through the application rather than a
+						file manager, using advanced editors where applicable. The application should
+						facilitate world import, export, and backup creation, features that might be
+						supported within the launcher itself. Duplicate world names would be permitted,
+						though warnings should inform users when identical names are detected. The
+						application should preserve user-defined names rather than modifying them for
+						uniqueness.
+					</p>
+				</content>
+			</section>
+			<section title="World Creation and Listing">
+				<content>
+					<p>
+						The <code>WorldCreateDisplay</code> would be renamed and accessed through the
+						world list screen, which displays all locally stored worlds. This interface
+						would solely process user inputs and configurations without saving changes
+						until the world creation process begins. If any fields remain empty or set to
+						"default", predefined values would be assigned automatically. The seed input
+						field would accept any characters and hash them through a custom hashing
+						function, even when numeric values are entered. An option may be provided to
+						input a <i>true numeric seed</i> separately near the input field. Fields
+						containing <i>invalid characters</i> or <i>unrecognized values</i> should be
+						flagged as "unparsable", disabling the completion button. Users would not be
+						shown the actual directory name assigned to the world.
+					</p>
+					<p>
+						Settings fields would be initialized within this screen but not retained
+						post-world creation. They should not persist as global states within places like
+						the <code>Settings</code> class. Instead, the <code>WorldSettings</code> class
+						should act as a dedicated record class storing all values, isolated from the
+						screen logic.
+					</p>
+					<p>
+						Within the world list screen, users would have access to operations such as
+						<i>importing, exporting, copying, deleting, and creating worlds</i>, with the
+						middle three restricted to existing worlds. The <code>WorldInfo</code> class
+						would resemble a lightweight record class, along with world data size
+						information. Users would be able to <i>customize world icons</i>, although the
+						default icon remains uniform across all entries. The displayed <i>world version</i>
+						would reflect the <i>last accessed game version</i>, rather than the actual data
+						format version.
+					</p>
+					<p>
+						Directory names would not be visible but should be accessible via a button on the
+						selected entry, with a folder icon labelled "<i>Open Folder</i>", avoiding disabled
+						button being shown. Users must select a world and click the <i>play button</i> to
+						launch it, though an optional <i>double-click quick access</i> action could be
+						enabled in preferences. Given a more refined and expansive UI, world information
+						would be <i>embedded within each entry</i>, rather than appearing in a separate
+						menu. If stored preferences reference a <i>nonexistent world key</i>, those entries
+						should be designated as unknown.
+					</p>
+					<p>
+						While the world list screen remains open, a <i>watcher thread</i> would monitor
+						<i>filesystem and operating system</i> (OS) <i>notifications</i> for updates. Any
+						operations performed within the screen menu should transmit <i>selected world data</i>
+						as arguments, avoiding reliance on static fields. Redundant code in the <i>ticking
+						method</i> should be minimized through refactoring and splitting.
+					</p>
+				</content>
+			</section>
+			<section title="World Loading and Operations">
+				<content>
+					<p>
+						World loading procedures would undergo significant restructuring. The existing
+						methods <code>setWorldName</code> and <code>hasLoadedWorld</code> should be removed,
+						as their implementations are conceptually flawed. <code>getValidWorldName</code>
+						would no longer be necessary.
+					</p>
+					<p>
+						Copying a world may function as a straightforward <i>duplication</i>, with "<i>Copy
+						of</i>" prefixed to the original world name. Users would be required to manually
+						edit the name post-duplication or enter a <i>custom name</i> via a dialog, similar
+						to the <i>IntelliJ rename prompt</i>.
+					</p>
+				</content>
+			</section>
+			<section title="World Boundaries and Tiles">
+				<content>
+					<p>
+						The <code>ConnectTile</code> class should be eliminated. Given the theoretically
+						<i>infinite world size</i>, visible or discoverable boundaries should not exist under
+						normal gameplay conditions. Players should be constrained within <i>soft world
+						boundaries</i>, preventing standard access beyond defined limits.
+					</p>
+					<p>
+						Certain <i>rock tiles</i> may contain varying concentrations of ores and minerals.
+					</p>
+				</content>
+			</section>
+			<section title="Chunk-Based World Generation">
+				<content>
+					<p>
+						Only the <i>chunk generator</i> within a dimension would use the dimension seed
+						or world seed during initialization. Other randomized events should rely on
+						<i>thread-specific random number generators</i>. Generation processes by covered
+						generators created during dimension initialization should begin <i>only after
+						explicit generation commands</i>, ensuring controlled execution rather than
+						immediate world filling. Arbitrary placement of structures at specific locations
+						should be discouraged unless dictated by a larger generative pattern.
+					</p>
+					<p>
+						World generation would be governed by a <i>manager</i>, which maintains
+						<i>registries of generation parameters, functions, and configurations</i>.
+						A <i>random number generator</i> with preset seed values would drive the
+						generation process. The generator should <i>remain active throughout world
+						loading</i> for continuous chunk generation. Generation configurations should be
+						<i>modular</i>, stored separately to allow for <i>public customization</i>
+						rather than being hardcoded. The interface should provide customization options
+						for generator configurations, including sampling functions and randomization
+						algorithms.
+					</p>
+					<p>
+						If the world size is <i>theoretically unlimited</i>, validation mechanisms
+						should be <i>unnecessary</i>, assuming robust generator design. Testing functions
+						may pose challenges due to <i>fragmented content generation</i>, complicating
+						validation methodologies.
+					</p>
+				</content>
+			</section>
+			<section title="Advanced World Generation Techniques">
+				<content>
+					<p>
+						If world generation incorporates <i>high variability</i>, conventional techniques
+						such as switch-case structures, loops, and if-else conditions may prove
+						insufficient. Even when fully programmatic approaches are used, constant
+						values should be effectively managed at the field or top level. Additionally,
+						cave structures would <i>not be exclusively planar</i>.
+					</p>
+					<p>
+						Dungeon generation exemplifies <i>non-standard dimension creation</i>, dictated
+						by <i>large-scale patterns</i> rather than general algorithms. Boss rooms and
+						dungeon gate structures are generated toward the center, requiring specialized
+						logic. To accommodate such designs, scripting may be necessary, instead of
+						conventional data structures like simple lists of attributes and properties
+						formatted in JSON.
+					</p>
+					<p>
+						Early world generation including terrains would be handled by the Rust part,
+						with chunk data subsequently transmitted to Kotlin for secondary population
+						processes.
+						<list>
+							<li>
+								<b>Features</b> are <i>small-scale decorative elements</i>, typically
+								<i>tile placements</i>.
+							</li>
+							<li>
+								<b>Structures</b> consist of <i>large-scale templates with complex
+								logic</i>, including preconfigured tile and entity placements.
+							</li>
+							<li>
+								<b>Jigsaws</b> serve as <i>presets for templates</i> used in
+								structures.
+							</li>
+						</list>
+						Most generation elements may leverage <i>custom data formats</i>, while
+						generator configurations, features, and structure definitions may incorporate
+						<i>scripting support</i>. This framework should ensure that procedural generation
+						remains <i>extensive, flexible, customizable, modular, and standardized</i>.
+					</p>
+				</content>
+			</section>
+			<section title="World Generation Testing">
+				<content>
+					<p>
+						Map generation <i>testing functions should be excluded from production code</i>,
+						as they introduce redundancy within released builds and remain inaccessible
+						without enabling hidden launch parameters. A <i>separate module</i> like
+						<code>demo</code> would allow manual parameter input for <i>visual validation
+						of configurations and algorithms</i>.
+					</p>
+				</content>
+			</section>
 			<section title="Basic Code Structures">
 				<content>
 					<p> =01=
@@ -2029,72 +2220,6 @@
 						completion detection, those may be detected in realtime, including the interactive
 						elements and input events. The one in Minecraft is not valuable for reference here.
 					</p>
-					<p> =07=
-						As for the world names, there should be no limitation. Therefore, the directory names
-						of worlds would be differently handled, by a randomly generated character table of
-						alphanumerics by indices, with an incrementing counter. Both the table and the counter
-						are stored as "internal" data of the client application. In normal operation, the
-						directory names must not be modified as there would be an internal table storing the
-						directory names as the identifiers for some preference-related local user data, like
-						the last played world. Since there is a chance that an unexpected collision occurs,
-						so a warning would be emitted and such string would be skipped. Overall, the string
-						would seemingly be incremented as 62-based and likely random. On the other hand,
-						server data are not stored on the client side, but sent on demand, only the server
-						configurations and primary metadata are stored in client application data. Then, there
-						is totally no need to check the names with any regular expression. Players are more
-						advised to access the world directory via an application rather than a filesystem
-						browser, and edit most files with advanced editors. This way, players must use the
-						application to import or export worlds, even making backups, the launcher might also
-						support such operations. Even worlds with duplicated names could exist, so it is
-						advised to make the name identifiable and unique, a warning would be shown if such
-						scenario occurs, but the name would still be saved as is instead of being modified
-						to become unique.
-					</p>
-					<p> =07=
-						The <code>WorldCreateDisplay</code> would be renamed and accessed from the world list
-						screen listing local worlds. The screen would only handle the inputs, all the
-						user-specified settings. If some of them are empty or remained as "default" without any
-						customization, the default values would be filled during the initialization of world
-						creation process. The seed field would accept any character but further hashed with
-						a custom hasher even they are numbers, so an option to input real numeric seed would be
-						provided near the input field. If there is any field containing illegal characters or
-						unknown values, they would be marked as "unparsable" and the button to complete would be
-						disabled. There is also no need to show what name would be saved eventually. The setting
-						fields would be initialized only on this screen, so no any settings are saved after world
-						creation, and they would not be saved as global states like the <code>Settings</code>.
-						The <code>WorldSettings</code> class would be a record class storing all the input values,
-						declared not in the screen class.
-					</p>
-					<p> =07=
-						In the world list screen, there would be several operations available, including importing,
-						exporting, copying, deleting and creating worlds, where exporting, copying and deleting
-						could only be done on existing worlds. Basically, the <code>WorldInfo</code> class might
-						be just the similar record class with fewer information, but with an addition of world
-						size on disk. The icon of world can be customized but the default icon would be the same.
-						Note that the world version shown would not be the actual logical data version but the
-						display version that the version of the game last accessed. The directory name would not
-						be shown however, but the user could open the world folder via the browser by a button,
-						labelled "Open Folder", or as a button on the selection, so that there is no need to show
-						disabled buttons. Then, the user has to press the play button on the selection, although
-						there might be optional quick access by double-clicking the entry, disabled by default.
-						Since the screen would be a lot finer and larger, the world information would be shown
-						within the entry instead of the separate menu. If there is any data stored a world key
-						which does not exist, such data would become unknown. While the screen is opened, the
-						watcher thread would keep tracking of the changes notified by the filesystem and the
-						operating system. While there is an operation emitted in the screen menu, the world
-						data of the selected entry would be sent as argument, without using the static fields.
-						Too much duplicate code in the ticking method, but many parts could be separated and
-						simplified.
-					</p>
-					<p> =07=
-						The process to load world information would differ a lot from the original one. Also,
-						having methods of <code>setWorldName</code> and <code>hasLoadedWorld</code> is really
-						weird. <code>getValidWorldName</code> would not be needed. To simplify the process,
-						copying world could just be a simple "duplicate", appending "Copy of" in the front of
-						the original world name. User has to edit the world to change the name afterward, or
-						the user could enter a different name than the default given name in a similar dialog
-						like the one in IntelliJ.
-					</p>
 					<p> =18=
 						When an entity is added into the world, an identifier would be passed into the constructor
 						of the entity. The identifier would be unique to the world and thus readonly. Since the
@@ -2386,12 +2511,6 @@
 						of this enum should be replaced by tile properties or metadata. Also, having this
 						as argument may have limited the variations of tiles.
 					</p>
-					<p> =07=
-						<code>ConnectTile</code> should be removed. With a theoretically infinitely
-						large world, there should be no boundaries visible or discoverable by players
-						normally when players should be limited to the inner soft world boundaries
-						with no normal access outside the boundaries.
-					</p>
 					<p> =26=
 						There is no much advantage in using enum than general constructors and fields
 						for <code>DecorTile</code>. Instead, when tiles are registered and stored as
@@ -2401,9 +2520,6 @@
 						The metadata and models of a tile should not rely on the positions of the tile.
 						The mechanisms of having variants of tiles in <code>DirtTile</code> do not obey
 						this.
-					</p>
-					<p> =07=
-						There might also be some rocks tiles with little or more content of ores or other minerals.
 					</p>
 					<p> =27=
 						Some systems like plants may not purely rely on the tile instances but the classes
@@ -2435,14 +2551,6 @@
 						harvesting, growing stages, diseases, nutrition, etc., would all be implemented for
 						all kinds of plants.
 					</p>
-					<p> =07=
-						Only the chunk generator in the dimension would take the dimension seed as argument.
-						Other events that take randomness would instead use thread random number generators.
-						During the initialization of dimension, the generators would be initialized, but
-						generation would not take place before generation commands were sent. It is not
-						recommended to generate structures at a certain location on a world without any
-						major pattern.
-					</p>
 					<p> =10=
 						Background of the world would be handled by shaders, so the scene may not be static.
 						Entity rendering would be controlled by rendering distance configured by the client.
@@ -2468,55 +2576,6 @@
 						world generation in the dedicated areas, no spawner-like device would be
 						implemented. Village generation should actually be standardized like a general
 						structure.
-					</p>
-					<p> =07=
-						World generation would be handled by a manager with registries of generation
-						parameters, functions and configurations. This would be aided by a random number
-						generator with the seeds provided in the code for the generation process. The
-						generator would always be available for chunk generations as the world is still
-						loaded. All the generation configurations would not be hardcoded in the code but
-						separately for the public customization interface. However, the primary functions
-						would be supported by the interface for generator configuration, including sampling
-						functions and random number generator algorithms.
-					</p>
-					<p> =07=
-						If world size is theoretically unlimited, there is no need to validate anything
-						when the generator is designed well. Also, it is challenging to design a suitable
-						testing function to validate the content of the world, especially when they are
-						generated parts by parts.
-					</p>
-					<p> =07=
-						If world generation tends to be fancy, consisting of a lot of variations, it would
-						not be simple as only with switch-cases, loops and if-else conditions. Also, even
-						if the entire generation is desired to be fully programmed, constants should be
-						more manageable, like being defined in the fields or the top level. The caves
-						would not be horizontal.
-					</p>
-					<p> =07=
-						The dungeon is an example of unordinary dimension generation, which is not set by
-						general algorithms but major design patterns. The boss room and dungeon gate
-						structure generations are the obvious evidence, they are generated toward the
-						center. To support such generation patterns, there may be the need of scripts
-						instead of simply just lists of attributes and properties. This means the system
-						would not use data structures like JavaScript Object Notation (JSON).
-					</p>
-					<p> =07=
-						The map generation testing function should not be included in the production code.
-						The main reason is that it could become a redundant part of the release whilst not
-						accessible without altering hidden launching parameters. There might another module
-						to manually enter parameters to visually examining the results and the effectiveness
-						of the configurations and algorithms.
-					</p>
-					<p> =07=
-						Early world generations such as terrains would be done in the Rust part. After
-						generation, chunk data would be sent back to the Kotlin part for further populations.
-						Features are small scale decorative elements, being as tile placements, while
-						structures are large scale templates and logics of tiles and entities with data and
-						parameters. Jigsaws are presets of the templates to be used by structures. Most of
-						them would come with custom data formats while generator configurations, features
-						and structure definitions may come with scripting. This should be able to ensure
-						that the supports are extensive, flexible, customizable, modularized and
-						standardized enough.
 					</p>
 					<p> =12=
 						Advancements and quests share similar properties and natures, so a common superclass
