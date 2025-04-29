@@ -1842,6 +1842,386 @@
 					</p>
 				</content>
 			</section>
+			<section title="Entity Management and Behaviors">
+				<content>
+					<p>
+						When an entity is introduced into the world, a <i>unique identifier</i> would
+						be assigned through its constructor, ensuring uniqueness and immutability within
+						the world instance. Entity removal would be governed by the <i>world’s ticking
+						system</i> per update, eliminating the need for a dedicated boolean field tracking
+						entity existence. Since an entity’s presence cannot be guaranteed beyond the
+						current tick, references to target entities may be transient, avoiding persistence
+						beyond a single tick cycle. If there exists any component storing entity references,
+						such behavior should be supported by the controls managed by the target entities,
+						ensuring appropriate destruction; thus, omnidirectional incoming reference may not
+						be recommended. Entity models should be <i>concealed</i> from direct external
+						interactions, relying solely on internal state transitions. A potential
+						<code>EntityPrototype</code> record class may be introduced to <i>store control
+						instances</i> before entity construction. Additionally, color field in entity is
+						redundant and should be excluded.
+					</p>
+					<p>
+						Despawning would be facilitated by a <i>dedicated control module</i>, ensuring
+						entities that do not support despawning retain null control references. This
+						approach extends to both removal and entity death scenarios. Methods "delegated"
+						to control operations could be structured as <i>inline extension functions</i>,
+						serving as lightweight utility methods. Since controls can be <i>dynamically
+						assigned</i>, their scope would remain unrestricted. Similar logic referred from
+						<code>ItemHolder</code>, with control classes potentially leveraging extension
+						functions for master classes like <code>Entity</code>.
+					</p>
+					<p>
+						There could be more details in the mechanisms of <code>Composter</code>, but it
+						might still depend on the direction of the game. Therefore, it would be more
+						complex and fancy.
+					</p>
+					<p>
+						The <code>walkDist</code> field in <code>Mob</code> is exclusively tied to sprite
+						animations and serves no additional purpose. Animation-related data should be
+						consolidated into an isolated object, ensuring responsibility is managed
+						independently of the master class. Walking distance tracking for statistics
+						should shift to move control modules, reinforcing modularity. Another dedicated
+						object should <i>store all geological data</i>, such as <i>position and
+						direction</i>, rather than scattering related fields within the mob structure.
+						<i>Attack cooldown logic</i> should be carefully balanced, ensuring fairness in
+						both offensive and defensive engagements, rather than a <i>short-period immunity
+						system</i> that lacks strategic coherence. A <code>Measure</code> data monitoring
+						class may be introduced to store both <i>bounds and counter values</i> for
+						statistical tracking.
+					</p>
+					<p>
+						Passive mob behaviors, such as <i>grazing</i>, should incorporate realistic
+						<i>action countdowns</i> rather than arbitrary event triggers. Both hostile and
+						neutral mobs should feature <i>enemy-tracking references</i>, allowing intelligent
+						behavior across different models. Current code indicates that the spawners are
+						immune to creepers, though its <i>chaotic</i> implementation should be refined.
+						Many mobs exhibit <i>overly simplistic mechanisms</i>, failing to convey clear
+						behavioral differentiation
+					</p>
+				</content>
+			</section>
+			<section title="Spawning and Generation Mechanisms">
+				<content>
+					<p>
+						Mobs may be primarily generated <i>during world creation</i>, foregoing natural
+						despawning mechanics for added realism. The <code>noActionTime</code> field in
+						<code>Mob</code> merely functions as a despawning check and lacks broader
+						significance, and the <code>speed</code> field similarly lacks meaningful utility.
+						Explosion damage should be applied directly to affected entities instead of being
+						processed through an event interface like <code>onExploded</code>. While the mob
+						level mechanism remains a potential feature, universal implementation is
+						unlikely.
+					</p>
+					<p>
+						Spawning and despawning conditions should be adaptable to <i>gameplay design</i>
+						and thematic direction. Since mobs are expected to spawn only during world
+						generation, natural spawning systems should not be implemented, leaving chunk
+						managers uninvolved in <i>ongoing mob population</i> dynamics.
+						This means that spawner-like devices would <i>not exist</i>, with all standard
+						structures spawned exclusively within desired areas during generation.
+						Village generation, for example, should conform to <i>standardized structure
+						generation rules</i> rather than ad hoc placement. Certain rock tiles may contain
+						varying levels of ore or mineral content, supporting resource diversity within
+						the terrain.
+					</p>
+					<p>
+						The <code>Spawner</code> mechanism is overly "<i>reflective</i>", making its
+						implementation in TerraModulus <i>improbable</i>. If mob-generation devices
+						are required, a more robust interface design should replace low-level
+						structural dependencies. Additionally, <i>daylight detection mechanisms</i> for
+						spawn prevention may require optimization if the lighting system undergoes
+						revision.
+					</p>
+				</content>
+			</section>
+			<section title="Collision and Entity Movement">
+				<content>
+					<p>
+						Having both <code>isSolid</code> and <code>blocks</code> for collision conditions
+						is redundant. A more effective approach would be <i>relying solely</i> on
+						<code>blocks</code> while dynamically assessing entity data upon collision when
+						necessary.
+					</p>
+					<p>
+						Since movement would be primarily governed by the <i>physics engine</i>, explicit
+						<code>move</code> method calls for entities are unnecessary. However, <i>velocity and
+						acceleration control</i> remain crucial, and should be managed through dedicated
+						move control modules. The previous sub-stepping implementation attempted to divide
+						movement into discrete units, but this approach becomes impractical within a decimal
+						coordinate system. Prior to the introduction of the improved algorithm, <i>tunneling
+						artifacts</i> occurred at higher speeds, which was a known issue that had been
+						previously reported.
+					</p>
+				</content>
+			</section>
+			<section title="Entity Behaviors and Interaction">
+				<content>
+					<p>
+						The handling of <code>Arrow</code> had been previously discussed, and its
+						integration into the <i>new entity system</i> would significantly improve
+						<i>collision detection</i>. The logic referencing tile ID 16 (lapis ore) appears
+						misplaced, with no clear rationale for its inclusion in entity behavior checks.
+					</p>
+					<p>
+						While <code>ItemEntity</code> would not feature inherent acceleration, initial
+						velocity and ground friction would still be considered. The current implementation
+						<i>misinterprets velocity and acceleration</i> principles, leading to confusion.
+						Ideally, each <code>ItemEntity</code> instance should represent a stack of items,
+						with distinct properties for total elapsed time and remaining time until deletion.
+						If the remaining time is null, the entity should persist <i>indefinitely</i>. The
+						two fields currently designated for synchronization serve little practical purpose.
+					</p>
+					<p>
+						With a <i>3D world system</i>, vertical motion calculations for animations would
+						be directly handled via physics, while <i>shadow rendering</i> would be standardized
+						across all entities. Entity initialization should leverage <i>factory methods</i>,
+						rather than relying on <code>Level</code> for instantiation. Additionally,
+						<i>initial</i> direction and velocity assignments should be handled through
+						specialized factory methods for, e.g., item and loot dropping.
+					</p>
+				</content>
+			</section>
+			<section title="Explosions and Advanced Motion Physics">
+				<content>
+					<p>
+						The <code>Tnt</code> class would remain classified as <i><b>Furniture</b></i>,
+						but with enhanced <i>visual effects</i> for explosion interactions. Explosion
+						mechanism for both entities and tiles should conform to <i>generalized explosion
+						algorithms</i>, considering exposure factors and interaction ranges. Calculation
+						methods for entities and tiles should remain <i>distinct</i>, though shared
+						foundational attributes could streamline <i>consistency</i>. Explosion mechanism
+						may support different explosion types, such as <i>gas-based</i> or
+						<i>fire-based</i> detonations, although it may just be using different attribute
+						values.
+					</p>
+					<p>
+						Character movement should follow <i>gradual velocity increases</i>, simulating
+						realistic acceleration rather than initiating motion instantaneously; friction
+						calculations may be involved. Knockback effects from external forces should be
+						processed as <i>impact</i> events, converting external force into a constant
+						velocity, counteracted by <i>environmental resistance</i> (ground friction or
+						air drag).
+					</p>
+				</content>
+			</section>
+			<section title="Item and Entity Property Management">
+				<content>
+					<p>
+						The <i>burn command</i> for mobs should be structured as a <i>dynamic property
+						assignment</i>, allowing flexibility rather than implementing it as a static
+						function.
+					</p>
+					<p>
+						Item data management has encountered structural issues, requiring separations
+						between <i>metadata, properties, and display information</i>. Each category
+						should be used differently based on contextual needs. For example,
+						<i>descriptions</i>should be recognized as part of <i>display information</i>,
+						rather than intrinsic item metadata. They were originally not clear for their
+						categories.
+					</p>
+					<p>
+						Some <i>item attributes</i> may be <i>hardcoded</i>, while others would be
+						<i>dynamically assigned</i>. Internal attributes would be categorized as
+						<i>item properties</i>, whereas externally accessible attributes would be
+						classified as <i>item tags</i>. Both properties and tags may be <i>static or
+						dynamic</i>, depending on their intended behavior.
+					</p>
+					<p>
+						Tiles should incorporate structured lists of properties, including but
+						not limited to:
+						<list>
+							<li><b>Flammability</b></li>
+							<li><b>Material type</b></li>
+							<li><b>Hardness</b></li>
+							<li><b>Blast resistance</b></li>
+							<li><b>Luminosity</b></li>
+						</list>
+					</p>
+					<p>
+						Tile metadata and models should remain <i>independent of tile positions</i>,
+						ensuring proper decoupling. The current handling of tile variants within
+						<code>DirtTile</code> does not adhere to this principle and requires revision.
+					</p>
+				</content>
+			</section>
+			<section title="Food and Potion Systems">
+				<content>
+					<p>
+						If a <i>new food system</i> incorporating <i>various recipes</i> is introduced,
+						materials should maintain <i>minimal attribute definitions</i>, given their
+						shared <i>item-type similarities</i>. Consuming food would still <i>deplete
+						stamina</i>, ensuring balance within gameplay mechanics.
+					</p>
+					<p>
+						Should <i>potion effects</i> be integrated, they should function as <i>universal
+						interfaces</i> applicable to all living mobs. A dedicated <i>registry</i> should
+						store all potion effect types and their handlers, allowing structured public
+						access and customization.
+					</p>
+				</content>
+			</section>
+			<section title="Item and Tile Systems">
+				<content>
+					<p>
+						When items are linked via <i>resource keys</i>, manual association of sprites
+						or models for individual items should become <i>unnecessary</i>.
+					</p>
+					<p>
+						Instead of relying on <code>Tile$Material</code>, tools should <i>derive behavior
+						from tile properties</i> rather than being constrained by an enum. Identifiers
+						should reside in the registry rather than within individual tile instances,
+						though a <i>resource entry</i> may be returned, containing both the <i>resource
+						key and object</i>. Other enum-dependent implementations should transition
+						<i>toward tile properties or metadata</i>, since using enums as function arguments
+						limits tile <i>variation flexibility</i>.
+					</p>
+					<p>
+						Using an <i>enum-based approach</i> in <code>DecorTile</code> provides little
+						advantage over conventional constructors and fields. Instead, tiles should be
+						registered as fields, with arguments directly passed into constructors during
+						initialization.
+					</p>
+					<p>
+						Current implementations of <code>Tiles</code> and <code>Items</code> classes
+						exhibit <i>low-level, disorganized structures</i>, requiring structural
+						improvements for maintainability.
+					</p>
+					<p>
+						If <code>FarmTile</code> serves merely as a <i>variant</i> of
+						<code>DirtTile</code>, their mechanisms could be merged rather than introducing
+						a separate tile classification. Dirt tiles would dynamically transition into
+						farmable states based on <i>moisture and nutrient levels</i>, allowing crops to
+						grow naturally on them. Rather than defining a new tile, crop interactions would
+						be tied to soil conditions, ensuring a more seamless agricultural system.
+					</p>
+				</content>
+			</section>
+			<section title="Rendering System and UI Management">
+				<content>
+					<p>
+						No class should extend the core game class <code>TerraModulus</code>. The
+						<code>RenderSystem</code> would exclusively oversee <i>high-level</i> operations,
+						with UI components delegated to a dedicated manager, such as
+						<code>UIManager</code> or <code>MenuManager</code>. Sprite management should be
+						merged into the registry system, ensuring unified asset handling. Rendering
+						performance should be hardware-accelerated, relying on native libraries and APIs,
+						particularly for physics-based computations. Specifics regarding graphics and
+						physics implementations will be addressed later. The major render system would
+						manage the world renderer states, separating UI and world graphics to ensure
+						clarity and modularity. Various fields should be decoupled accordingly.
+					</p>
+					<p>
+						The window size would remain <i>dynamic</i>, with no fixed dimensions. Instead
+						of a canvas scale, an adjustable <i>UI scale</i> would be introduced, functioning
+						as a simple multiple of base dimensions, allowing users to modify UI scaling
+						based on window size without storing these preferences. The entire render system
+						would be backed by an optimized rendering engine.
+					</p>
+					<p>
+						The canvas should be <i>fully occupied</i>, with UI elements such as the status
+						bar, HUD components (e.g., hot bar, boss bar, debug screen) structured as menu
+						components rather than static overlays. Level rendering should integrate world
+						background and sky rendering as part of comprehensive world rendering.
+					</p>
+					<p>
+						Fullscreen functionality and screenshot handling should be managed directly
+						within the render system rather than external methods.
+					</p>
+					<p>
+						The canvas should aggregate rendering results from both UI and world graphics,
+						efficiently processing composited graphical elements. Internally buffered arrays
+						might be employed within the rendering engine, improving performance and
+						consistency.
+					</p>
+					<p>
+						Rendering <i>queues</i> present a valuable optimization strategy, streamlining
+						render request processing. However, clearing request validation introduces
+						unnecessary overhead. Instead, hidden elements should be <i>skipped</i> within
+						rendering functions, rather than processing functions for rendering requests.
+						Maintaining well-defined responsibilities prevents inefficiencies.
+					</p>
+					<p>
+						A separate overlay canvas for light rendering should be eliminated, with a
+						single unified canvas handling all composited graphical elements via the
+						rendering engine. The current workaround approach in <code>Screen</code>,
+						aimed at optimizing rendering, is not the most practical industry standard.
+						Furthermore, sprite rendering and inverted color line rendering have yet to
+						capitalize on <code>Graphics2D</code> optimizations, which could be enhanced
+						through OpenGL hardware acceleration.
+					</p>
+					<p>
+						Several menu components require updates, including the hot bar and various
+						menu frames, though these adjustments align with graphics discussions
+						scheduled for later stages.
+					</p>
+					<p>
+						The rendering system will likely be <i>custom-implemented</i> for optimal
+						compatibility and usability. However, it remains beneficial to explore
+						existing meshing, modeling, or sprite libraries as supplementary tools.
+					</p>
+					<p>
+						The toggle mechanism for hardware acceleration remains an open question.
+						Under normal circumstances, there should be <i>no need</i> to disable hardware
+						acceleration, but certain edge cases, such as <i>graphics card incompatibility</i>,
+						may require turning it off. If compatibility issues arise before the
+						application fully launches, in-app toggling becomes <i>impractical</i>. Instead,
+						hardware acceleration settings should be configured <i>via launch arguments</i>
+						or <i>managed internally</i> (by detection), preventing post-launch usability
+						issues.
+					</p>
+				</content>
+			</section>
+			<section title="Loading Screen and Splash Screen">
+				<content>
+					<p>
+						The <i>loading screen</i> and possibly a <i>splash screen</i> may include a
+						hardcoded <i>embedded image</i> within the application. The loading screen
+						would feature a <i>progress bar</i>, initializing full loading of system
+						components in a manner similar to Minecraft: simple, clean, and iconic, after
+						the appearance of the splash screen with a logo. Additionally, customized
+						splash screens could be inserted pre-title screen, or during world
+						initialization phases (early, middle, after).
+					</p>
+					<p>
+						Initialization timing for tiles, entities, and items remains under discussion,
+						contingent on registry implementation methods. The title screen should appear
+						only after initialization completes, ensuring all essential resources are
+						preloaded. If fullscreen mode is enabled at launch, the window should transition
+						immediately upon initialization, rather than employing a delayed separate switch.
+					</p>
+				</content>
+			</section>
+			<section title="Font System and Text Rendering">
+				<content>
+					<p>
+						The <code>Font</code> class might be consolidated within a single package,
+						likely hidden inside the graphics module. Character mappings (originally as
+						<code>chars</code> field) would be fully configurable through asset packs.
+						Multiple text rendering modes should be available, including <i>plain</i>,
+						<i>formatted</i>, and <i>pre-styled</i> options.
+					</p>
+					<p>
+						An optional configuration object, such as <code>FontStyle</code>, may be
+						utilized when drawing text, supporting attributes like background color and
+						foreground color. Features about rendering boundaries should be deprecated,
+						including horizontal scrolling function. Horizontal scrolling should be
+						reserved exclusively for animated automatically scrolling text, rather than
+						general user interactable menu elements.
+					</p>
+					<p>
+						Text rendering modes could be consolidated into a single configuration
+						attribute, ensuring streamlined customization: plain text remains unstyled,
+						while enabled attributes apply respective formatting styles. The stack-based
+						"redo" mechanism remains excessively complex, warranting removal. Width
+						calculations may leverage advanced looping techniques, eliminating invalid
+						formatting codes from processing logic. A display component architecture may
+						mitigate such issues. Centered text rendering may also be discarded, with
+						paragraph alignment and shadow effects serving as refined alternatives.
+						Current FontStyle implementation is inadequate and could benefit from a
+						transition to UI component-based solutions.
+					</p>
+				</content>
+			</section>
 			<section title="Basic Code Structures">
 				<content>
 					<p> =01=
@@ -1851,34 +2231,10 @@
 						or a functional interface with advanced features. However,
 						<code>MonoCondition</code> could be replaced by <code>Predicate</code>.
 					</p>
-					<p> =03=
-						No class would extend the major game class <code>TerraModulus</code>. The
-						<code>RenderSystem</code> would only handle the top operations. UI components would
-						be handled in another manager, like <code>UIManager</code> or <code>MenuManager</code>.
-						The sprite management would be merged into the registry system. Everything would be
-						enhanceable by hardware accelerations, so the rendering system would highly depend on
-						the native libraries and the APIs, especially physics. Detailed implementation of
-						graphics and physics would be discussed later. The major render system would manage
-						the states of the world renderer, so the systems of UI and world graphics are
-						separated. This way, several fields would be separated. Also, the window size
-						would not be fixed, and there would not be something called the canvas "scale",
-						but there would be UI "scale", which is a simple multiple of the base dimensions,
-						available for setting depending on the window size (not saved). The entire render
-						system would be backed by the rendering engine.
-					</p>
-					<p> =03=
-						The canvas would be fully filled. The several UI elements like the app status bar
-						and HUD elements (e.g. hot bar, boss bar, debug screen) would become menu components.
-						Level rendering would be a part of world rendering, which includes world background
-						and sky rendering.
-					</p>
 					<p> =05=
 						Toasts are usable, but not the notification text directly on
 						screen. All notifications would be replaced by chat (in game for world events) or
 						toasts (any client event in game). The toasts would have their own lifetime.
-					</p>
-					<p> =03=
-						Fullscreen and screenshots would be handled instead by the render system.
 					</p>
 					<p> =05=
 						The usages of toasts are not in the same level. <code>AppToast</code> is a subclass
@@ -1890,19 +2246,6 @@
 					<p> =16=
 						Resources or assets would not be loaded early as before canvas initialization, but packs would be loaded
 						at the same time as vanilla assets.
-					</p>
-					<p> =03=
-						However, probably only the loading screen, with
-						probably a splash screen would be the hardcoded asset image embedded into the
-						application. There would be a progress bar to initialize full loading of all parts
-						after the appearance of the splash screen with a logo, like Minecraft's one, simple
-						and neat but symbolic. Maybe there could be customized splash screen inserted after
-						initialization just before the title screen or pre-, during or post-world loading.
-						As for when to initialize tiles, entities and items, still a question, since it
-						depends on how they are defined with registries later. For the title screen, it
-						would be set only after the initialization, so the necessary resources would be
-						ready first. If it is set to fullscreen on start, the window would be set to
-						fullscreen when initialized, not that separated.
 					</p>
 					<p> =24=
 						Colors, there is entirely no need to care about old-formatted color values. However,
@@ -1934,27 +2277,6 @@
 						updating methods seem to be various but really unnecessary, it is still lacking
 						information.
 					</p>
-					<p> =03=
-						The <code>Font</code> class would be made into a single package but most likely just
-						hidden within the graphics module. The <code>chars</code> would be fully configurable
-						later by assets pack. Several drawing mode of text would be available, like plain,
-						formatted, hard-/pre-formatted (styled). When drawing, an optional configuration
-						object like the <code>FontStyle</code> could be passed as an argument, for background
-						and foreground colors, and the rendering bounds? Actually for bounds, horizontal
-						scrolling may be disused, but perhaps only the vertical values are useless. The
-						ability to scroll entries horizontally would eventually not be implemented, but for
-						displaying scrolling text only. Still, all the drawing modes could be combined to
-						just set whether to enable formatting codes as the configuration attributes, since
-						when nothing is set, it is fully plain; when something is set, it could be styled.
-						The "redo" code may still be too complex in the system, so the stack class would not
-						be needed. Width calculation, maybe using advanced looping, since invalid codes
-						would not be used in formatting; probably display component architecture would be
-						used to prevent this. Drawing centered may not be used anymore; drawing paragraphs
-						would be quite advanced, so it would be higher level. For drawing styles, there
-						could be paragraph alignment and shadows, but the current implementation of
-						<code>FontStyle</code> is quite poor, and it could be replaced by using UI
-						components.
-					</p>
 					<p> =09=
 						Texture atlas could be implemented, especially when the engine is lower level, since
 						it could improve memory efficiency for a mass number of sprites. All the textures
@@ -1974,23 +2296,6 @@
 						saved in the chunk data. Rendering lightness would depend on the gamma value set.
 						Mirroring settings could just be 2 separate boolean values, but sprite transforming
 						would be realized in another way, probably by filtering function or something.
-					</p>
-					<p> =03=
-						Anyway, the canvas would just handle the rendering results by the graphics elements
-						from both the UI and the world. When it comes to the rendering engine, internally
-						buffer arrays would be used. The rendering queues is quite a good idea compared to
-						the idea in the past, it was used for rendering optimization. However, the optimization
-						strategy by checking the clearing request is not that ideal in the system, since it
-						could be an overhead. A better way is in fact to skip rendering when there is some
-						places are intended to be hidden when it is in the rendering functions, but not by
-						the processing functions of rendering requests. The responsibilities should be definite
-						in fact. There would not be an overlay canvas just for rendering lights, but all the
-						rendering would be done with just one canvas handled by the rendering engine for
-						compositing all the graphics elements in one. The current way in <code>Screen</code>
-						is actually more like a workaround to optimize graphics rendering, though not the
-						best or the most practical in the industry. Among the rendering classes, only the
-						sprite rendering and inverted color line rendering ones have not taken the advantages
-						of <code>Graphics2D</code>, which could be optimized by hardware acceleration.
 					</p>
 					<p> =09=
 						As for <code>Sprite</code>, there would probably be a high level wrapper of the
@@ -2220,18 +2525,6 @@
 						completion detection, those may be detected in realtime, including the interactive
 						elements and input events. The one in Minecraft is not valuable for reference here.
 					</p>
-					<p> =18=
-						When an entity is added into the world, an identifier would be passed into the constructor
-						of the entity. The identifier would be unique to the world and thus readonly. Since the
-						removal of entity would be handled on each tick of world updates and there would not be
-						a field saving the boolean whether it is removed, everything would still be taken into
-						account without knowing whether the entity is still in the world next tick, it is advised
-						to avoid pure incoming references existing more than a tick on the target entity. The
-						models of entities should be hidden and immune to direct external impacts but rely on
-						internal states. There might be a record class of <code>EntityPrototype</code> before
-						the construction of entity, by storing all the controls. By the way, entity color is
-						really pointless.
-					</p>
 					<p> =09=
 						The rendering part of entity is mainly responsible by the texture models, but the
 						appearance may be different depending on the entity states and properties. For this,
@@ -2239,28 +2532,6 @@
 						interactive models are handled differently and only affect physics, while both are
 						stored in the entity. Still note that the interactive models should be simpler than
 						the texture models, since textures may be preloaded as atlas.
-					</p>
-					<p> =19=
-						It is not a good way to have both <code>isSolid</code> and <code>blocks</code> to handle
-						collision conditions. A better way may still be having only <code>blocks</code> and
-						assessing entity data on collision if necessary.
-					</p>
-					<p> =19=
-						Movement would mostly be tackled by the physics engine, so there is no need to worry about
-						the <code>move</code> methods for entities. However, the velocity and acceleration
-						controls matter, thus they would be managed by move controls. The actual implementation
-						for the algorithm used sub-stepping by breaking down the movement unit by unit, but
-						unrealizable for a decimal coordinates system. Before the algorithm was implemented,
-						tunneling actually occurred for increased speed, which had also been reported in fact.
-					</p>
-					<p> =18=
-						Despawning would also be handled by a dedicated control. This way, if the entity does not
-						support despawning, the control would be null instead. This also includes the call when
-						the entities are removed or killed. Moreover, the methods for "delegations" of controls
-						could actually be inline functions as they are just helper methods, added that controls
-						could be dynamically added, so the scopes and ranges of them could not be limited. The
-						same as <code>ItemHolder</code>. Control classes may also add extension functions to
-						master classes like <code>Entity</code>.
 					</p>
 					<p> =01=
 						Both <code>Tickable</code> and <code>ClientTickable</code> have no use. There is no point
@@ -2277,34 +2548,9 @@
 						other than having a transitional tile, particle animations with immediate tile destruction
 						are a more consistent way to the system. <code>ExplodedTile</code> should be removed.
 					</p>
-					<p> =19=
-						The mechanisms and situation of <code>Arrow</code> has been explained before. When there
-						is the new entity system, this could also actually be solved way more easily, including
-						the collision detection. Also, no idea why the check of tile with ID 16, which is lapis
-						ore?
-					</p>
-					<p> =19=
-						Although <code>ItemEntity</code> itself would not have acceleration, initial velocity and
-						frictions on the ground could still be applied. Most likely, the code has messed up what
-						"velocity" and "acceleration" actually mean in mechanics. Ideally, each Item Entity
-						should only represent a stack of item(s). There could also be two separate properties for
-						the total time lasted and the remaining time before deletion. If the remaining time is
-						null, the entity would never be deleted. The two fields for synchronization are quite
-						meaningless. When there is the 3D world system, there is no need to solely calculate
-						the vertical motion of the entities for animation, as well as the shadows, which could
-						also be standardized across different entities. The class would provide a factory method
-						to initialize the entity, instead of by <code>Level</code>. However, the initial
-						direction and velocities of the entities should not be determined within the
-						constructor but with factor methods that handle differently for dropping items and loots.
-					</p>
 					<p> ====
 						If there is something that runtime lists may not do much, static fields may actually
 						more debugging-friendly.
-					</p>
-					<p> =18=
-						As for <code>Composter</code>, there could be more details in the mechanisms. It may
-						still depend on the direction of the game, but most likely, everything could be harder
-						and more complex.
 					</p>
 					<p> ====
 						The string analysing and parsing way is too error-prone. In fact, we should rather let compiler
@@ -2324,74 +2570,9 @@
 						to abstract properties. Also, not everything has to be in the constructors but the
 						factor helper methods.
 					</p>
-					<p> =18=
-						The mechanisms of <code>Spawner</code> are quite "<i>reflective</i>". However, this thing
-						would less likely be implemented into TerraModulus. Even if there is a need to have a
-						machine to generate mobs, a better interface should be made to prevent low level code
-						structure. Also, the way to detect daylight to skip spawning could be improved if the
-						lighting system is changed.
-					</p>
-					<p> =19=
-						<code>Tnt</code> may
-						remain as <code>Furniture</code>, but more visual effects could be added. Also,
-						interactions due to explosion could be standardized into general explosion algorithms
-						for both entities and tiles, especially the factors of exposure and ranges, although
-						the calculations of interactions of entities and tiles would still be separated. There
-						would also be different attributes for an explosion. However, there might be different
-						types of explosions, like gas or fire.
-					</p>
-					<p> =19=
-						If the character moves from
-						zero by walking, the velocity should increase gradually in a period like a second, to
-						better simulate the motion.
-					</p>
-					<p> =18=
-						The <code>walkDist</code> field in <code>Mob</code> only relates to the sprite animation
-						but no other uses. Such data should be grouped together within an object, so that the
-						objects could be responsible for the master class. The walking distance for statistics should also be handled
-						by the move control. There should also be another object storing all the geologic data
-						of the mob, like the position and direction. There is probably no need to have delay between
-						attack damages; as for attack cooldowns, this should be implemented thoughtfully to
-						balance the acts instead of receives, this kind of short period immunity may not make
-						much sense. There might be a data monitoring object <code>Measure</code> to hold both the bounds
-						and the actual counter of the value of measurement.
-					</p>
-					<p> =19=
-						Knocking back by external motion would be
-						handled by impact, that will be converted to a constant velocity to be resisted by
-						resistance from the ground or air.
-					</p>
-					<p> =18=
-						For spawning and despawning conditions of mobs, they may be changed depending on the
-						design of the gameplay and the styles. To add a little realism, spawning of mobs may
-						mostly be held during world generation without natural despawning.
-						<code>noActionTime</code> in <code>Mob</code> is just for despawning check, and the
-						<code>speed</code> field is also not useful.
-					</p>
 					<p> =09=
 						For mob sprites, the compilation would be generalized into a kind of
 						models.
-					</p>
-					<p> =18=
-						Explosion damage would be sent from explosion directly to the
-						entity, rather than an event interface <code>onExploded</code>.
-					</p>
-					<p> =23=
-						The burn command to a mob could become a dynamic property of a mob, as a
-						property assignment.
-					</p>
-					<p> =18=
-						The level of mob is another mechanism, but unlikely to be generally implemented.
-					</p>
-					<p> =18=
-						The generation of mobs should be handled in world generation.
-					</p>
-					<p> =18=
-						There is actually no need to have a field of <code>color</code> in
-						<code>PassiveMob</code>. The behaviors like grazing could be more realistic, like
-						having a countdown in the action. Both hostile and neutral mobs could have a list
-						of enemies for tracking. In code, it seems like spawner is immune to creeper, but the
-						way is too chaotic. Many mobs have only simple mechanisms without obvious difference.
 					</p>
 					<p> =09=
 						If the models of mob are standardized, there is no need to have
@@ -2417,21 +2598,6 @@
 						some extra information like durability may also be rendered along with the model of
 						the item. Therefore, models and the GUI rendering functions would be separated for
 						items.
-					</p>
-					<p> =23=
-						The data part of item has failed, but all the metadata/properties and display
-						information should have been separately provided for different usages by different
-						ways, that description is one of the display information.
-					</p>
-					<p> =26=
-						When items are linked by
-						resource keys, there would not be the need to associate the sprites or models
-						manually one by one.
-					</p>
-					<p> =23=
-						Some attributes of items may be hardcoded for an item, but some may be dynamic.
-						Internal attributes would become item properties while public ones would become item
-						tags. Any of them could be either dynamic or static.
 					</p>
 					<p> =13=
 						If the nature of books is to be an item in the world with content stored, it is not
@@ -2467,16 +2633,6 @@
 						players have to change the string. Fishing rods would be only able to catch fishing
 						but not other items. Also, rods could be used anywhere.
 					</p>
-					<p> =23=
-						If there would be a new food system with various recipes, the materials could contain
-						fewer attributes as they are similar item type. Eating food would still cost stamina
-						anyway.
-					</p>
-					<p> =23=
-						If there would be potion effects supported, they would be generally supported as an
-						interface for all living mobs. Also, there would be a registry for storing all the
-						potion effect types and the handlers, so that it could be a public interface.
-					</p>
 					<p> =25=
 						For <code>ToolType</code>, it would not be an enum, but a typical class, with all the
 						instances stored as constants. All the <code>ToolItem</code> instances would use the
@@ -2499,28 +2655,6 @@
 						Also, it should not take the tile player selected as the target but the area of
 						tiles close to the player.
 					</p>
-					<p> =23=
-						All the tiles may have a list of properties,
-						such as flammability, material type, hardness, blast resistance, luminosity, etc.
-					</p>
-					<p> =26=
-						Instead of <code>Tile$Material</code>,
-						Some tools may rely on various tile properties, but not with an enum. Identifiers may only
-						be stored in the registry instead of within tile instance, but a resource entry may
-						be returned to include the resource key along with the resource object. Other usages
-						of this enum should be replaced by tile properties or metadata. Also, having this
-						as argument may have limited the variations of tiles.
-					</p>
-					<p> =26=
-						There is no much advantage in using enum than general constructors and fields
-						for <code>DecorTile</code>. Instead, when tiles are registered and stored as
-						fields, the arguments would be directly passed into the constructors.
-					</p>
-					<p> =23=
-						The metadata and models of a tile should not rely on the positions of the tile.
-						The mechanisms of having variants of tiles in <code>DirtTile</code> do not obey
-						this.
-					</p>
 					<p> =27=
 						Some systems like plants may not purely rely on the tile instances but the classes
 						of plants registered into the game. Then, tiles, items, etc., would be registered
@@ -2530,20 +2664,10 @@
 						there might still be some differences in the details for different types of plants.
 						This includes fertilization.
 					</p>
-					<p> =26=
-						The approaches in <code>Tiles</code> and <code>Items</code> are quite low level and chaotic.
-					</p>
 					<p> =28=
 						<code>canWool</code> is actually a mechanism that does not really make sense. For the
 						logic, this should be a feature that may be removed in the game. Also, having a
 						carpet tile may be better than a wool tile.
-					</p>
-					<p> =26=
-						If <code>FarmTile</code> is a variant of <code>DirtTile</code>, both could actually be
-						combined in the mechanisms. When the dirt tile has reached a certain level of moisture
-						and nutrition, crops could be growing on it. Thus, there is no need to add another
-						tile, especially for a variant or a state of a tile. Crops may also grow and interact
-						according to the status of the dirt tile underneath.
 					</p>
 					<p> =27=
 						For the variations of crops and plants, there could be real-life species as well as
@@ -2568,14 +2692,6 @@
 						tile type with all the metadata included would be created, so the data could also be
 						modified directly without invoking extra methods. Entity instantiations and removals
 						may also be handled in the similar way.
-					</p>
-					<p> =18=
-						If mobs are spawned only during world generation, additional natural spawning may
-						not be implemented. Therefore, chunk manager would not handle any mob natural
-						spawning interface. While all ordinary structures would only be spawned during
-						world generation in the dedicated areas, no spawner-like device would be
-						implemented. Village generation should actually be standardized like a general
-						structure.
 					</p>
 					<p> =12=
 						Advancements and quests share similar properties and natures, so a common superclass
@@ -2731,27 +2847,12 @@
 					for non-game elements. Further implementation would be handed in the future asset
 					system.
 				</p>
-				<p> =03=
-					Many menu components are certainly required to be updated. This includes the hot bar
-					and several menu frames. However, this part relates to graphics which would be discussed
-					at the later stage. Rendering system may be mostly implemented ourselves for the best
-					compatibility and usages, but it is still worth finding an existing meshing, modelling or
-					sprite library for backing.
-				</p>
 				<p> =01=
 					Some utility classes could be made for synchronization. For some places, synchronized
 					maps and collections are needed, but the syntax should be more straightforward, like
 					the <code>Mutex</code> or <code>ReadWriteLock</code> in Rust. A similarly favored class
 					could be made for generic instances holding internally by the constructor with the new
 					instances. This could only be ensured by the developer writing the code, though.
-				</p>
-				<p> =03=
-					The way to handle the toggle of hardware acceleration is still a question. In
-					general, there is no need to turn off hardware acceleration, but in rare cases
-					the graphics cards may not be compatible with the software, so they may have to
-					be turned off. However, if it has already malfunctioned when the application has
-					launched, the toggle in application is quite unusable. They should either be
-					configured by launching arguments or handled internally by the application.
 				</p>
 			</content>
 		</section>
