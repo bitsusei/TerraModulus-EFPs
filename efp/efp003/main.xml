@@ -2119,9 +2119,10 @@
 					</p>
 					<p>
 						The canvas should be <i>fully occupied</i>, with UI elements such as the status
-						bar, HUD components (e.g., hot bar, boss bar, debug screen) structured as menu
-						components rather than static overlays. Level rendering should integrate world
-						background and sky rendering as part of comprehensive world rendering.
+						bar, Heads-Up Display (HUD) components (e.g., hot bar, boss bar, debug screen)
+						structured as menu components rather than static overlays. Level rendering should
+						integrate world background and sky rendering as part of comprehensive world
+						rendering.
 					</p>
 					<p>
 						Fullscreen functionality and screenshot handling should be managed directly
@@ -2222,115 +2223,580 @@
 					</p>
 				</content>
 			</section>
+			<section title="Texture Atlas and Sprite Architecture">
+				<content>
+					<p>
+						A <i>texture atlas system</i> would be implemented to improve memory efficiency,
+						particularly in lower-level engines handling many sprites. All textures
+						would use a <i>shared set of atlases</i>, with new atlases created only when the
+						existing ones reach capacity. However, sprite dimensions may not always conform
+						to square proportions or power-of-two sizing, requiring an efficient algorithm.
+						A useful reference for this approach is
+						<a href="https://www.david-colson.com/2020/03/10/exploring-rect-packing.html">
+							David Colson’s rectangle packing article
+						</a>. Since most textures will be rectangular or square, all assets should be
+						fully loaded from relevant asset packs. The <code>MinicraftImage</code> class
+						serves as a simplified alternative to existing image handling structures but
+						may not be used in this framework.
+					</p>
+					<p>
+						A <i>high-level wrapper</i> would be introduced to manage low-level sprite
+						instances. When sprites are incorporated into the centralized texture atlas, each
+						<code>Sprite</code> should correspond to a <i>data pointer</i> containing
+						information about pixel locations within the atlas. These references would then
+						be registered appropriately. Additionally, <code>Px</code> would be replaced with
+						<i>OpenGL functionalities</i>, ensuring greater performance and flexibility.
+					</p>
+					<p>
+						The <code>SpriteAnimation</code> class should be restructured to function as
+						<i>animated instances of sprites</i>, storing only a pointer with minimal
+						additional data. Animated sprites may exist as either UI components or animated
+						texture segments, following the specification outlined in the asset pack system.
+						Internally, its current implementation is overly complex, rather than aligning
+						with external timing mechanisms, animation should operate using a tick counter
+						within the world ticking function. Borders should not be managed here, but
+						delegated to a separate layer. Since sprite instances should be recreated rather
+						than "<i>relinked</i>", the system should undergo a <i>complete redesign</i> for
+						efficiency.
+					</p>
+				</content>
+			</section>
+			<section title="Registry-Based Sprite Management">
+				<content>
+					<p>
+						The codebase currently lacks structure, requiring major improvements.
+						<code>SpriteManager</code> should be governed by registries. If skins are
+						directly managed <i>via accounts</i>, their in-game management should be
+						simplified, avoiding unnecessary record-based associations. "<i>Missing</i>"
+						texture management should be handled at a higher level, rather than simple
+						functions. With a fully implemented texture atlas system, sprite sheets should
+						no longer require inefficient separate asset loading. The <code>SpriteMeta</code>
+						structure is redundant and should be discarded and rebuilt. Additionally,
+						<code>SpriteType</code> is messy and inefficient, and would function better under
+						a <i>registry-based</i> approach.
+					</p>
+					<p>
+						The interaction between <code>Sprites</code> and <code>SpriteLink</code> remains
+						overly convoluted. The logic behind mirroring tiles individually without
+						considering relative positional adjustments within the sprite system suggests
+						a <i>lack of proper filtering mechanisms</i>. OpenGL already provides these
+						functionalities, making a manual extra implementation unnecessary.
+					</p>
+				</content>
+			</section>
+			<section title="Entity Rendering and Texture Models">
+				<content>
+					<p>
+						The entity rendering process should primarily rely on <i>texture models</i>,
+						though appearance may vary based on entity states and properties. Instead of
+						using method overrides, an external <i>control element</i> should manage
+						state-dependent visual changes. Interactive models should remain distinct,
+						affecting only physics mechanics, while both elements remain stored within
+						entity data. Interactive models should be simpler than texture models, as
+						textures will be preloaded within the atlas system.
+					</p>
+					<p>
+						Mob sprite compilation should be generalized into standardized models,
+						due to the new texture model system. If mob models follow a consistent
+						framework, there should be no need for separate sprite sets to manage player
+						"<i>carrying</i>" textures. Player rendering would remain straightforward,
+						covering <i>motions and postures</i> such as swimming, item holding, and falling.
+						Item holding visuals should be refined to better distinguish held items,
+						rather than exclusively displaying items when actively in use.
+					</p>
+				</content>
+			</section>
+			<section title="Item Rendering and GUI">
+				<content>
+					<p>
+						Items are primarily rendered within HUD components or inventory menus, with
+						additional instances appearing as item entities. When rendered within
+						the GUI, supplementary attributes such as durability should be displayed
+						alongside item models. To ensure modular structure, models and GUI rendering
+						functions should be cleanly separated, preventing unnecessary dependencies.
+					</p>
+				</content>
+			</section>
+			<section title="Particle Animation and Tile Interaction">
+				<content>
+					<p>
+						Using <code>ExplosionTileTicker</code> for animation is inefficient, as
+						leveraging tiles for extended animations is a fundamentally flawed design.
+						Given the tile system, where tile ticking is random while tile entity ticking
+						is regular, introducing <i>transitional tiles</i> disrupts system consistency.
+						Instead of relying on temporary tile states, particle animations with immediate
+						tile destruction would maintain structural integrity within the system. As a
+						result, <code>ExplodedTile</code> should be removed entirely.
+					</p>
+					<p>
+						Each particle entity should represent a <i>single sprite unit</i>, ensuring visual
+						and mechanical consistency. Additionally, particles should not actively interact
+						with other world objects. <code>TextParticle</code>, in particular, does not
+						behave like a particle but rather serves as a <i>distinct visual effect</i>, making
+						its implementation overly complex for a basic particle system. Likewise,
+						<code>WaterParticle</code> is excessively intricate, its code structure could
+						be simplified significantly if initial velocities were integrated as standard
+						entity mechanisms.
+					</p>
+					<p>
+						The <i>glint particle</i> used in <code>WateringCanItem</code> should be formally
+						registered rather than arbitrarily managed. Additionally, splashing particles
+						should be handled within a more generalized framework, preventing fragmented
+						particle logic. The current implementation of the watering can is close to be
+						a <i>magical element</i> in the gameplay, thus should be rewritten. The item should
+						target an area near the player similar to how the particle effect works, rather
+						than focusing exclusively on the selected tile, ensuring broader interaction
+						across surrounding tiles.
+					</p>
+				</content>
+			</section>
+			<section title="Shaders and Light System">
+				<content>
+					<p>
+						Darkness rendering should be refined based on <i>light sources and light
+						levels</i>stored within chunk data. The rendered light intensity would be
+						influenced by the gamma value setting. Mirroring settings of textures could be
+						streamlined into two separate boolean values, while sprite transformations should
+						be handled through alternative methods, such as filtering functions or similar
+						optimizations.
+					</p>
+					<p>
+						The <code>Lantern</code> could be considered one of many advanced artificial
+						light sources. The lighting system requires significant improvement, particularly
+						in handling <i>light obstruction</i> by objects, which would enhance gameplay
+						immersion. Currently, the system does not account for blocked light, and
+						addressing this limitation could make lighting mechanisms more dynamic and
+						interactive. Additionally, enum-based if-else chains should transition to
+						switch-case structures if the Java Development Kits (JDK) version is updated,
+						while Kotlin implementations should utilize <code>when</code> expressions for
+						better readability.
+					</p>
+					<p>
+						World background rendering should be governed by shaders, ensuring that scenery
+						remains dynamic rather than static. Entity rendering distance should be
+						adjustable via client settings, allowing users to configure their viewing range
+						accordingly. Lighting effects, including blending and raytracing, should be
+						processed through shaders, using tile light values as input data. However,
+						entity-based lighting information should remain excluded from mechanical logic,
+						meaning player sight obstruction would not interfere with shader computations.
+					</p>
+				</content>
+			</section>
+			<section title="Resource Pack Management">
+				<content>
+					<p>
+						Resources and assets should no longer be loaded before canvas initialization,
+						but rather loaded simultaneously with vanilla assets.
+					</p>
+					<p>
+						Resource packs would no longer rely on directory structures, as assets would be
+						categorized separately within the system. Only packs designed for the current
+						application version should be fully supported, with older packs receiving <i>minimal
+						compatibility support</i> where possible. Vanilla assets, if fully configurable,
+						should be bundled into a <i>single package</i>, either embedded within the binary or
+						provided as an external resource, though modifications should be prohibited,
+						ensuring they are only loaded once on startup. Traversing embedded assets manually
+						would no longer be necessary.
+					</p>
+					<p>
+						The resource pack selection screen would maintain a two-tab structure, unloaded
+						packs on the left and loaded packs on the right. Higher screen resolution
+						eliminates the need to combine both lists into a single view, as that could
+						reduce discoverability. Only brief descriptions of packs should be displayed,
+						avoiding unnecessary detail within the UI. A watcher system should actively
+						monitor all packs, ensuring real-time updates. Upon exiting the pack selection
+						screen, all selected packs should be loaded into memory, though they should
+						remain unlocked, allowing dynamic reloading of all packs except vanilla assets,
+						even when no changes occur within the UI.
+					</p>
+					<p>
+						When new items are added to the pack list, the selected entry should remain
+						active but shift accordingly. If an entry is removed, the selection should be
+						cleared. Entries would not be selected by mouse but hovered; other control
+						methods would select entries. The file watcher should function as an independent
+						utility class, not an inner class of the display system. During loading, packs
+						should be locked, preventing modifications until the process completes. Movement
+						of packs via keyboard or controller should require the entry to be actively
+						selected, reinforcing structured navigation. The entry list might use a linked
+						list. <i>Soft-read</i> locks should secure pack metadata retrieval, ensuring safe
+						concurrent access. Logo dimensions should remain unrestricted, though optimal
+						sizing should always be enforced. Stream handling remains low-level, so a better
+						manager should be made; filtering assets for retrieval should no longer be
+						necessary since it would no longer contain a directory structure. Only embedded
+						assets may invoke <code>readStringFromInputStream</code>, though usage might be
+						minimized. Metadata structures should transition away from JSON, with asset
+						content organized across multiple files instead of relying on single metadata
+						sources.
+					</p>
+				</content>
+			</section>
+			<section title="Pack Loading Steps">
+				<content>
+					<p>
+						<b>Initial Pack Loading during Application Startup</b>
+						<list>
+							<li>Locate the directory containing packs.</li>
+							<li>Match available packs with user preferences.</li>
+							<li>
+								Select compatible packs; issue warnings for unsupported versions or
+								missing entries.
+							</li>
+							<li>Apply a hard lock on all packs, including vanilla assets.</li>
+							<li>
+								Verify vanilla assets via checksum validation; emit errors if
+								inconsistencies arise.
+							</li>
+							<li>Load selected packs sequentially into memory.</li>
+							<li>Release all loaded packs upon successful completion.</li>
+							<li>Finalize initialization.</li>
+						</list>
+					</p>
+					<p>
+						<b>Pack Reloading after Saving Preferences</b>
+						<list>
+							<li>Unload all assets except vanilla assets.</li>
+							<li>Identify matching packs and apply hard locks; issue errors if needed.</li>
+							<li>If recoverable errors occur, revert to the pack list screen.</li>
+							<li>If a pack updates during the process, return to the pack list screen.</li>
+							<li>Load selected packs sequentially into memory.</li>
+							<li>Release loaded packs.</li>
+						</list>
+					</p>
+					<p>
+						The built-in loading screen before loading other assets would use <i>embedded</i>
+						assets in the binary. Although vanilla assets are managed differently, their
+						format and specifications should remain <i>consistent with custom packs</i>. The
+						key distinction lies in how the pack manager aligns operations within the
+						standardized system.
+					</p>
+				</content>
+			</section>
+			<section title="Pack Management and Initialization Framework">
+				<content>
+					<p>
+						Since pack loading requires <i>distinct stages</i> for initialization and
+						configuration, a single pack manager may not suffice. Post-construction
+						initialization is not considered design-safe, requiring multiple utility
+						components to streamline pack management workflows. Individual packs should
+						remain <i>self-contained</i>, ensuring safe execution structures.
+					</p>
+					<p>
+						All pack loading operations should be handled through a function within the
+						manager system. Skins should be processed separately from other assets. If
+						assets are loaded at a lower level, their processing logic might not reside
+						within the Kotlin part.
+					</p>
+					<p>
+						Exceptions should be handled at the <i>individual pack level</i>, meaning that
+						strict mode should terminate loading upon encountering errors, while compatible
+						mode should bypass minor exceptions, allowing support for older versions.
+					</p>
+				</content>
+			</section>
+			<section title="Book Display and Text Management">
+				<content>
+					<p>
+						The <code>BookDisplay</code> implementation likely stemmed from previous
+						attempts to introduce editable books, but text field handling requires
+						improvement. Further refinements should be discussed separately. Additionally,
+						books without a title and page count should not be classified as books, meaning
+						they should never use this class.
+					</p>
+					<p>
+						The <code>PagedDisplay</code> class is redundant, as its functionality can be
+						more effectively replaced by a <i>scroll pane</i>, which offers greater ease of
+						use. Unless the system explicitly manages book-like content, pages are unnecessary,
+						making the class unnecessary.
+					</p>
+				</content>
+			</section>
+			<section title="Book Content Handling and Translation Compatibility">
+				<content>
+					<p>
+						Since books function as items with stored content, translating them dynamically
+						is discouraged, except for special book types. Translation discrepancies between
+						server-side and client-side configurations could lead to inconsistent content
+						display. For game-generated static books (such as "<i>Antidious</i>"), these
+						should be categorized separately from regular book items to enable client-side
+						translation support.
+					</p>
+					<p>
+						Thus, <code>BookData</code> should be considered an outdated structure, as static
+						book content should be managed via assets rather than hardcoded within the code.
+					</p>
+				</content>
+			</section>
+			<section title="Utilities">
+				<content>
+					<p>
+						In Kotlin, <code>Action</code> should be replaced with a <i>typealias</i> for the
+						function type <code>() -> Unit</code>, declared in the utils file. Similarly,
+						<code>Condition</code> could be defined as <code>() -> Boolean</code>, or enhanced
+						using a functional interface for additional capabilities. <code>MonoCondition</code>
+						would be better replaced by <code>Predicate</code>, improving clarity and modularity.
+					</p>
+					<p>
+						<code>Dimension</code>, <code>Insets</code>, <code>Point</code>, and
+						<code>Rectangle</code> should transition into <i>immutable value classes</i>. These
+						graphical elements should be encapsulated within a dedicated graphics module,
+						restricting use to client-side operations. Additional functions should support
+						transformations and interactions with these classes. <code>Insets</code> may be
+						redundant if <code>Dimension</code> suffices, though certain functionalities
+						could be directly merged into <code>Rectangle</code>.
+					</p>
+					<p>
+						The <code>Ellipsis</code> class likely functions as a dot-based loading
+						animation, a format that is rarely used today. Modern UI favors progress bars,
+						spinners, or more dynamic and informative animations. The dot animation system
+						should be retired. <code>SequentialEllipsis</code> seems to loop a single dot,
+						while <code>SmoothEllipsis</code> mimics a looping effect similar to a progress
+						bar. The <code>DotUpdater</code> updating functions, though varied, lack
+						significant justification for inclusion and should be reconsidered.
+					</p>
+					<p>
+						Direction-based positions should follow standardized enum class structures,
+						supporting configurations with two, four, five, eight, or nine directions.
+						<code>RelPos</code> exemplifies a set of nine directional positions in a
+						rectangle, while border layouts require sets of five directions.
+						<code>xIndex</code> and <code>yIndex</code> should be computed dynamically based
+						on <code>ordinal</code>, rather than being explicitly stored. To enhance value
+						safety, methods such as <code>getPos</code> should be avoided, with
+						<code>getOpposite</code> optimized through switch-case structures in Java or
+						<code>when</code> blocks in Kotlin. If anchors must be defined based on
+						<code>Point</code> and <code>RelPos</code>, an <code>Anchor</code> class should
+						be introduced. Some classes may support interchanging, while "<i>to</i>"
+						functions are preferred over "<i>from</i>" functions.
+					</p>
+					<p>
+						Both <code>Tickable</code> and <code>ClientTickable</code> serve no real purpose,
+						lacking clear functional necessity, and the reason behind this cannot be found.
+						<code>Direction</code> represents entity activity directions, but its enum
+						constraints limit extensibility when additional directional systems are required.
+						A <i>spherical coordinate-based vector</i> system with unit length definitions would
+						provide better flexibility for direction systems without a limited set of directions.
+					</p>
+					<p>
+						Positional coordinates (e.g., x and y) should not be treated as separate
+						parameters, but consolidated into unified structures, particularly when representing
+						vectors or object positions. This ensures a single-point reference model, applicable
+						to simple vectors, tile positions within dimensions, or other models.
+						Returning entries, such as tiles from chunk managers, should yield data objects
+						containing positional references, tile types, and metadata, allowing direct
+						modifications without extra method calls. Entity instantiations and removals
+						may adhere to a similar management approach.
+					</p>
+					<p>
+						Most functions in <code>MyUtils</code> can be replaced with helper functions from
+						existing utility libraries. Any functions explicitly designed for this codebase
+						should be declared as top-level functions for improved simplicity.
+					</p>
+					<p>
+						Due to limitations in coordinate system design, <code>Vector2</code> remains
+						underutilized in the codebase. Multiple vector classes should be introduced,
+						accommodating different parameter configurations and vector properties. These
+						classes should maintain record-class structures with immutable fields or as value
+						classes, ensuring primitive-like value integrity.
+					</p>
+					<p>
+						Certain utility classes could be introduced for synchronization. Thread-safe
+						maps and collections require simplified syntax, resembling Rust’s
+						<code>Mutex</code> and <code>ReadWriteLock</code> implementations. Note that
+						existing libraries may already have been available for this purpose. A similar
+						class could be introduced for managing internally held instances, though
+						ensuring proper design remains the developer’s responsibility.
+					</p>
+				</content>
+			</section>
+			<section title="Toast and Notification System">
+				<content>
+					<p>
+						Toast notifications should replace on-screen notification text, with world
+						events communicated via chat and client-side game events displayed as toasts.
+						Each toast notification should maintain its own defined lifetime, ensuring
+						structured appearance and expiration timing.
+					</p>
+					<p>
+						The current toast usage hierarchy lacks consistency. <code>AppToast</code>
+						extends <code>Toast</code>, yet is handled at the same level as the superclass,
+						leading to inconsistencies in field usage. Toasts should either be defined as
+						separate classes or treated as structured subclasses within a unified system,
+						depending on implementation needs. The behavioral distinctions between toast
+						categories suggest that a simple classification approach may be not enough.
+					</p>
+					<p>
+						Application (system) toasts and gameplay toasts share similar structural properties
+						but serve different use cases. Separating them visually by placing application
+						notifications in the bottom-right corner (similar to Windows system notifications)
+						and gameplay notifications in the top-right corner would provide clear
+						distinction and accessibility. Additionally, players should be able to review
+						gameplay notifications via the inventory menu and access application
+						notifications through the pause menu or other non-gameplay screens.
+					</p>
+					<p>
+						Toast content should support formatted text, allowing bold titles (pre-styled)
+						and detailed descriptions via external functions responsible for formatted
+						output generation. Instance creation may not be overly frequent, permitting
+						full instantiation of frames without singleton constraints.
+					</p>
+					<p>
+						The toast constructor design should maintain similar parameter structures,
+						with subclasses deciding primary attributes while allowing optional extra
+						parameters. The sprite property should be treated as an abstract property
+						rather than a constructor parameter, enabling consistent code pattern
+						generalization. Toasts should support nullable values for custom rendering,
+						yet favor sprite-based rendering for simplicity. A separate class may be
+						introduced to align both code quality and flexibility of rendering, allowing
+						sprite rendering and advanced animated rendering.
+					</p>
+					<p>
+						Toast animations could be introduced but require separate discussion regarding
+						implementation specifics. <code>AchievementUnlockToast</code> is not optimally
+						used in its current form, better structural management for content, frame design,
+						and animation handling should be considered.
+					</p>
+				</content>
+			</section>
+			<section title="Fishing System">
+				<content>
+					<p>
+						All fishing-related code should be contained within the item class,
+						ensuring logical structuring and consistency.
+					</p>
+					<p>
+						The <code>FishingData</code> system could be converted into resources linked
+						via resource keys, streamlining data management. For realism, the fishing line
+						could have durability, with the potential to break if stretched excessively,
+						requiring players to replace it. Fishing rods should be restricted to catching
+						fish rather than other item types while remaining usable anywhere.
+					</p>
+				</content>
+			</section>
+			<section title="Tool Type System and Mining Mechanisms">
+				<content>
+					<p>
+						<code>ToolType</code> should transition from an enum-based system to a class
+						structure, with all instances stored as constants. <code>ToolItem</code>
+						instances should reference these tool types directly during construction,
+						avoiding loop-based initialization. The tool type should be stored as an item
+						property, enhancing modularity.
+					</p>
+					<p>
+						If tiles incorporate a <i>health system</i>, mining level mechanisms for tools may
+						become obsolete. However, a dual health meter system could be introduced,
+						where using an appropriate tool activates a mining meter, accelerating resource
+						extraction. Additionally, single-action harvesting tools could bypass the
+						mining meter entirely, eliminating the concern altogether.
+					</p>
+					<p>
+						Tool durability should remain exclusive to item instances, rather than being
+						defined by tool types. Some materials may not have a dedicated tool type,
+						requiring alternative mechanisms for extraction. Attack damage bonuses for
+						tools may be managed via mappings, associating attacker and target attributes
+						before linking them to specific tools. These collections could be registered
+						to the specific tools systematically, ensuring consistency across combat
+						interactions.
+					</p>
+				</content>
+			</section>
+			<section title="Bucket and Plant Systems">
+				<content>
+					<p>
+						The <code>BucketItem</code> should store <i>fluids</i> rather than tiles, ensuring
+						alignment with its intended purpose as a liquid container. The concept of a
+						"<i>hole</i>" tile value is illogical; it should instead be null, emphasizing
+						the absence of fluid rather than an arbitrary placeholder. Additionally, the
+						<code>offset</code> field, once relevant for sprite sheet slicing, has lost
+						its necessity and can be replaced by <code>ordinal()</code> for cleaner indexing.
+					</p>
+					<p>
+						Some systems like plants, should not depend exclusively on tile instances, but
+						rather on plant class registrations within the game system. This registry-driven
+						approach allows tiles, items, and other related elements to be registered based
+						on the core plant classifications. This includes but not limited to trees, crops,
+						flowers and grass. Given this structure, mechanisms for <code>TreeTile</code>,
+						<code>FlowerTile</code>, and <code>CropTile</code> should be unified, providing
+						shared functionality while still allowing specific behaviors per plant type,
+						such as fertilization.
+					</p>
+					<p>
+						Both real-life and fantasy plant species could be supported within the system,
+						introducing unique mechanisms like growth, harvesting, nutrition, diseases, and
+						life stages. Examples of fantasy species include heavenly berries and hellish
+						berries. Each plant type should undergo systematic development, ensuring its
+						growth mechanisms align with environmental factors.
+					</p>
+				</content>
+			</section>
+			<section title="Color System">
+				<content>
+					<p>
+						The legacy formatted color values are no longer relevant and should not be
+						maintained. Instead of relying on the tint function, the system should support
+						expanded predefined colors and alternative utility functions. Formatting codes
+						should not be handled within <code>Color</code>, but rather assigned to a
+						dedicated class responsible for display string formatting or another
+						appropriate system. Additionally, original format codes may contain <i>control
+						characters</i>, which cannot be directly typed, limiting their usability.
+					</p>
+					<p>
+						The <code>limit</code> function is redundant, as it essentially mirrors the
+						existing <code>clamp</code> function, warranting removal. Tinting functions,
+						along with most related functions, should also be deprecated, though the
+						lightness calculation method may still be repurposed elsewhere.
+					</p>
+					<p>
+						The <code>ClothingItem</code> class has faced long-standing issues, primarily
+						due to its lack of meaningful functionality. Its mechanisms should undergo a
+						complete rewrite, aligning with a system similar to Leather Armor in Minecraft,
+						allowing for greater adaptability and refinement.
+					</p>
+					<p>
+						The dye system should transition from a limited color selection to a more
+						extensive color range, such as a full 32-bit RGB spectrum. However, dyed
+						objects may present modeling challenges, requiring a blending or color mapping
+						function for proper visualization. A 1-bit image may facilitate tinting
+						textures, using a dedicated tinting function to ensure consistent rendering
+						across different dyed materials.
+					</p>
+				</content>
+			</section>
+			<section title="Wool and Carpet Tiles">
+				<content>
+					<p>
+						The <code>canWool</code> mechanism appears illogical and should be considered
+						for removal from the game. Replacing wool tiles with carpet tiles may be a
+						better alternative, ensuring cleaner mechanisms and usability.
+					</p>
+				</content>
+			</section>
+			<section title="Audio System">
+				<content>
+					<p>
+						The audio system would be redesigned using <i>OpenAL</i>, supporting multiple
+						new features. However, mixing algorithms will be excluded, opting instead for
+						simple additive methods to maintain audio consistency and quality.
+						<list>
+							<li>
+								<b>Non-game environments</b> should feature only UI sounds and background
+								music (BGM).
+							</li>
+							<li>
+								<b>In-game audio</b> should exclusively originate from world-based sound
+								sources while an additional ambience track may be available for
+								environmental audio like raining, ensuring immersive interactions.
+							</li>
+							<li>
+								<b>In-game sound sources</b> should remain unrestricted, while non-game
+								elements should be limited to the two primary sources.
+							</li>
+						</list>
+						Further implementation will be integrated within the future asset system,
+						allowing flexibility and refinement in managing sound behaviors.
+					</p>
+				</content>
+			</section>
 			<section title="Basic Code Structures">
 				<content>
-					<p> =01=
-						<code>Action</code> in Kotlin could be instead a typealias of function type
-						<code>() -> Unit</code>, and declared in utils. It is the similar as
-						<code>Condition</code>, which could instead be <code>() -> Boolean</code>
-						or a functional interface with advanced features. However,
-						<code>MonoCondition</code> could be replaced by <code>Predicate</code>.
-					</p>
-					<p> =05=
-						Toasts are usable, but not the notification text directly on
-						screen. All notifications would be replaced by chat (in game for world events) or
-						toasts (any client event in game). The toasts would have their own lifetime.
-					</p>
-					<p> =05=
-						The usages of toasts are not in the same level. <code>AppToast</code> is a subclass
-						of <code>Toast</code>, but it is used in the same level as the superclass by the
-						fields. They should either be separate classes or subclasses, or even in the same
-						system. It depends on actually how they would be implemented. The behaviors of the
-						toasts may be different by this, so it could not be said in simple words just now.
-					</p>
-					<p> =16=
-						Resources or assets would not be loaded early as before canvas initialization, but packs would be loaded
-						at the same time as vanilla assets.
-					</p>
-					<p> =24=
-						Colors, there is entirely no need to care about old-formatted color values. However,
-						it could just use the similar functions, but there could be more colors, using less
-						the tint function, or probably using other utility functions. For formatting codes,
-						they would not be handled in <code>Color</code>, but another class handling display
-						strings or whatever fits. In fact this kind of format may exist control characters
-						that normally could not be typed, so they could not be used properly. The
-						<code>limit</code> function is just the <code>clamp</code> function, repeated. The
-						tinting functions and most other functions would likely be removed, but the lightness
-						calculation could be reused, in somewhere.
-					</p>
-					<p> =01=
-						<code>Dimension</code>, <code>Insets</code>, <code>Point</code> and
-						<code>Rectangle</code> could be made into value classes, in which the fields should
-						be immutable. Likely these classes related to graphics would be hidden into the
-						graphics module, which would be only used by client side. There could be more
-						functions to transform, operate or interact with these value classes. Also, Insets
-						may not be really needed when there is <code>Dimension</code>, but probably the
-						functions could be directly added to <code>Rectangle</code>.
-					</p>
-					<p> =01=
-						If guessed correctly, <code>Ellipsis</code> is probably just the dotting animation.
-						This style is mostly not used, since it is more tended to show more details and be
-						more intuitive. Mostly, spinners, progress bars or more fancy animations are used
-						nowadays. Ellipsis would not be used in the future. <code>SequentialEllipsis</code>
-						seems to be moving a single dot per period; <code>SmoothEllipsis</code> seems to be
-						looping dots like a loading progress bar without progress. The <code>DotUpdater</code>
-						updating methods seem to be various but really unnecessary, it is still lacking
-						information.
-					</p>
-					<p> =09=
-						Texture atlas could be implemented, especially when the engine is lower level, since
-						it could improve memory efficiency for a mass number of sprites. All the textures
-						would use the same set of atlases, in which a new one would be created only when
-						the existing one(s) is/are full. However, a difficulty is that not all the sprites
-						would be squares or even squares with the sides of powers of 2, a good algorithm
-						would be required. A reference could be taken from
-						<a href="https://www.david-colson.com/2020/03/10/exploring-rect-packing.html">
-							this article
-						</a>. Note that they would be mostly rectangles or squares, and all textures from
-						all the assets packs would be loaded. <code>MinicraftImage</code> is just an
-						alternative of the existing image classes with just a simpler class structure, but
-						may not be used.
-					</p>
-					<p> =10=
-						Darkness rendering would be advanced based on light sources and light level values
-						saved in the chunk data. Rendering lightness would depend on the gamma value set.
-						Mirroring settings could just be 2 separate boolean values, but sprite transforming
-						would be realized in another way, probably by filtering function or something.
-					</p>
-					<p> =09=
-						As for <code>Sprite</code>, there would probably be a high level wrapper of the
-						low level sprite instances. When sprites are loaded into the centralized texture
-						atlas, each sprite corresponds to a pointer with some information locating the
-						entire sprite pixels in the atlas. Then the sprites are saved into the registries.
-						So, <code>Px</code> would also be replaced by the OpenGL functionalities.
-					</p>
-					<p> =09=
-						The <code>SpriteAnimation</code> should really be the animated instances of the
-						sprites with just a pointer with some little extra data. However, it may either
-						be the animated UI components, or the animated texture parts. The sprite
-						architecture should be similar to the specification as in assets pack. Also,
-						the implementation of it internally is too complex, there is no need to align
-						with the time outside, but just a simple tick counter by the ticking function.
-						The borders should not be done here, but in another level. If it is just a
-						simple extended variable instances from a sprite, there is no need for this,
-						all the instances would be recreated, so no "relinking" is needed. However,
-						these may probably just be remade from zero as a better solution.
-					</p>
-					<p> =09=
-						These are probably a lot of messes in the codebase. The <code>SpriteManager</code>
-						should be done by registries. If the skin is directly managed by the account,
-						the in-game management of skins would be a lot simpler, without bothering with
-						the records. The "missing" textures should be done in a higher level class than
-						this. If the texture atlas system is done, there is no need to manage the sheets
-						of all the sprites like this even loaded entire from the assets. The
-						<code>SpriteMeta</code>, probably ignored, to be smashed and remade. The
-						<code>SpriteType</code> logic is quite messy, they should just be registry things.
-						Sprites and <code>SpriteLink</code>, quite complex though, too much. Why would
-						there need to mirror the tiles respectively without mirroring the relative
-						positions of them in a sprite? It is probably just because there is no a
-						well-made filtering mechanism in the rendering system. OpenGL has these
-						functionalities.
-					</p>
 					<p> =12=
 						If achievements become account-based, all the data would come from server instead
 						of application assets. The implementation would probably like the Xbox achievements
@@ -2339,31 +2805,6 @@
 						management. The achievement notification could be a lot better, like using toasts.
 						The original unit class <code>Achievement</code> is quite light, with only a few
 						fields, with other parts in the display class, but not organized well.
-					</p>
-					<p> =05=
-						Toast is quite a good idea, but the implementation could still be improved. There
-						are application (system) toasts and gameplay toasts, having similar properties, but
-						they are used in different places. To make them separated, a better way could be
-						putting application notifications in the bottom-right corner like the system
-						notifications and gameplay notifications in the top-right corner. Players could still
-						access the gameplay notification center in the inventory menu screens and the
-						application notification center in the pause menu or any other screen outside game.
-						The content should be formatted text, but somewhere, there could be bold title with
-						details by an external function forming the resultant formatted text. There would not
-						be too frequent for the instances, so the frames could be fully instantiated without
-						using singletons. The constructor could be similar, that parameters are mostly decided
-						by the subclasses with optional extra parameters. The sprite property could also be
-						abstract property instead of constructor parameter with field, such patterns could be
-						generalized as a code style. It accepts nullable for custom rendering, but should only
-						with sprites for simplification. Animations could be supported, but it is another
-						topic. <code>AchievementUnlockToast</code> is not that good usage. Still, there should
-						be a better to handle the content, frame and animations.
-					</p>
-					<p> =13=
-						For the <code>BookDisplay</code>, most probably the previous trial to implement the
-						editable books, but the way to handle text fields could really be better. More details
-						should be discussed later. Books without the title and page count are not books and
-						should never use this class.
 					</p>
 					<p> =12=
 						There could still be the <code>HowToPlayDisplay</code> screen. Firstly, the
@@ -2382,11 +2823,6 @@
 						gameplay guides should be put into general guides. However, advanced guides
 						would not be placed here, but instead other places, like with a wiki. The
 						layout of this screen may refer to the one in Minecraft: Bedrock Edition.
-					</p>
-					<p> =13=
-						There is no the real need of <code>PagedDisplay</code>. It could really be replaced
-						by using a scroll pane, which is even more easy-to-use than pages, unless they
-						are really books, but not the case. Not much to notice, this class could be dropped.
 					</p>
 					<p> =12=
 						For <code>QuestsDisplay</code>, the management part could be separated like how
@@ -2432,121 +2868,11 @@
 						probably a select dropdown for showing all, only unlocked or only completed series, and
 						the display menu on the right would be empty if no series is selected in the tab.
 					</p>
-					<p> =01=
-						There may be different sets of directions or positions, but they should be managed in a
-						standardized way, with their enum classes. For example, there would be sets of 2, 4, 5,
-						8 or 9 directions. <code>RelPos</code> is an example of a set of 9 directions in a
-						rectangle. A border layout would use a set of 5 directions. <code>xIndex</code> and
-						<code>yIndex</code> should rather be computed on demand according to the natures of
-						<code>ordinal</code>. To be value-safe, functions like <code>getPos</code> would be
-						avoided, and <code>getOpposite</code> would use switch-case or when instead. If there
-						must be a value of anchor based on <code>Point</code> and <code>RelPos</code> specified,
-						a dedicated class of <code>Anchor</code> could exist.
-					</p>
-					<p> =16=
-						The resource packs and similar things would no longer rely on the directory
-						structures. There would be several categories of the assets. The only supported
-						version of the packs should only be the one the version of the application was
-						designed for, and the older packs may only be loaded with minimal supports
-						where possible. As for the vanilla assets, if all the assets are configurable,
-						they should be packed as one and either embedded in the binary or as an external
-						asset, but modifications to it is disallowed and thus only loaded once on start.
-						There is no longer the need to traverse the embedded assets. The screen would
-						still be 2 tabs with the left unloaded and the right to load. With a higher
-						resolution, there is really no need to combine them into one list while it could
-						reduce the discoverability of the list. Only the brief description of the packs
-						would be needed, so the screen does not have to be detailed. The watcher would
-						monitor all the packs. When leaving this screen, all the packs are loaded into
-						memory, and the packs would not be locked, so all the packs except vanilla
-						assets would be reloaded even if there is no change while on this screen. For
-						the list entries, if there are new items added to the list, the selected one
-						would be kept selected but shifted, and the selection would be removed if the
-						entry is removed; the list entries would not be said to be selected by the mouse,
-						but for the other controls. The file watcher, would be itself as a utility class,
-						so would not be the inner class of the display class or such. On the other hand,
-						they are locked to ensure it would not be modified during loading. If they are
-						keyboard or controller controls, the packs could only be moved while selected.
-						Then, the list entries are also likely linked. For reading the information of
-						the pack, "soft read" lock would only be needed, the dimensions of the logo
-						would not be limited, but there are always the optimal ones. This stream handling
-						part is actually quite low level. There would also no need for the filter to
-						get the assets content. Depending on the assets, mostly only the embedded assets
-						may use the <code>readStringFromInputStream</code> function, but not a must. The
-						metadata would no longer be a single file, and most content may not use the JSON
-						structures.
-					</p>
-					<p> =16=
-						The steps to load packs on start during initialization would be:
-						<list>
-							<li>Load directory for packs.</li>
-							<li>Match packs with preferences.</li>
-							<li>Select matched packs and ignore others, warnings may be emitted.</li>
-							<li>Hard lock all the packs including vanilla assets.</li>
-							<li>Validate vanilla assets with a checksum, an error may be emitted.</li>
-							<li>Load all the packs in order into the memory.</li>
-							<li>Release all the packs.</li>
-							<li>Finish initialization.</li>
-						</list>
-						Note that the assets for the loading screen would be embedded, but it is possible
-						that there could be a "booting" screen configured after loading.
-					</p>
-					<p> =16=
-						The steps to load packs after saving the pack preferences would be:
-						<list>
-							<li>Unload all the assets except vanilla assets.</li>
-							<li>Select matched packs and hard lock packs, errors may be emitted.</li>
-							<li>If reversible errors are emitted, return to the pack list screen.</li>
-							<li>If any pack is updated during the process, return the screen.</li>
-							<li>Load all the packs in order into the memory.</li>
-							<li>Release all the packs.</li>
-						</list>
-						Obviously, the way to manage the vanilla assets is quite different from custom
-						packs, but the format and specification would still be the same. The part which
-						matters would only be how the pack manager works to align with the standard system.
-					</p>
-					<p> =16=
-						Since it would involve different stages for initialization and configuration, there
-						may not only be the single manager for the packs. Post-construction initialization
-						would not be design-safe, so the stages may be separated into several utility parts
-						for the entire pack management system. Individual packs would be on their own, but
-						the workflows must be safe enough as designed.
-					</p>
-					<p> =16=
-						For pack loading, all the parts would just be handled by a function with the manager.
-						Skins would be handled separately from the assets. If assets loading is handled in the
-						lower level, the processing code may not be here. As for loading packs, the exceptions
-						would only take for a single pack, but the entire loading process would be stopped for
-						strict mode. Also, the compatible mode would skip some unimportant exceptions and allow
-						loading old versions.
-					</p>
 					<p> =12=
 						Tutorials should be reworked. However, they could just be in the How to Play screen
 						or as guides configured in the menus, which could be referred from RimWorld. As for
 						completion detection, those may be detected in realtime, including the interactive
 						elements and input events. The one in Minecraft is not valuable for reference here.
-					</p>
-					<p> =09=
-						The rendering part of entity is mainly responsible by the texture models, but the
-						appearance may be different depending on the entity states and properties. For this,
-						an extra control element might be better than using method overrides. Moreover, the
-						interactive models are handled differently and only affect physics, while both are
-						stored in the entity. Still note that the interactive models should be simpler than
-						the texture models, since textures may be preloaded as atlas.
-					</p>
-					<p> =01=
-						Both <code>Tickable</code> and <code>ClientTickable</code> have no use. There is no point
-						to have them, so the reason behind this cannot be found. The <code>Direction</code> is
-						actually the entity activity direction, but when it would not be 4 or 5 only, the enum
-						would become insufficient. For direction system other than the compass directions, a
-						vector in spherical coordinates with a unit length would be used.
-					</p>
-					<p> =21=
-						Having <code>ExplosionTileTicker</code> as the animation is actually a bad idea. In fact,
-						using tiles as the animations is a bad design idea itself already. Given the tile system
-						that ticking of tiles are random, but tile entities are ticked regularly, the transitional
-						state as a tile could interfere the design consistency of the entire system. Apparently,
-						other than having a transitional tile, particle animations with immediate tile destruction
-						are a more consistent way to the system. <code>ExplodedTile</code> should be removed.
 					</p>
 					<p> ====
 						If there is something that runtime lists may not do much, static fields may actually
@@ -2558,140 +2884,10 @@
 						code does not mean improving runtime performance, even using loops to reduce the parts
 						of code does not mean the method is wise or the developer is smart.
 					</p>
-					<p> =10=
-						<code>Lantern</code> could be just one of the advanced artificial light source options.
-						The way to handle lighting could be really better. The current way does not handle light
-						blocking by objects, but actually gameplay experience could be enhanced if it could be
-						done. The way to if-else chain the enums could be changed into switch-cases if the JDK
-						version could be raised, but in Kotlin, <code>when</code> could be used.
-					</p>
 					<p> ====
 						Actually, in the structure of Kotlin, some constructor parameters could be simplified
 						to abstract properties. Also, not everything has to be in the constructors but the
 						factor helper methods.
-					</p>
-					<p> =09=
-						For mob sprites, the compilation would be generalized into a kind of
-						models.
-					</p>
-					<p> =09=
-						If the models of mob are standardized, there is no need to have
-						separate sprite sets for player carrying textures. Rendering of player is quite straightforward, like swimming
-						and item holding, even falling, but item holding might but clearer, not only when
-						they are being used.
-					</p>
-					<p> =25=
-						All fishing-related code should all be handled in the item class.
-					</p>
-					<p> =21=
-						For particles, each particle entity should represent one unit of sprite for
-						consistency. Also, they are not expected to have active interactions with other
-						world objects. The <code>TextParticle</code> is actually not like particles, but other
-						kind of visual effects, and the effects are too much for a particle. The mechanism of
-						<code>WaterParticle</code> is actually too complex, but the code could have been
-						simplified if initial velocities could be supported as general entity mechanisms.
-					</p>
-					<p> =09=
-						When an item is being rendered, most of the time it would be on the Heads-Up Display
-						(HUD) or in inventory menus. Other chances to be the sprites of item entities. The
-						difference is that, when they are rendered on the Graphical User Interface (GUI),
-						some extra information like durability may also be rendered along with the model of
-						the item. Therefore, models and the GUI rendering functions would be separated for
-						items.
-					</p>
-					<p> =13=
-						If the nature of books is to be an item in the world with content stored, it is not
-						recommended to have them translated unless they are a special type of books. It is
-						because there could be inconsistencies between server and client sides if the stored
-						content may differ between different client settings. Thus, for the static books
-						generated or originated from the game internals, like the "Antidious" book, they
-						should be handled in a separate item instead of regular book item. This is to
-						support client side translation, which clients would support. This means
-						<code>BookData</code> would be an outdated structure. This kind of static content
-						should be handled by assets instead of being in the code.
-					</p>
-					<p> =27=
-						<code>BucketItem</code> should contain fluid instead of tile. Hole does not make sense
-						but null since this kind of item is intended to contain actual fluid or liquid. The
-						<code>offset</code> field is no longer useful when they are cut down to smaller
-						sprites from an entire sprite sheet, could be replaced by <code>ordinal()</code>.
-					</p>
-					<p> =24=
-						<code>ClothingItem</code> has been an issue for long time. There is actually no
-						real use for the original mechanism, but it could be rewritten like Leather Armor
-						in Minecraft.
-					</p>
-					<p> =24=
-						In fact, dyes could be more flexible than having a small set of colors, but a wide
-						range of colors like 32-bit RGB set. A limitation would be that dyed objects may
-						be hardly modelled, so a blending or color mapping function may be necessary. A
-						1-bit image could be used for tinting textures with the given tinting function.
-					</p>
-					<p> =25=
-						<code>FishingData</code> could be turned into resources linked by resource keys.
-						It might be more realistic if string could be broken when stretched too much, that
-						players have to change the string. Fishing rods would be only able to catch fishing
-						but not other items. Also, rods could be used anywhere.
-					</p>
-					<p> =25=
-						For <code>ToolType</code>, it would not be an enum, but a typical class, with all the
-						instances stored as constants. All the <code>ToolItem</code> instances would use the
-						references to the types for construction, without any looping. The tool type would be
-						stored as item property. However, if all the tiles have a health system, there might
-						not be a kind of mining level system for tools. Still, there could be two meters of
-						health that when a suitable tool is used, a mining meter could be used. Also, if
-						some tools could harvest a resource with only one action, the health meter could be
-						ignored, and thus the aforementioned concern would be invalid. Durability of tool
-						would not be set in the type but only in the item instances. It is possible that
-						there could be a material that there is no a tool type specifically for it. For
-						attack damage bonuses, there could be a mapping to collections for tools, taking
-						attacker and attack targets as parameters, and eventually sent to the collection
-						for the specific tool; the entire collection would then be registered to the tool.
-					</p>
-					<p> =21=
-						The glint particle in <code>WateringCanItem</code> should be registered. Besides,
-						the splashing particles could be handled better, to a more generalized extent.
-						The working mechanisms of this are actually quite magical, but could be rewritten.
-						Also, it should not take the tile player selected as the target but the area of
-						tiles close to the player.
-					</p>
-					<p> =27=
-						Some systems like plants may not purely rely on the tile instances but the classes
-						of plants registered into the game. Then, tiles, items, etc., would be registered
-						according to the registries of these plants. This includes trees, crops, flowers,
-						grass, etc. Both <code>TreeTile</code>, <code>FlowerTile</code> and
-						<code>CropTile</code> would be combined for mechanisms in this sense, although
-						there might still be some differences in the details for different types of plants.
-						This includes fertilization.
-					</p>
-					<p> =28=
-						<code>canWool</code> is actually a mechanism that does not really make sense. For the
-						logic, this should be a feature that may be removed in the game. Also, having a
-						carpet tile may be better than a wool tile.
-					</p>
-					<p> =27=
-						For the variations of crops and plants, there could be real-life species as well as
-						fantasy species, like the heavenly berries and hellish berries. Mechanisms like
-						harvesting, growing stages, diseases, nutrition, etc., would all be implemented for
-						all kinds of plants.
-					</p>
-					<p> =10=
-						Background of the world would be handled by shaders, so the scene may not be static.
-						Entity rendering would be controlled by rendering distance configured by the client.
-						Light rendering would be controlled by shaders based on the tile light values,
-						light blending and raytracing would also be programmed by shaders, without the
-						information of entity lighting, including the sight blocking from player.
-					</p>
-					<p> =01=
-						Coordinates, such as x and y, would not be treated as separate parameters. Instead,
-						they would be consolidated into a single entity, particularly when representing a
-						vector or an object's position. This approach ensures that positional data is conveyed
-						as a unified parameter, whether in the form of a simple vector, a tile position
-						referencing a dimension, or another integrated structure. When returning entries,
-						like a tile from chunk manager, an entry describing the positions and the specified
-						tile type with all the metadata included would be created, so the data could also be
-						modified directly without invoking extra methods. Entity instantiations and removals
-						may also be handled in the similar way.
 					</p>
 					<p> =12=
 						Advancements and quests share similar properties and natures, so a common superclass
@@ -2744,18 +2940,6 @@
 						even be tracked before being unlocked. However, the quest system would follow the
 						similar structure as the advancement system since the original style has been
 						outdated.
-					</p>
-					<p> =01=
-						Most functions in <code>MyUtils</code> could be replaced by the helper functions
-						from various utility libraries. If there are functions designed specifically for
-						this codebase, they may actually be declared as top level functions for simplicity.
-					</p>
-					<p> =01=
-						Unfortunately, due to the coordinate system implementation, the <code>Vector2</code>
-						class is not fully utilized in code. There would be several classes to represent
-						different forms of vectors with different parameters and properties. However, it
-						is important to note that they should all be record classes with all the fields
-						immutable, to be treated as primitive-like values.
 					</p>
 				</content>
 			</section>
@@ -2837,22 +3021,6 @@
 					or enums would be used. It is because any errors caused with the strings could only
 					sometimes be known in runtime, thus there could be potential bugs. It could also
 					cause extra performance overheads in runtime by string representation and parsing.
-				</p>
-				<p> =29=
-					The audio system would be remade with using OpenAL. Several features would be
-					implemented. And note that no mixing algorithm would be used, only simple additions.
-					This should ensure the quality of audio with consistency. When not in game, there would
-					only be UI sounds and BGM; when in game, other sounds only come from the world. There
-					should be no limitation with in-game sound sources, but seemingly only 2 major sources
-					for non-game elements. Further implementation would be handed in the future asset
-					system.
-				</p>
-				<p> =01=
-					Some utility classes could be made for synchronization. For some places, synchronized
-					maps and collections are needed, but the syntax should be more straightforward, like
-					the <code>Mutex</code> or <code>ReadWriteLock</code> in Rust. A similarly favored class
-					could be made for generic instances holding internally by the constructor with the new
-					instances. This could only be ensured by the developer writing the code, though.
 				</p>
 			</content>
 		</section>
