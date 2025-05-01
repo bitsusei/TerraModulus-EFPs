@@ -109,7 +109,7 @@
 	<xs:element name="section">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="content" type="content"/>
+				<xs:element name="content" type="content" minOccurs="0"/>
 				<xs:element ref="section" maxOccurs="unbounded" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="title" type="xs:string" use="required"/>
