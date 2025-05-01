@@ -279,6 +279,11 @@
 							and plans based on the original code and future development drafts
 						</li>
 						<li>
+							<b>General Code Style</b>: Drafting out general code style guidelines according
+							to the codebase practices and phenomenon, preventing unnecessary and unintended
+							repeated mistakes
+						</li>
+						<li>
 							<b>Development Roadmap and Direction</b>: Commenting on the original direction
 							of the Minicraft+ project and planning on the future roadmap and direction based
 							on that for TerraModulus
