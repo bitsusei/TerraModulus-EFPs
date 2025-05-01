@@ -9,9 +9,11 @@
 	<body>
 		<section title="Introduction">
 			<content>
-				In EFP 2, a plan to review TerraModulus Relictus branch has been made. This EFP describes
-				about the report of the entire review process. In the following, the report will be presented
-				section by section according to the previously made plan.
+				<p>
+					In EFP 2, a plan to review TerraModulus Relictus branch has been made. This EFP describes
+					about the report of the entire review process. In the following, the report will be presented
+					section by section according to the previously made plan.
+				</p>
 			</content>
 		</section>
 		<section title="Codebase Commentary">
@@ -2795,234 +2797,383 @@
 					</p>
 				</content>
 			</section>
-			<section title="Basic Code Structures">
+			<section title="Achievements, Advancements and Quests">
 				<content>
-					<p> =12=
-						If achievements become account-based, all the data would come from server instead
-						of application assets. The implementation would probably like the Xbox achievements
-						in Minecraft: Bedrock Edition. Anyway, the code, logic or parts that are not related
-						to the UI should be separated from the classes, like the loading thing or achievement
-						management. The achievement notification could be a lot better, like using toasts.
-						The original unit class <code>Achievement</code> is quite light, with only a few
-						fields, with other parts in the display class, but not organized well.
+					<p>
+						If achievements transition to an account-based system, all related data should
+						be sourced from the server rather than application assets. This setup would
+						resemble Xbox achievements in Minecraft: Bedrock Edition, enhancing cross-device
+						consistency.
 					</p>
-					<p> =12=
-						There could still be the <code>HowToPlayDisplay</code> screen. Firstly, the
-						rendering of keys could be enhanced with using images, which are the mapped
-						keys, but not the names of the mappings. All the paragraphs would be put into
-						a single translation entry to simplify this thing, but there may be ignorable
-						odd double line breaks between paragraphs. There would be actually 3 types of
-						controls: Keyboard Only, Mouse &amp; Keyboard, Controller. No fallback, so when
-						any controller is disconnected, keyboard would still not usable, unless it is
-						"Controller &amp; Keyboard", with the pattern that "major-first-minor-second".
-						For every set of controls, there would be a guide, with topics in the subtopics
-						under each setting of control. If there are guides without <i>any</i> control,
-						they should be placed aside the control guides. Usage guidelines for each set
-						of controls could be different, but most of the basic functionalities would
-						still be usable. Control guides should be put into control guides; general
-						gameplay guides should be put into general guides. However, advanced guides
-						would not be placed here, but instead other places, like with a wiki. The
-						layout of this screen may refer to the one in Minecraft: Bedrock Edition.
+					<p>
+						To improve code organization, achievement logic and non-UI components should be
+						decoupled from display-related classes, ensuring separation between achievement
+						management and loading mechanisms. Achievement notifications could be redesigned
+						using toast notifications, delivering more streamlined and engaging alerts.
 					</p>
-					<p> =12=
-						For <code>QuestsDisplay</code>, the management part could be separated like how
-						advancements should have been done. This kind of quest tree display would be quite
-						complex, so keyboard navigation would be available only on keyboard-only mode; or
-						the mouse should be used to drag. Like mentioned in other mechanisms like OSK keys,
-						the components could be linked. There are various ways to display the node description
-						in the tree layout: the first way is using tooltips; the second way is showing the
-						content in a separate menu with the hovering node, empty if nothing hovered; the third
-						way is to select the node on press and show the content in a separate menu. It would
-						depend on whether there would be features supported here. As for the JSON structure,
-						it would not be important when it would no longer be formatted in this way as sources.
-						Full refreshing functions like <code>refreshDisplayableQuests</code> should only be
-						invoked only when they are loaded or something, but not every time some elements are
-						updated, which should always be done in sync with any related activities. This includes
-						<code>reloadEntries</code>, though the data should not be updated in real-time even if
-						they are changed, instead should be the snapshot at the time accessed for simplicity
-						and also consistency. The inner subclasses of <code>Display</code> are quite complex, but
-						they could just be made as submenus.
+					<p>
+						The existing <code>Achievement</code> unit class is lightweight, containing only
+						a few fields, while other logic resides within the display class, hindering
+						clarity. Reorganizing these elements would greatly improve structure and
+						maintainability.
 					</p>
-					<p> =12=
-						In the structure of quests, they are organized as series. There is no singleton quests
-						but series of quests. A series includes several quests, which may be unlocked in
-						sequence. When showing the menu list of series, they could be listed on the
-						left-hand-side and put the tree layout on the right-hand-side menu, making use of the
-						screen. If there is description for the series, it would be put on the right-hand-side,
-						on the top or on the bottom, outside te tree. Certainly, while there would be 2 separate
-						systems of quests and advancements, quests would not depend on the system of advancements
-						but the more abstract structure. In abstraction, they are called "Progression Systems".
-						Locked quests would always be hidden to prevent spoiler, but advancements may be hidden
-						depending on the levels. The implementation of <code>SeriesQuestViewerDisplay</code> is
-						really complex, if there is a component supporting drawing graphics in shapes this could
-						be a lot simpler, in addition that the nodes could still be boxes of components. Still,
-						if the components could be shapes, there is even no need for the graphics component,
-						simply placing them in the component pool. Making rows and columns while they are
-						unnecessarily like that would be complex, but making linking like elements in a linked
-						list should be enough. That means there would also not need the map of quest
-						relationships when they could just be put into the quest node component instance. Auto
-						scrolling would be used only for keyboard or controller controls, or mouse dragging would
-						be used instead. If the quest manager is instantiated, there is no need the functions of
-						<code>resetGameQuests</code> or <code>load</code>, and saving would be handled by a world
-						save manager. There are no need separated tabs for unlocked and completed series, but
-						probably a select dropdown for showing all, only unlocked or only completed series, and
-						the display menu on the right would be empty if no series is selected in the tab.
+					<p>
+						The quest management system should be separated from <code>QuestsDisplay</code>,
+						similar to how advancements were intended to be structured. The quest tree
+						display is complex, requiring keyboard navigation in keyboard-only mode, with
+						mouse-based drag controls as an alternative. The components could be linked like
+						how OSK keys work.
 					</p>
-					<p> =12=
-						Tutorials should be reworked. However, they could just be in the How to Play screen
-						or as guides configured in the menus, which could be referred from RimWorld. As for
-						completion detection, those may be detected in realtime, including the interactive
-						elements and input events. The one in Minecraft is not valuable for reference here.
+					<p>
+						Several methods for node description presentation could be adopted:
+						<list>
+							<li>Tooltips displaying descriptions on hover</li>
+							<li>A dedicated panel showing hovered-node content</li>
+							<li>Selecting a node via click and displaying content in a separate menu</li>
+						</list>
+						The selected method would depend on feature support and available UI capabilities.
 					</p>
-					<p> ====
-						If there is something that runtime lists may not do much, static fields may actually
-						more debugging-friendly.
+					<p>
+						The JSON-formatted data structure of the quest data would no longer be important
+						when a new data format will be proposed. Entry and menu data synchronization with
+						internal states should always be preferred over full refreshing of the status and
+						lists to prevent unnecessary overheads and ensure consistencies and simplicities.
+						For example, <code>refreshDisplayableQuests</code> and <code>reloadEntries</code>
+						should be used upon data loading.
 					</p>
-					<p> ====
-						The string analysing and parsing way is too error-prone. In fact, we should rather let compiler
-						complain than allow runtime errors or subtle bugs to occur, and reducing the amount of
-						code does not mean improving runtime performance, even using loops to reduce the parts
-						of code does not mean the method is wise or the developer is smart.
+					<p>
+						Inner subclasses within <code>Display</code> subclasses remain overly complex, but
+						they could be converted into structured submenus.
 					</p>
-					<p> ====
-						Actually, in the structure of Kotlin, some constructor parameters could be simplified
-						to abstract properties. Also, not everything has to be in the constructors but the
-						factor helper methods.
+					<p>
+						Quests should not exist as singletons—instead, but structured in series, with
+						individual quests unlocking sequentially. The quest menu layout could display
+						series lists on the left, while the quest tree visualization occupies the
+						right-hand menu. Series descriptions should be positioned either at the top or
+						bottom of the tree layout.
 					</p>
-					<p> =12=
-						Advancements and quests share similar properties and natures, so a common superclass
-						should be made for simplification. A more important part is that most vanilla
-						modularized components should be able to be easily disabled in the same public
-						interface. There should be categories for advancements to organize for different
-						topics of progress; would still be series for quests. Even if they have
-						categorization, groupings may also be used within a category or a series, or in other
-						words, a category or a series may contain more than one tree of elements. To let the
-						progress be recorded, the elements or units could require both preceding elements
-						and completion criteria to be both exist, that the criteria may be recorded preventing
-						requiring repeated completion after the preceding elements being completed when they
-						have already been fulfilled. All the elements would still be tree-linked with the
-						preceding elements to be the requirement for the succeeding elements to be able to
-						be completed. The configuration may no longer use JSON to define the structure for
-						the ease of creation and parsing. When the preceding elements have already to be
-						completed, the succeeding elements should be unlocked unless they are necessarily
-						hidden; if completing an element requiring completing another element, it should be
-						included as a kind of criteria instead of being a "requirement" as both "criterion"
-						and "requirement" have similar meanings. Also, rewards should be abstract and with
-						a list for each element. Each criterion may follow with description and the boolean
-						value of whether to be visible. <code>AdvancementTrigger</code> should be renamed
-						to <code>AdvancementTracker</code> for clarity. Trackers would also be in a registry,
-						to let the conditions of criteria to be detected and fulfilled. In fact, trackers
-						and condition handlers may also be constructed as anonymous classes. For working
-						instances, they may have the references to the metadata of the elements and also
-						the status of the elements for each tracking target, either global or player.
-						Trackers should be using generic types to reduce the verbosity in using type
-						checking. <code>Rangeable</code> should be separated into Minimum, Maximum and
-						Range; <code>ItemConditions</code> could be simplified to a counting-based instead
-						stack-based basis; there should be no no-op criterion and tracker but empty for the
-						element to simplify the structure. During the processing of elements, the game
-						should not be saved for progress synchronization. When passing a record to trackers
-						to track for, a criterion working instance and the element working instance could
-						be bundled in a new record object instead of being mutually included to simplify
-						the structure.
+					<p>
+						Quests and advancements should remain distinct, as quests rely on a more abstract
+						progression systems than advancements. In abstraction of them, they are called
+						"Progression Systems". Locked quests should always remain hidden to prevent
+						spoilers, while advancements may be selectively obscured based on advancement
+						levels.
 					</p>
-					<p> =12=
-						Although most main utility parts of the advancement system are in the
-						<code>AdvancementElement</code> class, since the amount of code is quite high, it
-						would still be better to separate the content for different responsibilities in a
-						separate package. If recipes can be disabled, they should be in a separate public
-						interface, so not only advancements could be able to handle recipe locking. An
-						advancement category may be per-user basis or global, depending on the nature of
-						the topic.
+					<p>
+						The <code>SeriesQuestViewerDisplay</code> implementation is notably complex.
+						A configurable shape-drawing component could simplify tree-node visualization,
+						allowing quest nodes to function as discrete UI components. If geometric shapes
+						could be defined as components, direct placement within component pools would
+						remove the need for graphical drawing algorithms, significantly reducing system
+						complexity. Elements could be aligned as rows and columns.
 					</p>
-					<p> =12=
-						A different of quests from advancements is that quests may have prerequisites to
-						be unlocked before to be able to be completed, so the completing criteria may not
-						even be tracked before being unlocked. However, the quest system would follow the
-						similar structure as the advancement system since the original style has been
-						outdated.
+					<p>
+						The quest tree structure should follow a linked list format, eliminating the
+						need for quest relationship mapping, as node-to-node connectivity should be
+						handled within the component instance itself. Auto-scrolling should apply to
+						keyboard and controller users, while mouse-based users can drag the tree view
+						freely.
+					</p>
+					<p>
+						If a quest manager is instantiated, functions such as
+						<code>resetGameQuests</code> and <code>load</code> should be deprecated, with
+						saving handled via the world save manager.
+					</p>
+					<p>
+						A select dropdown should replace separate tabs for unlocked and completed series,
+						allowing users to filter quests by "All," "Unlocked," or "Completed", with an
+						empty right-hand display when no selection is active.
+					</p>
+					<p>
+						Given shared properties between advancements and quests, a common superclass
+						should be introduced for simplification and structured inheritance. Most modular
+						vanilla components would allow easy toggling by using same public interfaces.
+					</p>
+					<p>
+						Advancements should be grouped into topic categories, while quests retain
+						series-based organization. Multiple progress trees may exist within a single
+						category or series, ensuring flexible progression tracking.
+					</p>
+					<p>
+						Progress elements should require both prerequisite elements and completion
+						criteria, ensuring tasks marked as completed remain fulfilled upon later
+						prerequisite unlocking. All elements should form tree-linked structures,
+						with preceding elements acting as unlocking requirements for succeeding tasks.
+					</p>
+					<p>
+						To streamline structural definitions, JSON should be replaced with more
+						efficient and structural formats, simplifying creation and parsing.
+					</p>
+					<p>
+						When the preceding elements have already to be completed, the succeeding
+						elements should be unlocked unless they are necessarily hidden; if completing
+						an element requiring completing another element, it should be included as a
+						kind of criteria instead of being a "requirement" as both "criterion" and
+						"requirement" have similar meanings. Also, rewards should be abstract and with
+						a list for each element. Each criterion may follow with description and the
+						boolean value of whether to be visible.
+					</p>
+					<p>
+						The existing <code>AdvancementTrigger</code> should be renamed to
+						<code>AdvancementTracker</code>, ensuring clarity in role designation.
+					</p>
+					<p>
+						Trackers should be registered systematically, facilitating progress detection.
+						They should also support anonymous class implementations, where active instances
+						reference both metadata and tracking status, whether global or player-specific.
+					</p>
+					<p>
+						Trackers should incorporate generic types, reducing verbosity in type checking.
+						Additionally:
+						<list>
+							<li>
+								<code>Rangeable</code> should be split into Minimum, Maximum, and Range
+								components.
+							</li>
+							<li>
+								<code>ItemConditions</code> should transition from stack-based tracking
+								to count-based evaluation.
+							</li>
+							<li>
+								No-op conditions and trackers should be removed, with empty conditions
+								used for structure simplification
+							</li>
+						</list>
+					</p>
+					<p>
+						During the processing of elements, the game should not be saved for progress
+						synchronization. During tracker evaluation, elements should be bundled into
+						record objects, preventing mutual inclusion complexity.
+					</p>
+					<p>
+						Given the complexity of <code>AdvancementElement</code>, separating
+						responsibilities into distinct classes in a separate package would enhance
+						organization. Recipe-locking functionalities should exist within a public
+						interface, enabling advancements or other game systems to control recipe
+						access restrictions. Advancement categories may be user-specific or global,
+						depending on the nature of the tracked progress.
+					</p>
+					<p>
+						Unlike advancements, quests may require prerequisites to be unlocked before
+						tracking completing criteria, preventing pre-unlock tracking. However, the
+						quest system should align structurally with the advancement system, as its
+						current format is outdated.
 					</p>
 				</content>
 			</section>
-			<section title="Extra Notes">
+			<section title="Help and Tutorials">
 				<content>
 					<p>
-						While doing the low level programming anywhere, even in the Kotlin parts, careful
-						coding is always required. It means, extra attentions are always needed, to ensure
-						the logics make sense without heavily relying on the compiler while the compiler
-						may not give valuable information just by the errors or warnings. This is especially
-						important while porting low level APIs to the higher level places, since it may
-						sometimes be forgotten.
+						The <code>HowToPlayDisplay</code> screen may be retained, with key rendering
+						improved using images, displaying mapped keys rather than textual key names.
+						Paragraphs should be consolidated into a single translation entry, simplifying
+						content management, though minor inconsistencies in line breaks may be
+						unavoidable.
 					</p>
 					<p>
-						When there are some utility classes, the internal code may be somehow lower level,
-						so the above rules apply. Also, the resultant syntax of the usages should be
-						idiomatic in Kotlin or even practical according to the code patterns.
+						Control schemes should be categorized into three types:
+						<list>
+							<li>Keyboard-Only</li>
+							<li>Mouse &amp; Keyboard</li>
+							<li>Controller-Only</li>
+							<li>Controller &amp; Keyboard</li>
+						</list>
 					</p>
 					<p>
-						Listeners must be handled well. They are registered when they are set up, but they
-						should be unregistered when the holders of the event listeners are destroyed, or
-						they are no longer used. There should be no "zombie" listeners happening. This
-						could only be ensured by the developers, and the compiler could not validate this.
-						Try-finally may be used if it is inside a try-catch block.
+						Pure controller scheme may not be recommended if controller connection
+						is unstable. If the controller-only option is selected, the keyboard remains
+						unusable even when the controller disconnects, so it is essential to carefully
+						select the options. The order of the names follows the major-first, minor-second
+						pattern. Each keybinding set does not share settings to another scheme.
 					</p>
 					<p>
-						In fact, when the constructions of classes are limited, as long as they are still
-						in the scope of context, they should be safe to be public. This covers the cases
-						when particularly some classes are doing their responsibilities in their domains
-						for other parts. This case, if the source data are from the other parts where the
-						creations are already limited and the classes in the domain are using the source
-						data with the publicly exposed classes definitions, the source data are still
-						limited in the scope safely even they are in the other domains as long as they
-						are well-designed.
+						Each control scheme should feature structured guides, with subtopics categorized
+						under individual control settings. General gameplay guides should be separated
+						from control-specific guidance, while advanced guides may be referenced
+						externally, such as in a wiki. The layout might align with the structure used
+						in Minecraft: Bedrock Edition.
 					</p>
 					<p>
-						Visibilities of code entities should be handled well and logical enough. If there
-						exist some functions or constants that are general, they could be considered
-						being moved out of the class. Also, if some members are designed to be used in
-						a specific scope, they should not be highly visible to prevent breaking mechanisms.
-					</p>
-					<p>
-						If a numerical countdown involves a specific event as designed, it should not be
-						made as a countup unless there are more events associated to this counter. However,
-						specifically, if the event dominates, there may still be a countdown designed for
-						the event and the countup for the others. If it involves time, increment or decrement
-						should be done at the end of the ticking function, and all the conditions regarding
-						the counter should be done prior than counter updates.
-					</p>
-					<p>
-						When there is no necessity, avoid singletons. This is to avoid unnecessary verbosity
-						caused by the extra unused code regenerated by declaring classes as singletons.
-					</p>
-					<p>
-						For a single file, there should be no more than two levels of inner classes in
-						general. This is to prevent unnecessary verbosity and ensure simplicity,
-						organization and readability of class structures.
-					</p>
-					<p>
-						Extension functions should be used wisely to prevent unnecessary pollutions. This may
-						greatly affect coding experience.
-					</p>
-					<p>
-						Classes that are solely referenced by another class within a package containing multiple
-						related components should ideally be nested within the class utilizing them,
-						particularly when thematic organization applies.
-					</p>
-					<p>
-						There should be a guideline that when initializations of fields are enough to be inlined,
-						they should be kept there and not put into initialization block.
+						Tutorials should be restructured, merging into the How-To-Play screen or
+						menu-based guides, akin to RimWorld’s guide system. Completion detection should
+						occur in real-time, tracking interactive elements and input events dynamically.
+						Minecraft’s tutorial approach is not applicable here.
 					</p>
 				</content>
 			</section>
 		</section>
-		<section title="Feature Implementation">
+		<section title="General Code Style">
 			<content>
 				<p>
-					When it is possible to not use string keys, they should be avoided. Instead, defined constants
-					or enums would be used. It is because any errors caused with the strings could only
-					sometimes be known in runtime, thus there could be potential bugs. It could also
-					cause extra performance overheads in runtime by string representation and parsing.
+					In this section, code style is mostly about the Object-Oriented Programming (OOP)
+					practices in Kotlin.
 				</p>
 			</content>
+			<section title="Data Structures and Debugging Practices">
+				<content>
+					<p>
+						Prefer <i>static fields</i> when runtime lists offer minimal advantages, as static
+						fields can enhance debugging accessibility.
+					</p>
+					<p>
+						Avoid overly concise code for performance assumptions. Reducing code size does not
+						necessarily improve runtime efficiency, nor does using loops inherently indicate
+						a better or smarter approach.
+					</p>
+				</content>
+			</section>
+			<section title="Constructor and Property Optimization in Kotlin">
+				<content>
+					<p>
+						Constructor parameters should be simplified into abstract properties when
+						applicable.
+					</p>
+					<p>
+						Not all initializations need to be placed directly in constructors. Factory
+						helper methods can often provide better structuring.
+					</p>
+				</content>
+			</section>
+			<section title="Low-Level Programming Considerations">
+				<content>
+					<p>
+						Extra caution is required when dealing with low-level programming, even in Kotlin,
+						to ensure logical correctness without over-reliance on compiler warnings or errors.
+					</p>
+					<p>
+						When porting lower-level APIs to higher-level components, developers must
+						remain vigilant to prevent overlooking critical details.
+					</p>
+				</content>
+			</section>
+			<section title="Utility Classes and Code Idioms">
+				<content>
+					<p>
+						Internal logic in utility classes often operates at a lower level, requiring
+						careful adherence to coding best practices.
+					</p>
+					<p>
+						Resultant syntax should remain idiomatic to Kotlin, leveraging practical code
+						patterns for improved clarity.
+					</p>
+				</content>
+			</section>
+			<section title="Event Listener Management">
+				<content>
+					<p>
+						Listeners must be properly registered and unregistered when their holders are
+						destroyed or deemed unnecessary.
+					</p>
+					<p>
+						"Zombie" listeners should be avoided, as they introduce memory leaks and
+						unintended behaviors. Compilers may not be able to check this.
+					</p>
+					<p>
+						Using try-finally within try-catch blocks can ensure proper listener cleanup.
+					</p>
+				</content>
+			</section>
+			<section title="Class Visibility and Scope Management">
+				<content>
+					<p>
+						If a class’s construction is restricted through private or internal
+						constructors, it can be safely marked public. External code cannot instantiate
+						it directly, keeping control within its intended scope.
+					</p>
+					<p>
+						Some classes serve specific roles within their domain. Even when publicly
+						exposed, they primarily function within their designated boundaries, ensuring
+						their responsibilities remain intact.
+					</p>
+					<p>
+						When data moves across domains using publicly available class definitions,
+						safety is maintained as long as the system is well-designed. If the original
+						domain constrains data creation, the integrity remains protected even when
+						other domains use the data.
+					</p>
+				</content>
+			</section>
+			<section title="Code Entity Visibility">
+				<content>
+					<p>
+						General-purpose functions or constants should be moved outside their class
+						definitions for broader accessibility.
+					</p>
+					<p>
+						Restrict visibility of specific members to prevent unintended modifications
+						and access that might break mechanisms.
+					</p>
+				</content>
+			</section>
+			<section title="Counter Mechanisms and Event Timing">
+				<content>
+					<p>
+						Numerical countdowns should only transition to count-up models when multiple
+						events require tracking.
+					</p>
+					<p>
+						If an event dominates counter functionality, both countdown (for the event)
+						and count-up (for secondary triggers) may coexist.
+					</p>
+					<p>
+						Increment/decrement operations should occur at the end of ticking functions,
+						while conditions regarding counters should be processed beforehand.
+					</p>
+				</content>
+			</section>
+			<section title="Avoidance of Unnecessary Singletons">
+				<content>
+					<p>
+						Singletons should be avoided unless absolutely necessary, as they introduce
+						additional verbosity and unused code overhead.
+					</p>
+				</content>
+			</section>
+			<section title="Class Nesting">
+				<content>
+					<p>
+						A single file should contain no more than two levels of inner classes, ensuring
+						better readability, organization, and simplicity of class structures, even
+						preventing unnecessary verbosity.
+					</p>
+					<p>
+						Classes referenced exclusively by another class within a multi-component package
+						should be nested within their primary referencing class, particularly when
+						thematic consistency applies.
+					</p>
+				</content>
+			</section>
+			<section title="Extension Function Usage">
+				<content>
+					<p>
+						Extension functions should be used thoughtfully, avoiding excessive pollution
+						that negatively affects coding experience.
+					</p>
+				</content>
+			</section>
+			<section title="Field Initialization Guidelines">
+				<content>
+					<p>
+						If inline initialization is enough, fields should be kept inlined rather
+						than delegated to an initialization block.
+					</p>
+				</content>
+			</section>
+			<section title="String Key Avoidance">
+				<content>
+					<p>
+						String keys should be avoided whenever possible. Instead, defined constants or
+						enums should be used to prevent runtime-only errors and potential bugs and reduce
+						unnecessary parsing overhead.
+					</p>
+					<p>
+						String parsing is error-prone. In fact, when it is possible to use a way to use
+						OOP features such as classes and builders, those should be used instead of string
+						representations, prevent unnecessary parsing overheads and errors, even subtle bugs.
+						This way, compiler may also aid debugging when the OOP way is used.
+					</p>
+				</content>
+			</section>
 		</section>
 		<section title="Development Roadmap and Direction">
 			<content>
