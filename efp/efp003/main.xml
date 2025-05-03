@@ -19,12 +19,17 @@
 		<section title="Codebase Commentary">
 			<content>
 				<p>
-					The source code was originally reviewed with an order but later reorganized by their
-					respective topics and themes. The review has been conducted as of commit
-					<code>2ba2b09bf94110efbdc36cd95ce8d74a20835205</code>.
-					In the following, various content will be discussed following their headers.
-					Please note that the organization of content in this section has been aided by Artificial
-					Intelligence (AI).
+					The source code was originally reviewed with an order but later reorganized by their respective
+					topics and themes. The review has been conducted as of commit
+					<code>2ba2b09bf94110efbdc36cd95ce8d74a20835205</code>. In the following, various content will be
+					discussed following their headers. Please note that the organization of content in this section has
+					been aided by Artificial Intelligence (AI).
+				</p>
+				<p>
+					This section presents commentary on the Minicraft+ codebase, reviewed in preparation for
+					the new TerraModulus project. Observations include evaluations of the existing implementation as well
+					as suggestions aligned with upcoming development directions. Where applicable, proposed changes for
+					TerraModulus are distinguished from recommendations for refining the existing codebase.
 				</p>
 			</content>
 			<section title="Application Initialization and Entrypoint">
@@ -3174,11 +3179,68 @@
 					</p>
 				</content>
 			</section>
+			<section title="UI Control and Data">
+				<content>
+					<p>
+						The Model-View-Controller (MVC) principle is an important pattern to separate
+						responsibilities of different components in the application. For example, the
+						UI instances of settings only view and control the internal setting values of
+						the settings, but are not persistent or acting as container for internal code.
+					</p>
+				</content>
+			</section>
 		</section>
 		<section title="Development Roadmap and Direction">
 			<content>
 				<p>
-
+					The review of the Minicraft+ codebase serves as the basis for the development of TerraModulus,
+					focusing on both refining the existing project and strategically planning for the new one.
+					The roadmap emphasizes a transition towards a more structured, modular, and efficient
+					architecture.
+				</p>
+				<p>
+					A key aspect of this direction is a clear separation of concerns, reflected in the proposed
+					organization of the <code>core</code> package and input handling. The application framework
+					will feature a dedicated <code>Main.kt</code> file for client and server implementations.
+					The <code>Game</code> component will be instantiated as <code>TerraModulus</code>, with
+					versioning managed through the application profile. Input handling will be streamlined into
+					distinct classes for key, text, gamepad, and mouse inputs, while controller management will
+					be handled by a dedicated <code>ControllerManager</code>.
+				</p>
+				<p>
+					The user interface will undergo significant enhancements, moving towards a component-based
+					design similar to AWT or Swing. This will improve code quality and scope management, with
+					screens and menus managed more effectively. The settings system will be refactored into
+					a <code>Preferences</code> system, ensuring settings values are independent of UI components.
+					Furthermore, the logging system will be transitioned to a different library for improved
+					idiomatic usage, and the save system will adopt a schema-driven framework to ensure
+					backward compatibility.
+				</p>
+				<p>
+					The roadmap also outlines significant advancements in several other areas. <i>Asset and
+					resource management</i> will be modernized to handle game resources more efficiently.
+					<i>Code quality</i> is a central concern, with a drive towards cleaner, more maintainable,
+					and idiomatic Kotlin code. A <i>new framework</i> is being developed to provide a robust
+					foundation for TerraModulus. There is consideration for using <i>Rust</i> for lower-level
+					engine components to potentially enhance performance. A <i>brand new world system</i> is
+					planned, promising more dynamic and engaging environments. Enhancements to <i>physics</i>
+					are also in scope, alongside the ambition to introduce a <i>3D world</i>. The project aims
+					to leverage <i>more libraries</i> to expand functionalities and features.
+				</p>
+				<p>
+					World generation will be a major focus, with a shift towards more flexible, customizable,
+					and standardized procedural generation techniques. This includes the use of scripting and
+					custom data formats to allow for extensive control over world generation parameters,
+					features, and structures. The roadmap also addresses the importance of robust error handling,
+					efficient memory management, and a consistent user experience.
+				</p>
+				<p>
+					Overall, the development roadmap for TerraModulus outlines a comprehensive overhaul of
+					the Minicraft+ codebase, aimed at creating a more maintainable, extensible, and feature-rich
+					game. This involves a focus on improved architecture, UI design, input handling, and world
+					generation, alongside significant advancements in asset management, code quality, and the
+					underlying engine, with an emphasis on modularity, clarity, and adherence to Kotlin's
+					idiomatic principles.
 				</p>
 			</content>
 		</section>
