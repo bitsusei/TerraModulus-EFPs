@@ -1,0 +1,296 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+	 efp="2" created="2025-01-28" category="process" status="draft" title="Relictus Review Plan">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="2"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					Before the actual development of TerraModulus, the old codebase, Relictus, should be reviewed
+					for further development. This includes all the works to do for the development, like the
+					features, utilities and mechanisms.
+				</p>
+				<p>
+					In this proposal, several topics would be covered and certain procedures would be defined.
+				</p>
+			</content>
+		</section>
+		<section title="Code Patterns">
+			<content>
+				<p>
+					Mainly, this is about Java code styles or patterns. However, some would be translated
+					to Kotlin, so some code patterns would be in Kotlin. Though later, some more code patterns
+					would be defined for the whole project for more parts like the ones in Rust.
+				</p>
+				<p>
+					Generally, some principles would be adapted, which are SOLID (SRP (Single Responsibility
+					Principle), OCP (Open/Closed Principle), LSP (Liskov Substitution Principle), ISP (Interface
+					Segregation Principle), DIP (Dependency Inversion Principle)), DRY (Don't Repeat Yourself),
+					GRASP (General Responsibility Assignment Software Patterns), LoD (Law of Demeter), COI
+					(Composition Over Inheritance), BDD (Behavior-Driven Development), CQRS (Command Query
+					Responsibility Segregation), DDD (Domain-Driven Design), ACID (Atomicity, Consistency, Isolation,
+					Durability), CAP Theorem (Consistency, Availability, Partition tolerance), FP (Functional
+					Programming), IoC (Inversion of Control), EDA (Event-Driven Architecture), CQS (Command-Query
+					Separation), DbC (Design by Contract), UA (Uniform Access), and basic ones:
+					Encapsulation, Abstraction, Polymorphism, Cohesion, Coupling, Delegation, Idempotence.
+				</p>
+				<p>
+					However, some design patterns or principles would not be implemented, like KISS (Keep It Simple,
+					Stupid) and YAGNI (You Aren't Gonna Need It). There are several reasons for this. Firstly,
+					KISS is too generic while our systems would less likely be always simple unnecessarily. As
+					for YAGNI, since our systems are mainly APIs, when there are potential usages and functions,
+					the features or methods could be implemented, the principle would less likely be adapted. For all
+					the Object-Oriented (OO) Designs, singletons would be less considered than regular classes,
+					instead, separate instances would be considered. This would assure that the system would
+					not be too fragile and thus less error-prone and more rigid. Despite this, if the
+					application involves local resources, a file lock could be used to ensure that only single
+					instance is launched for data integrity and consistency.
+				</p>
+			</content>
+			<section title="Object-Oriented Programming">
+				<content>
+					<p>
+						In general Object-Oriented Programming (OOP), for both Java and Kotlin, the designs and
+						principles would be discussed in the following.
+					</p>
+					<p>
+						Several principles would be adapted directly: SRP, LSP, DbC, CQS, DIP, DRY, LoD,
+						GRASP, COI, BDD, FP, IoC, EDA, UA. Mostly, there would not be many extra interpolations
+						over them.
+					</p>
+					<p>
+						For OCP, the entities are not necessarily closed, but should always be open. This should
+						ensure that the system are extensible in wide ways, but modifications are not always
+						avoided for functionality expansions. Other parts of OCP would be adapted directly.
+					</p>
+					<p>
+						There should be a balance between ISP and DDD. While realizing DDD, each entity should
+						have only one responsibility in one level, which is not limited to the responsibilities
+						in lower levels. This is all decided by designs.
+					</p>
+					<p>
+						DRY is the realization of using abstractions. Using delegations, LoD would be used.
+						Many of the above principles involve abstractions and encapsulation. When performing
+						abstractions, it is always recommended to apply COI.
+					</p>
+					<p>
+						All the global states should be immutable. Mutable states are kept in objects
+						or instances. Thus, all these objects and instances should only exist in methods
+						or function blocks, and not stored in global states. This is not applicable in the
+						terms of threads or processes.
+					</p>
+					<p>
+						When using assertions or assertion-like programming, it should be ensured that all
+						cases are covered, and when necessary, errors may be thrown. Considering all
+						potential cases should ensure that no potential bugs would occur. If some
+						"assertions" failed, it is regarded as design bugs and are preferentially thrown
+						with crashing, although the design bugs may not essentially interrupt the process.
+						In some aspects, mods or plugins may be the causes of design bugs, it may be related
+						to be code of them, or the compatibility issue of the APIs with the content, but more
+						likely the authors of the content to check the code.
+					</p>
+					<p>
+						The responsibility of the class should not change with the constructor arguments.
+						Then, there should be no unused fields leftover while the fields may be used in
+						other cases, decided by the constructor. This is the responsibility of the fields.
+						This is purely affected by the code design. In other words, a field should not be
+						unused because one field is in another value, or "state". In any state, all the fields
+						should be used in the same way, taking their only responsibility. Otherwise, it could
+						also not ensure the class has only one responsibility. When needed, subclasses should
+						be made instead. An example of realization is
+						<a href="https://github.com/MinicraftPlus/minicraft-plus-revived/pull/666">
+							Minicraft+ #666
+						</a>.
+					</p>
+					<p>
+						SRP is applied together with CQRS, CQS and DbC. On the other hand, IoC may also be used
+						for some interfaces.
+					</p>
+					<p>
+						Avoid having code that may access the fields during class initialization. For example,
+						in Java, if there is code in another method accessing the field before field assignment
+						invoked in the class initialization, a Null Pointer Exception (NPE) may be thrown when
+						accessing the field in a non-null way. In design, it should be ensured that no code
+						that would access the class or object field during the initialization of the class or
+						object, unless it is highly assured. This is difficult to be checked by the compiler
+						and thus the responsibility of the developer.
+					</p>
+					<p>
+						For exceptions and errors, all exceptions should be caught regardless whether they
+						are checked or not. This should ensure that when there is any exception occurred,
+						the information would be enough for bug fixing. The main is to avoid uncaught exceptions
+						as many as possible. Then, all the exceptions should all be handled. The excepted cases
+						are handled in the respective expected ways, including the exceptions. If the
+						unexpected exceptions are known from the documentation, such cases may be directly
+						regarded as "design bugs" or coding bugs; else they are handled as unknown errors.
+						Unknown errors could be more serious as it may involve more different parts of
+						the application and the runtime, but it could also be the issues caused by badly
+						coded mods or plugins.
+					</p>
+					<p>
+						In any cases of exceptions, logs, even traces, are still preferentially printed.
+						Exceptions are used only when the cases are <i>unexpected</i> or <i>unusually</i>
+						happened. This could prevent too many exceptions being thrown in runtime and saving
+						CPU time generating stack traces. If they are expected, code that does not throw
+						the exceptions is more preferred. Exceptions other than checked or runtime exceptions
+						may be handled by the top running loop or as uncaught, since these errors should
+						be completely unexpected to happen. When unexpected exceptions occur, the necessary
+						steps are just to pass them to the error handler, and cancel the operation according
+						to the level of exception. They should not be thrown again as they are "caught".
+						However, if the exceptions should be rethrown to be handled by higher level, these
+						should be rethrown directly and possibly wrapped in a more general exception,
+						preferentially without logging.
+					</p>
+					<p>
+						An example of exception usage is number parsing. Input should first be checked by
+						a regex made completely fitting the case; then no exception would be expected, since
+						the malformed numbers would have already been handled when checking with the regex.
+						Any more exception thrown by parsing would instead be regarded as "design bug", that
+						the regex is not well-formed to suit the case.
+					</p>
+					<p>
+						For API flexibility and extensibility, classes are encouraged to be non-final, but
+						the classes could be final, only if they are completely not designed to be extendable.
+						Sometimes, classes or registries are preferred over enums if the components could be
+						designed to be extendable for mods. This would allow wide extensibility for modding.
+					</p>
+					<p>
+						EDA is useful when the main process enters the main loop. Arbitrary events are
+						proceeded in the side threads, and may trigger the main process for further operations.
+						This would include sound events, which act as side threads for audio processing.
+						These may not directly control the main process, but would affect the main process
+						at some extents, and the main process may control the states of the event processes.
+					</p>
+					<p>
+						While coding, special cases should generally be avoided. This should ensure the neatness
+						of the code while keeping the logic clean and intuitive. The UA Principle is applicable
+						to this design pattern. This is good for logical neatness and uniformity, and favored
+						by OOP. Many logical bugs could be prevented in this manner.
+					</p>
+					<p>
+						For DIP, it is applicable only for cases that the classes are designed to be not
+						concrete. Concrete classes include the main application class and various manager
+						classes.
+					</p>
+					<p>
+						Most fields should be accessed by using methods, that are generally overrideable,
+						allowing flexible API implementations. Sealed classes may or may not be useful here.
+					</p>
+					<p>
+						For database management, it is the responsibility of the application or service to
+						ensure data integrity and accessibility. Once service is off, it is the responsibility
+						of the actor to ensure the data is usable and valid. Most of the time, the data stored
+						in the data should be used if no error has occurred. If the data is outdated, the
+						service should try to fix the data up to meet the latest format of the data. However,
+						the service may not need to always fix the data if it is intended to ignore old data.
+						If the database has unintended changes during off-time of the service, it is
+						recommended to notify the user of the status, but since the responsibility is up to
+						the actor, data recovery may not be necessary. Moreover, if the data corruption is
+						caused by the service during normal operation, it is the responsibility of the
+						service to fix the data unless it is known that there may be data corruption during
+						the operation of the service. Despite the above, if the corruption is caused by
+						an actor who is not related to the service, the service should be tolerated and
+						ignore the changes, while default or reset data may be used instead. Users may still
+						have the rights to keep the original corrupted data, so a copy of the corrupted data
+						should be made for the maximum data conservation for the user. It would not be the
+						responsibility of the service for backup management. Consistency is the main point
+						with this idea. Then, the availability should be attained.
+					</p>
+				</content>
+			</section>
+			<section title="Java">
+				<content>
+					<p>
+						Firstly, all static fields should be immutable and thus final. Even if they are final,
+						it does not mean they are "immutable". Since they are just references, the fields of
+						the objects may still be mutable. This is ensured by code design and is not compiler's
+						responsibility. Singleton object design is related to this, as "singletons" are meant
+						to be the instances stored as the static final <code>INSTANCE</code> fields in the
+						respective classes. Many parts in the code of Minicraft+ do not follow this design.
+						Although it is OOP, non-final static fields should always be avoided. Static fields
+						mean global states, mutable static fields are always disallowed.
+					</p>
+					<p>
+						Custom errors are preferentially checked for coding. Compiler checks for checked
+						exceptions, so the developer could be more aware of the exceptions and handle
+						them right away.
+					</p>
+					<p>
+						All the fields should be accessed by getters and setters and made private. This
+						is not applied on constants.
+					</p>
+				</content>
+			</section>
+			<section title="Kotlin">
+				<content>
+					<p>
+						Basically, all singleton objects declared by <code>object</code> as the top level
+						classes are avoided. However, companion objects are preferred, but acts like the
+						static members in Java, while these members should still be consistent across
+						application states, and changeable only by the arguments.
+					</p>
+					<p>
+						All the exceptions are unchecked, but it is still possible to catch all the
+						exceptions if they are known to be thrown by the methods. However, it is preferred
+						to mark all the possible exceptions with the <code>@Throws</code> annotation or
+						in the KDoc of the methods.
+					</p>
+					<p>
+						All classes and functions are public and final by default. They are made private
+						and open on purpose aiming for API.
+					</p>
+				</content>
+			</section>
+		</section>
+		<section title="Reviewing Process">
+			<content>
+				<p>
+					First of all, an Informational EFP would be made for the review report of Relictus.
+					The EFP would be associated with this review plan. However, both would be in
+					progress at the same time. This EFP would be updated and kept <i>Provisional</i>
+					while reviewing process is ongoing, so that the entire process could be described
+					completely here, and the report completely acts as a "report". This would allow
+					complementing necessary information and steps required for the entire reviewing
+					process.
+				</p>
+				<p>
+					The main part is the codebase, but not only the code. To plan for future development
+					of TerraModulus, the roadmap and the development direction, including the gameplay
+					content would also be a part of the review. Here, Minicraft+ would be taken as the
+					reference.
+				</p>
+				<p>
+					While reviewing, no commit to the Relictus branch would be made, as no change would
+					be made by reviewing. This is different from the previous plan to optimize the
+					codebase. However, some code may be tested for the reviews. Still, mainly reviewing
+					would be made based on what is in the codebase.
+				</p>
+				<p>
+					Several sections would be included in the report:
+					<list>
+						<li>
+							<b>Codebase Commentary</b>: Commenting on the code structure and usages based
+							on the aforementioned standards and principles; the implementation of features
+							and functionalities may also be commented with the recommendations for amendments
+							and plans based on the original code and future development drafts
+						</li>
+						<li>
+							<b>General Code Style</b>: Drafting out general code style guidelines according
+							to the codebase practices and phenomenon, preventing unnecessary and unintended
+							repeated mistakes
+						</li>
+						<li>
+							<b>Development Roadmap and Direction</b>: Commenting on the original direction
+							of the Minicraft+ project and planning on the future roadmap and direction based
+							on that for TerraModulus
+						</li>
+					</list>
+				</p>
+			</content>
+		</section>
+	</body>
+</efp>
