@@ -1,27 +1,38 @@
-# TerraModulus EFPs
+# sv
 
-## Execution Framework Proposals
+Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
-**Execution Framework Proposals**, or EFPs, are the structured documents that outlline how
-a project or initiative will be executed, managed, and monitored to achive its goals; or
-explain or define a certain architecture which would be applied onto the project, including
-its community.
+## Creating a project
 
-An EFP may involve the community, an architecture, a plan or a scheme. It may not be highly
-executive, but may involve certain objectives, deliverables, or boundaries of the project.
-There may not be time constrains, but the milestones and objectives may be decided in the
-roadmap. Moreover, it would be intended to standardize and guide the project or a process.
-Sometimes, some EFPs may solicit feedback from the community depending on the context, so
-EFPs may be updated and revised upon feedbacks or progressions. However, the topics or the
-themes of the EFPs should not be changed, or else a new EFP should be issued for the new
-content and updates. Certainly, detailed descriptions should always be included to ensure
-the goals and methods are generally understood.
+If you're seeing this, you've probably already done this step. Congrats!
 
-### Structure 
+```bash
+# create a new project in the current directory
+npx sv create
 
-The entire EFP architecture is defined in EFP 1. An EFP includes the following sections:
-- WIP
+# create a new project in my-app
+npx sv create my-app
+```
 
-## Workflows and Usages
+## Developing
 
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+## Building
+
+To create a production version of your app:
+
+```bash
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
+
+> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
