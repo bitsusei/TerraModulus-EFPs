@@ -5,6 +5,7 @@ import { parseStringPromise, Builder } from "xml2js";
 import { DOMParser, XMLSerializer, Node, Element, Document } from '@xmldom/xmldom'
 import os from "os";
 import dedent from "dedent-js";
+import toString from "lodash/toString";
 
 const filterChildElementNodeName = (node: Node, name: string) => {
 	return node.childNodes.filter(n => n.nodeName === name && n.nodeType == Node.ELEMENT_NODE) as Element[];
@@ -12,16 +13,14 @@ const filterChildElementNodeName = (node: Node, name: string) => {
 
 const rootDoc = new DOMParser().parseFromString('<root></root>', 'text/xml');
 
-const recreateElementAs = (element: Element, newName: string) => {
+const recreateElementAs = (element: Element, newName: string, processor?: (node: Node) => Node) => {
 	const ele = rootDoc.createElement(newName);
-	for (const attr of element.attributes) {
+	Array.from(element.attributes).forEach(attr => {
 		ele.setAttributeNode(attr);
-	}
-
-	for (const child of element.childNodes) {
-		ele.appendChild(child);
-	}
-
+	});
+	Array.from(element.childNodes).forEach(child => {
+		ele.appendChild(processor === undefined ? child : processor(child));
+	});
 	return ele;
 }
 
@@ -63,69 +62,80 @@ const convertHtml = (element: Element) => {
 	}
 	let ele = element;
 	if (Object.keys(renameMap).includes(element.nodeName)) {
-		ele = rootDoc.createElement(renameMap[element.nodeName]);
-		for (const attr of element.attributes) {
-			ele.setAttributeNode(attr);
-		}
-		for (const child of element.childNodes) {
-			ele.appendChild(child.nodeType === Node.ELEMENT_NODE ? convertHtml(child as Element) : child);
-		}
+		ele = recreateElementAs(element, renameMap[element.nodeName]);
 	}
 
-	// Special treatment for codeblock
-	if (element.nodeName === "code-block") {
-		dedentElementText(ele);
-	}
-
-	// Description list conversion
-	if (element.nodeName === "dl") {
-		filterChildElementNodeName(ele, "li").forEach(n => {
-			const dt = rootDoc.createElement("dt");
-			dt.textContent = n.getAttribute("title")!;
-			ele.insertBefore(n, dt);
-			const dd = rootDoc.createElement("dd");
-			for (const child of n.childNodes) {
-				dd.appendChild(child.nodeType === Node.ELEMENT_NODE ? convertHtml(child as Element) : child);
+	switch (element.nodeName) {
+		// Special treatment for codeblock
+		case "code-block":
+			dedentElementText(ele);
+			break;
+		// Description list conversion
+		case "dl":
+			filterChildElementNodeName(ele, "li").forEach(n => {
+				const dt = rootDoc.createElement("dt");
+				dt.textContent = n.getAttribute("title")!;
+				ele.insertBefore(n, dt);
+				const dd = rootDoc.createElement("dd");
+				Array.from(element.childNodes).forEach(child => {
+					dd.appendChild(child.nodeType === Node.ELEMENT_NODE ? convertHtml(child as Element) : child);
+				});
+				ele.insertBefore(n, dd);
+				ele.removeChild(n);
+			});
+			break;
+		// (Un)ordered List conversion
+		case "list":
+			let listType: string;
+			switch (ele.getAttribute("type")) {
+				case "decimal":
+				case "lower-alpha":
+					listType = "ol";
+					break;
+				default: // bullet or none
+					listType = "ul"
+					break;
 			}
-			ele.insertBefore(n, dd);
-			ele.removeChild(n);
-		});
-	}
 
-	// (Un)ordered List conversion
-	if (element.nodeName === "list") {
-		let listType: string;
-		switch (ele.getAttribute("type")) {
-			case "decimal":
-			case "lower-alpha":
-				listType = "ol";
-				break;
-			default: // bullet or none
-				listType = "ul"
-				break;
-		}
+			const ls = rootDoc.createElement(listType);
+			switch (ele.getAttribute("type")) {
+				case "decimal":
+					ls.setAttribute("class", "list-decimal");
+					break;
+				case "none":
+					ls.setAttribute("class", "list-none");
+					break;
+				case "lower-alpha":
+					ls.setAttribute("class", "list-[lower-alpha]");
+					break;
+				default: // bullet
+					ls.setAttribute("class", "list-disc");
+					break;
+			}
 
-		const ls = rootDoc.createElement(listType);
-		switch (ele.getAttribute("type")) {
-			case "decimal":
-				ls.setAttribute("class", "list-decimal");
-				break;
-			case "none":
-				ls.setAttribute("class", "list-none");
-				break;
-			case "lower-alpha":
-				ls.setAttribute("class", "list-[lower-alpha]");
-				break;
-			default: // bullet
-				ls.setAttribute("class", "list-disc");
-				break;
-		}
+			Array.from(element.childNodes).forEach(child => {
+				ls.appendChild(child.nodeType === Node.ELEMENT_NODE ? convertHtml(child as Element) : child);
+			});
 
-		for (const child of ele.childNodes) {
-			ls.appendChild(child.nodeType === Node.ELEMENT_NODE ? convertHtml(child as Element) : child);
-		}
-
-		ele = ls;
+			ele = ls;
+			break;
+		// Default behavior of links
+		case "a":
+			if (!ele.hasAttribute("target")) {
+				// in a new window or tab
+				ele.setAttribute("target", "_blank");
+			}
+		default:
+			if (!Object.keys(renameMap).includes(element.nodeName)) {
+				Array.from(ele.childNodes).forEach(child => {
+					if (child.nodeType === Node.ELEMENT_NODE) {
+						const n = convertHtml(child as Element);
+						if (n !== child)
+							ele.replaceChild(n, child);
+					}
+				});
+			}
+			break;
 	}
 
 	return ele;
@@ -136,7 +146,9 @@ const compileSection = (element: Element, level: number = 0) => {
 	const ctn: Element | undefined = filterChildElementNodeName(element, "content")[0];
 	let ctnOut: string = "";
 	if (ctn !== undefined) {
-		ctnOut = new XMLSerializer().serializeToString(recreateElementAs(ctn, "div"));
+		ctnOut = new XMLSerializer().serializeToString(recreateElementAs(ctn, "div", n => (
+			n.nodeType === Node.ELEMENT_NODE ? convertHtml(n as Element) : n
+		)));
 	}
 
 	let sectionsOut: string = "";
@@ -151,6 +163,14 @@ const compileSection = (element: Element, level: number = 0) => {
 			${sectionsOut}
 		</div>
 	`)
+}
+
+const compileBody = (element: Element) => {
+	let out = "";
+	filterChildElementNodeName(element, "section").forEach(n => {
+		out += compileSection(n);
+	})
+	return out;
 }
 
 export async function load(): Promise<App.EfpList> {
@@ -228,7 +248,7 @@ export async function load(): Promise<App.EfpList> {
 						.flatMap(n => filterChildElementNodeName(n, "efp").map(n => n.nodeValue as string)),
 					pullRequests: filterChildElementNodeName(filterChildElementNodeName(metadata, "pullRequests")[0], "pullRequest")
 						.map(n => n.attributes.getNamedItem("id")!.value) as App.EfpData["pullRequests"],
-					body: new XMLSerializer().serializeToString(convertHtml(filterChildElementNodeName(doc, "body")[0])),
+					body: compileBody(filterChildElementNodeName(doc, "body")[0]),
 				}
 				if (dd === "main.xml") {
 					main = efp;
