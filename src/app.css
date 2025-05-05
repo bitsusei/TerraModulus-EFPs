@@ -1,0 +1,51 @@
+@import 'tailwindcss';
+
+body {
+    @apply font-sans;
+}
+
+@utility hyperlink {
+    @apply text-blue-500 hover:underline;
+}
+
+#efp-body {
+    h2 {
+        @apply text-3xl my-4;
+    }
+
+    h3 {
+        @apply text-2xl my-3;
+    }
+
+    h4 {
+        @apply text-xl my-2;
+    }
+
+    h5 {
+        @apply text-lg my-2;
+    }
+
+    h6 {
+        @apply text-base my-2;
+    }
+
+    a {
+        @apply hyperlink;
+    }
+
+    code {
+        @apply bg-gray-100 px-[4px] py-[2px] border-gray-300 border-1 rounded-sm
+    }
+}
+
+ol, ul {
+    @apply ps-10;
+}
+
+.left-center {
+    left: center;
+}
+
+.top-center {
+    top: center;
+}

@@ -5,8 +5,22 @@ import { sveltePreprocess } from 'svelte-preprocess';
 const config = {
 	// Consult https://svelte.dev/docs/kit/integrations
 	// for more information about preprocessors
-	preprocess: sveltePreprocess({ script: true, style: true }),
-
+	preprocess: sveltePreprocess({
+		script: true,
+		style: true,
+		postcss: {
+			plugins: [
+				"postcss-advanced-variable",
+				"postcss-import",
+				"postcss-center",
+				"tailwindcss/nesting",
+				"tailwindcss",
+				"autoprefixer",
+				"postcss-plugin-context",
+				"postcss-utilities"
+			]
+		}
+	}),
 	kit: {
 		// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
 		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.

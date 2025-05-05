@@ -1,11 +1,8 @@
 import { error } from "@sveltejs/kit";
 import fs from "fs";
-import path from "path";
-import { parseStringPromise, Builder } from "xml2js";
 import { DOMParser, XMLSerializer, Node, Element, Document } from '@xmldom/xmldom'
 import os from "os";
 import dedent from "dedent-js";
-import toString from "lodash/toString";
 
 const filterChildElementNodeName = (node: Node, name: string) => {
 	return node.childNodes.filter(n => n.nodeName === name && n.nodeType == Node.ELEMENT_NODE) as Element[];
