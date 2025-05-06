@@ -1,11 +1,16 @@
 @import 'tailwindcss';
 
+@plugin 'tailwind-scrollbar';
+
+@custom-variant light (&:where([data-theme=light], [data-theme=light] *));
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 body {
     @apply font-sans;
 }
 
 @utility hyperlink {
-    @apply text-blue-500 hover:underline;
+    @apply light:text-blue-600 dark:text-[#2b79a2] hover:underline;
 }
 
 #efp-body {
@@ -34,12 +39,45 @@ body {
     }
 
     code {
-        @apply bg-gray-100 px-[4px] py-[2px] border-gray-300 border-1 rounded-sm
+        @apply light:bg-gray-100 dark:text-[#c5c8c6] px-[4px] py-[2px] light:border-gray-300 border-1 rounded-sm;
+    }
+
+    p, ol, ul {
+        @apply my-4;
+    }
+
+    .section-header {
+        @apply flex items-center size-fit;
+        .hover-link {
+            @apply inline overflow-hidden size-0 invisible opacity-0 ms-2;
+            transition: visibility 0s, opacity 0.2s linear;
+            svg {
+                @apply size-4;
+            }
+        }
+
+        &:hover .hover-link {
+            @apply size-4 visible opacity-100;
+        }
+
+        &:target {
+            @apply pt-13 -mt-13;
+        }
     }
 }
 
 ol, ul {
     @apply ps-10;
+}
+
+.dropdown {
+    .dropdown-menu {
+        @apply invisible opacity-0;
+        transition: visibility 0s, opacity 0.2s linear;
+        &.active {
+            @apply visible opacity-100;
+        }
+    }
 }
 
 .left-center {

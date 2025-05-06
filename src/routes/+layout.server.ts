@@ -138,7 +138,10 @@ const convertHtml = (element: Element) => {
 	return ele;
 }
 
-const compileSection = (element: Element, level: number = 0) => {
+/** Ugly though */
+const linkLogoSvg = fs.readFileSync("src/lib/assets/icons/link.svelte", "utf-8");
+
+const compileSection = (element: Element, levels: number[]) => {
 	const title = element.attributes.getNamedItem("title")!.value;
 	const ctn: Element | undefined = filterChildElementNodeName(element, "content")[0];
 	let ctnOut: string = "";
@@ -149,12 +152,18 @@ const compileSection = (element: Element, level: number = 0) => {
 	}
 
 	let sectionsOut: string = "";
+	let i = 0;
 	for (const section of filterChildElementNodeName(element, "section")) {
-		sectionsOut += compileSection(section, level + 1);
+		sectionsOut += compileSection(section, levels.concat(i++));
 	}
 
 	return dedent(`
-		<h${level + 2}>${title}</h${level + 2}>
+		<div class="section-header" id="section-${ levels.join("-") }">
+			<h${ levels.length + 1 }>${title}</h${ levels.length + 1 }>
+			<a class="hover-link" href="#section-${ levels.join("-") }">
+				${ linkLogoSvg.replace("class={$$props.class}", "") }
+			</a>
+		</div>
 		<div>
 			${ctnOut}
 			${sectionsOut}
@@ -164,8 +173,8 @@ const compileSection = (element: Element, level: number = 0) => {
 
 const compileBody = (element: Element) => {
 	let out = "";
-	filterChildElementNodeName(element, "section").forEach(n => {
-		out += compileSection(n);
+	filterChildElementNodeName(element, "section").forEach((n, i) => {
+		out += compileSection(n, [i]);
 	})
 	return out;
 }

@@ -4,6 +4,5 @@
 	theme: {
 		extend: {},
 	},
-	plugins: [],
 	darkMode: "selector",
 }
