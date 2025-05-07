@@ -10,9 +10,8 @@ const config = {
 		style: true,
 		postcss: {
 			plugins: [
-				"postcss-advanced-variable",
 				"postcss-import",
-				"postcss-center",
+				"postcss-advanced-variable",
 				"tailwindcss/nesting",
 				"tailwindcss",
 				"autoprefixer",

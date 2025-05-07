@@ -1,8 +1,9 @@
 import { error } from "@sveltejs/kit";
 import fs from "fs";
-import { DOMParser, XMLSerializer, Node, Element, Document } from '@xmldom/xmldom'
+import { DOMParser, XMLSerializer, Node, Element } from '@xmldom/xmldom'
 import os from "os";
 import dedent from "dedent-js";
+import hljs from 'highlight.js';
 
 const filterChildElementNodeName = (node: Node, name: string) => {
 	return node.childNodes.filter(n => n.nodeName === name && n.nodeType == Node.ELEMENT_NODE) as Element[];
@@ -66,6 +67,11 @@ const convertHtml = (element: Element) => {
 		// Special treatment for codeblock
 		case "code-block":
 			dedentElementText(ele);
+			if (ele.hasAttribute("lang")) {
+				ele = new DOMParser().parseFromString(dedent(`<pre><code>
+					${ hljs.highlight(ele.textContent!, { language: ele.getAttribute("lang")! }).value }
+				</code></pre>`), 'text/xml').firstChild as Element;
+			}
 			break;
 		// Description list conversion
 		case "dl":
@@ -180,11 +186,15 @@ const compileBody = (element: Element) => {
 }
 
 export async function load(): Promise<App.EfpList> {
-	const list: App.EfpList = {}
+	const list: App.EfpList = {
+		indexMap: {},
+		map: {},
+		indices: [],
+	};
 	for (const d of fs.readdirSync("efp")) {
 		let main: App.EfpData | undefined;
-		const subpages: App.EfpList[keyof App.EfpList]["subpages"] = {};
-		const assets: App.EfpList[keyof App.EfpList]["assets"] = {};
+		const subpages: App.EfpEntry["subpages"] = {};
+		const assets: App.EfpEntry["assets"] = {};
 		for (const dd of fs.readdirSync(`efp/${d}`)) {
 			if (dd.endsWith(".xml")) {
 				// type sectionType = {
@@ -239,7 +249,7 @@ export async function load(): Promise<App.EfpList> {
 					.replaceAll(`\\${os.EOL}[ \t]*`, ""), "text/xml"), "efp")[0] as Element;
 				const metadata = filterChildElementNodeName(doc, "metadata")[0];
 				const efp: App.EfpData = {
-					id: doc.attributes.getNamedItem("efp")!.value,
+					id: parseInt(doc.attributes.getNamedItem("efp")!.value),
 					created: new Date(doc.attributes.getNamedItem("created")!.value),
 					category: doc.attributes.getNamedItem("category")!.value as App.EfpData["category"],
 					status: doc.attributes.getNamedItem("status")!.value as App.EfpData["status"],
@@ -270,7 +280,9 @@ export async function load(): Promise<App.EfpList> {
 			error(500, `main.xml not found for \`${d}\``);
 		}
 
-		list[d] = {
+		list.indexMap[main.id] = d;
+		list.indices.push(main.id);
+		list.map[d] = {
 			main,
 			subpages,
 			assets,

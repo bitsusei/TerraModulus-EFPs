@@ -52,31 +52,31 @@
 	};
 </script>
 
-<div class="flex h-lvh overflow-hidden divide-solid divide-x-8 divide-transparent light:text-black dark:text-[#bcbdd0] light:bg-slate-50 dark:bg-[hsl(226,23%,11%)] dark:scrollbar-thumb-[#c8c9db] dark:scrollbar-track-[hsl(226,23%,11%)]" data-theme={ currentTheme }>
-	<aside class="flex-shrink-0 w-72 flex flex-col dark:bg-[#282d3f] dark:text-[#c8c9db] transition-all duration-300 overflow-y-auto scrollbar" class:-ml-72={ !sidebarOpen }>
+<div class="flex h-lvh overflow-hidden divide-solid divide-x-8 divide-theme-main-bg text-theme-main-text bg-theme-main-bg scrollbar-thumb-theme-scrollbar-thumb scrollbar-track-theme-scrollbar-track" data-theme={ currentTheme }>
+	<aside class="flex-shrink-0 w-72 flex flex-col bg-theme-sidebar-bg text-theme-sidebar-text transition-all duration-300 overflow-y-auto scrollbar" class:-ml-72={ !sidebarOpen }>
 		<nav class="flex-1 flex flex-col mt-4">
-			{#each Object.keys(data) as efp}
-				<a class={{"p-2 light:hover:bg-gray-200 transition-colors divide-solid dark:divide-[#2d334f] divide-y": true, "light:text-blue-700 dark:text-[#2b79a2] font-bold": page.url.pathname === `/efp/${ efp }`}} href="/efp/{ efp }">
-					EFP { data[efp].main.id } - { data[efp].main.title }
+			{#each Object.keys(data.map) as efp}
+				<a class={{"p-2 hover:bg-theme-sidebar-hover transition-colors divide-solid divide-theme-sidebar-divide divide-y": true, "text-theme-sidebar-active font-bold": page.url.pathname === `/efp/${ efp }`}} href="/efp/{ efp }">
+					EFP { data.map[efp].main.id } - { data.map[efp].main.title }
 				</a>
 			{/each}
 		</nav>
 	</aside>
 	<div class="flex-1 overflow-y-auto scrollbar justify-center content-center bg-inherit">
-		<header class="p-2 font-semibold light:bg-inherit dark:bg-[hsl(226, 23%, 31%)] sticky z-50 top-0 shadow light:text-stone-500 dark:text-[#737480] light:border-b-gray-100 dark:border-b-[hsl(226, 23%, 16%)]">
+		<header class="p-2 font-semibold bg-theme-header-bg sticky z-50 top-0 shadow border-b text-theme-header-text border-b-theme-header-border">
 			<div class="mx-auto flex items-center content-center gap-x-4 transition-colors">
-				<button aria-label="sidebar-toggle" class={{"size-fit outline-none p-2 cursor-pointer rounded-lg light:hover:text-stone-800 dark:hover:text-[#b7b9cc]": true, "light:bg-gray-200 dark:bg-gray-800": sidebarOpen}} title="Toggle Nav"
+				<button aria-label="sidebar-toggle" class={{"size-fit outline-none p-2 cursor-pointer rounded-lg hover:text-theme-header-hover-text": true, "bg-theme-header-active-bg": sidebarOpen}} title="Toggle Nav"
 					onclick={ () => sidebarOpen = !sidebarOpen }>
 					<MenuLogo class="size-5 fill-current transition-colors" />
 				</button>
 				<div class="dropdown">
-					<button aria-controls="theme-menu" aria-expanded="{ themeDropdownOpen }" aria-haspopup="true" class={{"size-fit outline-none p-2 cursor-pointer rounded-lg light:hover:text-stone-800 dark:hover:text-[#b7b9cc]": true, "light:bg-gray-200 dark:bg-gray-800": themeDropdownOpen}} title="Switch Theme"
+					<button aria-controls="theme-menu" aria-expanded="{ themeDropdownOpen }" aria-haspopup="true" class={{"size-fit outline-none p-2 cursor-pointer rounded-lg hover:text-theme-header-hover-text": true, "bg-theme-header-active-bg": themeDropdownOpen}} title="Switch Theme"
 						onclick={ () => themeDropdownOpen = !themeDropdownOpen } onfocus={ e => dispatchFocusOut(e.currentTarget.parentElement as HTMLElement, () => themeDropdownOpen = false) }>
 						<ThemeLogo class="size-5 fill-current transition-colors" />
 					</button>
-					<div id="theme-menu" role="menu" class="dropdown-menu float-left font-normal light:text-black dark:text-[#bcbdd0] light:bg-slate-50 dark:bg-[hsl(226,23%,11%)] overflow-hidden flex flex-col z-60 rounded-lg shadow-sm absolute" class:active={ themeDropdownOpen }>
+					<div id="theme-menu" role="menu" class="dropdown-menu float-left top-13 font-normal text-theme-main-text bg-theme-header-bg border border-theme-header-border overflow-hidden flex flex-col z-60 rounded-lg shadow-sm absolute" class:active={ themeDropdownOpen }>
 						{#each Object.keys(themes) as theme, i}
-							<button tabindex="{i}" role="menuitem" class="p-3 outline-none cursor-pointer light:hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors" class:font-bold={ theme === selectedTheme }
+							<button tabindex="{i}" role="menuitem" class="p-3 outline-none cursor-pointer hover:bg-theme-header-active-bg transition-colors" class:font-bold={ theme === selectedTheme }
 								onclick={ () => selectTheme(theme as keyof typeof themes) }>
 								{ themes[theme as keyof typeof themes] }
 							</button>
@@ -87,13 +87,13 @@
 					The TerraModulus EFP Book
 				</div>
 				<a href="https://github.com/AnvilloyDevStudio/TerraModulus-EFPs">
-					<button aria-label="git-repo" class="size-fit outline-none p-2 cursor-pointer light:hover:text-stone-800" title="GitHub repository">
+					<button aria-label="git-repo" class="size-fit outline-none p-2 cursor-pointer hover:text-theme-header-hover-text" title="GitHub repository">
 						<GithubLogo class="size-5 fill-current transition-colors" />
 					</button>
 				</a>
 			</div>
 		</header>
-		<main class="p-4 max-w-200 mx-auto">
+		<main class="p-8">
 			{@render children()}
 		</main>
 	</div>

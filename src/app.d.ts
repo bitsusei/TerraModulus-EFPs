@@ -10,7 +10,7 @@ declare global {
 		interface PageState {}
 		interface Platform {}
 		interface EfpData {
-			id: string;
+			id: number;
 			created: Date;
 			category: "informational" | "process" | "standard";
 			status: "draft" | "deferred" | "provisional" | "final";
@@ -23,15 +23,18 @@ declare global {
 			body: string;
 			// TODO references
 		}
+		interface EfpEntry {
+			/** Main XML body */
+			main: EfpData;
+			/** Other XML pages */
+			subpages: Record<string, EfpData>;
+			/** Other non-XML files */
+			assets: Record<string, any>;
+		}
 		interface EfpList {
-			[key: string]: {
-				/** Main XML body */
-				main: EfpData;
-				/** Other XML pages */
-				subpages: Record<string, EfpData>;
-				/** Other non-XML files */
-				assets: Record<string, any>;
-			};
+			map: Record<string, EfpEntry>;
+			indexMap: Record<number, string>;
+			indices: number[];
 		}
 	}
 }
