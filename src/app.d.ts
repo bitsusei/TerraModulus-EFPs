@@ -35,6 +35,19 @@ declare global {
 			map: Record<string, EfpEntry>;
 			indexMap: Record<number, string>;
 			indices: number[];
+			searchEntries: {
+				id: number,
+				title: string,
+				content: string,
+				created: Date,
+				category: EfpData["category"],
+				status: EfpData["status"],
+				obsoletedBy: string[],
+				updatedBy: string[],
+				obsoletes: string[],
+				updates: string[],
+				pullRequests: [string, ...string[]],
+			}[];
 		}
 	}
 }

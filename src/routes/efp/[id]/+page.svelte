@@ -2,14 +2,15 @@
 	import RightArrowIcon from '$lib/assets/icons/right-arrow.svelte';
 	import capitalize from "lodash/capitalize";
 
-	let { data } = $props();
 	const formatEfpList = (list: string[]) => list.map(n => (
 		`<a href="./efp${ n.padStart(3, "0") }" target="_blank" class="hyperlink">EFP ${n}</a>`
 	)).join(", ");
 	const formatDate = (date: Date) => {
 		const formatter = new Intl.NumberFormat(undefined, { minimumIntegerDigits: 2 });
 		return `${ date.getUTCFullYear() }-${ formatter.format(date.getUTCMonth() + 1) }-${ formatter.format(date.getUTCDate()) }`;
-	}
+	};
+
+	let { data } = $props();
 	let containerWidth = $state(0);
 	// assume findIndex() != -1
 	let previousChapter = $derived(data.indices.findIndex(i => i === data.efp.main.id) - 1); // -1 if unavailable

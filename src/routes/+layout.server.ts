@@ -190,6 +190,7 @@ export async function load(): Promise<App.EfpList> {
 		indexMap: {},
 		map: {},
 		indices: [],
+		searchEntries: [],
 	};
 	for (const d of fs.readdirSync("efp")) {
 		let main: App.EfpData | undefined;
@@ -282,6 +283,22 @@ export async function load(): Promise<App.EfpList> {
 
 		list.indexMap[main.id] = d;
 		list.indices.push(main.id);
+		list.searchEntries.push({
+			id: main.id,
+			title: main.title,
+			content: main.body.replaceAll(/<[^>]+>/g, "")
+				.replaceAll(/[^\S\n]+/g, " ")
+				.replaceAll(/[^\S\n]*\n[^\S\n]*/g, "\n")
+				.trim(),
+			created: main.created,
+			category: main.category,
+			status: main.status,
+			obsoletedBy: main.obsoletedBy,
+			updatedBy: main.updatedBy,
+			obsoletes: main.obsoletes,
+			updates: main.updates,
+			pullRequests: main.pullRequests,
+		});
 		list.map[d] = {
 			main,
 			subpages,

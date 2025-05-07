@@ -32,9 +32,6 @@ devDependencies:
   '@xmldom/xmldom':
     specifier: ^0.9.8
     version: 0.9.8
-  advanced-filter-system:
-    specifier: ^1.3.4
-    version: 1.3.4
   autoprefixer:
     specifier: ^10.4.21
     version: 10.4.21(postcss@8.5.3)
@@ -47,6 +44,9 @@ devDependencies:
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
+  minisearch:
+    specifier: ^7.1.2
+    version: 7.1.2
   postcss:
     specifier: ^8.5.3
     version: 8.5.3
@@ -734,11 +734,6 @@ packages:
     hasBin: true
     dev: true
 
-  /advanced-filter-system@1.3.4:
-    resolution: {integrity: sha512-E28XEPdUvAf6sqoraDWYj/E++Ema4W0s6C6VYTJMgV+qenZTE1Ba1rZkOY9pxjnwVopQ9oN3LLBF/f/unTceJQ==}
-    engines: {node: '>=14.0.0'}
-    dev: true
-
   /ansi-regex@2.1.1:
     resolution: {integrity: sha512-TIGnTpdo+E3+pCyAluZvtED5p5wCqLdezCyhPZzKPcxvFplEt4i+W7OONCKgeZFT3+y5NZZfOOS/Bdcanm1MYA==}
     engines: {node: '>=0.10.0'}
@@ -1114,6 +1109,10 @@ packages:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
+    dev: true
+
+  /minisearch@7.1.2:
+    resolution: {integrity: sha512-R1Pd9eF+MD5JYDDSPAp/q1ougKglm14uEkPMvQ/05RGmx6G9wvmLTrTI/Q5iPNJLYqNdsDQ7qTGIcNWR+FrHmA==}
     dev: true
 
   /mri@1.2.0:
