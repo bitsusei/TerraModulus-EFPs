@@ -31,12 +31,20 @@ body {
     --color-theme-code-bg: var(--color-theme-code-bg);
     --color-theme-code-border: var(--color-theme-code-border);
     --color-theme-search-button-bg: var(--color-theme-search-button-bg);
+    --color-theme-search-bar-bg: var(--color-theme-search-bar-bg);
+    --color-theme-search-bar-border: var(--color-theme-search-bar-border);
 
-    @keyframes fade-in {
+    @keyframes fadeInOut {
         0% {
+            display: none;
             opacity: 0%;
         }
+        1% {
+            display: var(--fade-result);
+            opacity: 1%;
+        }
         100% {
+            display: var(--fade-result);
             opacity: 100%;
         }
     }
@@ -62,7 +70,9 @@ body {
     --color-theme-hyperlink-text: #20609f;
     --color-theme-code-text: #301900;
     --color-theme-code-bg: #f6f7f6;
-    --color-theme-search-button-bg: var(--color-neutral-500);
+    --color-theme-search-button-bg: var(--color-neutral-300);
+    --color-theme-search-bar-bg: var(--color-neutral-400);
+    --color-theme-search-bar-border: var(--color-neutral-500);
 }
 
 @variant dark {
@@ -86,6 +96,8 @@ body {
     --color-theme-code-text: #c5c8c6;
     --color-theme-code-bg: #1d1f21;
     --color-theme-search-button-bg: var(--color-zinc-800);
+    --color-theme-search-bar-bg: var(--color-gray-800);
+    --color-theme-search-bar-border: var(--color-gray-700);
 }
 
 @utility hyperlink {
@@ -149,12 +161,34 @@ ol, ul {
     @apply ps-10;
 }
 
+/* $duration: var(--tw-duration, var(--default-transition-duration));
+$timing-function: var(--tw-ease, var(--default-transition-timing-function)); */
+
+@utility animate-fade-in-out-block {
+    --fade-result: block;
+    animation: fadeInOut var(--tw-duration, var(--default-transition-duration)) var(--tw-ease, var(--default-transition-timing-function));
+}
+@utility animate-fade-in-out-inline {
+    --fade-result: inline;
+    animation: fadeInOut var(--tw-duration, var(--default-transition-duration)) var(--tw-ease, var(--default-transition-timing-function));
+}
+@utility animate-fade-in-out-flex {
+    --fade-result: flex;
+    animation: fadeInOut var(--tw-duration, var(--default-transition-duration)) var(--tw-ease, var(--default-transition-timing-function));
+}
+@utility animate-fade-in-out-contents {
+    --fade-result: contents;
+    animation: fadeInOut var(--tw-duration, var(--default-transition-duration)) var(--tw-ease, var(--default-transition-timing-function));
+}
+
 .dropdown {
     .dropdown-menu {
-        @apply invisible opacity-0;
-        transition: visibility 0s, opacity 0.2s linear;
-        &.active {
-            @apply visible opacity-100;
+        @apply opacity-0 transition-all transition-discrete animate-fade-in-out-flex;
+        &:popover-open {
+            @apply opacity-100 flex;
+        }
+        @starting-styles &:popover-open {
+            @apply opacity-0;
         }
     }
 }
