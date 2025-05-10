@@ -5,9 +5,13 @@
 	import ThemeIcon from "$lib/assets/icons/theme.svelte";
 	import SearchIcon from "$lib/assets/icons/search.svelte";
 	import CrossIcon from "$lib/assets/icons/cross.svelte";
+	import UpArrowIcon from "$lib/assets/icons/up-arrow.svelte";
 	import { onMount } from 'svelte'
 	import { page } from '$app/state';
 	import MiniSearch from "minisearch";
+	import FormDialog from './FormDialog.svelte';
+	import { BooleanFilter, FilterField, NegFilter, type Filter, type SearchEntry } from '$lib/search';
+	import NewSearchFieldFilterOption from './NewSearchFieldFilterOption.svelte';
 
 	let { children, data } = $props();
 	let sidebarOpen = $state(true);
@@ -42,102 +46,25 @@
 		}
 	};
 
-	const miniSearch = new MiniSearch<App.EfpList["searchEntries"][0]>({
+	const miniSearch = new MiniSearch<SearchEntry>({
 		idField: "id",
 		fields: ["title", "content"],
 		searchOptions: { fuzzy: .2 },
 		autoSuggestOptions: { fuzzy: .2 },
 	});
 
-	interface Equalable<T> {
-		equals(other: T): boolean;
-	}
-	abstract class Comparable<T> implements Equalable<T> {
-		equals(other: T) { return this.compare(other) === 0; }
-		/** +ve when > `other`; 0 when === `other`; -ve when < `other` */
-		abstract compare(other: T): number;
-	}
-	class NumberCmp extends Comparable<number> {
-		readonly val: number;
-		constructor(val: number) { super(); this.val = val; }
-		compare(other: number) { return this.val - other; }
-	}
-	class DateCmp extends Comparable<Date> {
-		readonly val: Date;
-		constructor(val: Date) { super(); this.val = val; }
-		compare(other: Date) { return this.val.getTime() - other.getTime(); }
-	}
-	interface IFilter<T> {
-		filter: (val: T) => boolean;
-	};
-	class RangeFilter<T extends Comparable<T>> implements IFilter<T> {
-		readonly op: "gt" | "eq" | "lt";
-		readonly val: T;
-
-		constructor(op: typeof this.op, val: typeof this.val) {
-			this.op = op;
-			this.val = val;
-		}
-
-		filter(val: T) {
-			switch (this.op) {
-				case "gt": return this.val.compare(val) > 0;
-				case "eq": return this.val.compare(val) === 0;
-				case "lt": return this.val.compare(val) < 0;
-			}
-		}
-	};
-	class BooleanFilter<T extends IFilter<T>> implements IFilter<T> {
-		readonly op: "and" | "or";
-		readonly val: [T, T, ...T[]];
-
-		constructor(op: typeof this.op, val: typeof this.val) {
-			this.op = op;
-			this.val = val;
-		}
-
-		filter(val: T) {
-			switch (this.op) {
-				case "and": return this.val.every(f => f.filter(val));
-				case "or": return this.val.some(f => f.filter(val));
-			}
-		}
-	};
-	class MatchFilter<T extends Equalable<T>> implements IFilter<T> {
-		readonly val: T;
-		constructor(val: T) { this.val = val; }
-		filter(val: T) { return this.val.equals(val); }
-	}
-	class NegFilter<T extends IFilter<T>> implements IFilter<T> {
-		readonly val: T;
-		constructor(val: T) { this.val = val; }
-		filter(val: T) { return !this.val.filter(val); }
-	}
-
 	miniSearch.addAll(data.searchEntries);
-	let searchFilters = $state<{
-		created?: IFilter<Date>,
-		category?: IFilter<App.EfpData["category"]>,
-		status?: IFilter<App.EfpData["status"]>,
-		obsoletedBy?: IFilter<string>,
-		updatedBy?: IFilter<string>,
-		obsoletes?: IFilter<string>,
-		updates?: IFilter<string>,
-		pullRequests?: IFilter<string>,
-	}>({});
-
-	const dispatchFocusOut = (e: Element, callback: () => void) => {
-		const listener = () => {
-			if (!e.contains(document.activeElement)) {
-				callback();
-				document.removeEventListener("focusin", listener);
-				document.removeEventListener("click", listener);
-			}
-		};
-		document.addEventListener("focusin", listener);
-		document.addEventListener("click", listener);
+	const filterFields = {
+		created: new FilterField<Date>("created"),
+		category: new FilterField<App.EfpData["category"]>("category"),
+		status: new FilterField<App.EfpData["status"]>("status"),
+		obsoletedBy: new FilterField<string>("obsoletedBy"),
+		updatedBy: new FilterField<string>("updatedBy"),
+		obsoletes: new FilterField<string>("obsoletes"),
+		updates: new FilterField<string>("updates"),
+		pullRequests: new FilterField<string>("pullRequests"),
 	};
-
+	let searchFilter = $state<Filter>();
 	let searchDialog = $state<HTMLDialogElement>();
 </script>
 
@@ -164,41 +91,83 @@
 						</div>
 					</div>
 				</button>
-				<!-- Unfortunately, backdrop blurring is not working well. -->
-				<dialog bind:this={ searchDialog } class="h-[min(80lvh,100lvw)] w-[min(100lvh,80lvw)] bg-transparent top-1/2 left-1/2 -translate-1/2 backdrop:bg-black/30 animate-fade-in-out-block" closedby="closerequest">
-					<div class="size-full flex flex-col items-center rounded-4xl bg-theme-main-bg text-theme-main-text">
-						<div class="w-full flex items-center">
-							<div class="size-15"></div>
-							<h1 class="grow-2 text-center text-2xl font-bold">
-								Search EFP
-							</h1>
-							<button class="flex-none cursor-pointer p-5 size-fit text-theme-header-text hover:text-theme-header-hover-text rounded-4xl overflow-hidden" onclick={ () => searchDialog!.close() } aria-label="close" title="Close">
-								<CrossIcon class="fill-current size-5 transition-colors" />
-							</button>
-						</div>
-						<div class="h-fit w-[95%] flex flex-col bg-theme-search-bar-border rounded-[20px] overflow-hidden">
-							<div class="h-10 w-full flex items-center bg-theme-search-bar-bg rounded-[40px] overflow-hidden divide-x-2 divide-theme-search-bar-border border-2 border-theme-search-bar-border">
-								<div class="h-full w-20">
-									<button popovertarget="filters-menu" popovertargetaction="toggle" class="flex size-full items-center justify-center cursor-pointer text-theme-header-text hover:text-theme-header-hover-text transition-colors">
-										Filters
-									</button>
-									<div id="filters-menu" class="absolute inset-auto top-[anchor(bottom)] left-[anchor(left)] size-50" popover="auto">
-
-									</div>
-								</div>
-								<input class="h-8 p-1 grow placeholder:italic placeholder:text-base placeholder:opacity-80" placeholder="Type keywords..." />
-								<button class="h-full w-20 flex items-center justify-center cursor-pointer text-theme-header-text hover:text-theme-header-hover-text">
-									<SearchIcon class="fill-current size-5 transition-colors" />
+				<dialog bind:this={ searchDialog } class="dialog-fade max-h-full max-w-full size-full bg-transparent backdrop:backdrop-blur-sm backdrop:bg-black/30" closedby="closerequest">
+					<div class="size-full flex items-center justify-center">
+						<div class="h-[min(80lvh,100lvw)] w-[min(100lvh,80lvw)] flex flex-col items-center rounded-4xl bg-theme-main-bg text-theme-main-text">
+							<div class="w-full flex items-center">
+								<div class="size-15"></div>
+								<h1 class="grow-2 text-center text-2xl font-bold">
+									Search EFP
+								</h1>
+								<button class="flex-none cursor-pointer p-5 size-fit text-theme-header-text hover:text-theme-header-hover-text rounded-4xl overflow-hidden" onclick={ () => searchDialog!.close() } aria-label="close" title="Close">
+									<CrossIcon class="fill-current size-5 transition-colors" />
 								</button>
 							</div>
-							<div class="h-10 w-full flex bg-theme-search-bar-border -mb-10 mb-0">
-								<div class="h-full w-20 flex items-center justify-center">Filters:</div>
+							<div class="h-fit w-[95%] flex flex-col bg-theme-search-bar-border rounded-[20px] overflow-hidden">
+								<div class="h-10 w-full flex items-center bg-theme-search-bar-bg rounded-[40px] overflow-hidden divide-x-2 divide-theme-search-bar-border border-2 border-theme-search-bar-border">
+									<div class="h-full w-20">
+										<button popovertarget="filters-menu" popovertargetaction="toggle" class="flex group/close transform size-full items-center justify-center cursor-pointer text-theme-header-text hover:text-theme-header-hover-text transition-colors">
+											Filters
+											<UpArrowIcon class="fill-current size-2.5 ml-1 transition-all group-hover/close:translate-y-0.5 transform -scale-y-100 group-[&:has(+div:popover-open)]/close:scale-y-100" />
+										</button>
+										<div id="filters-menu" class="popover-fade absolute inset-auto top-[anchor(bottom)] rounded-b-lg left-[calc(anchor(left)-2px)] shadow-sm border-2 border-theme-search-bar-border bg-theme-search-bar-border" popover="auto">
+											<div class="flex flex-col">
+												{#snippet opButton(key: string, name: string)}
+													<button popovertarget={key} popovertargetaction="toggle" class="size-full rounded-lg bg-theme-search-bar-bg flex items-center justify-center cursor-pointer text-theme-header-text hover:text-theme-header-hover-text">
+														{name}
+													</button>
+												{/snippet}
+												{#snippet wrapFilterOption(name: string, callback: () => void)}
+													<button class="flex items-center justify-start" onclick={callback}>
+														<div class="flex items-center justify-center italic text-md h-8 w-8">
+															Wrap
+														</div>
+														<div class="p-2">
+															{name}
+														</div>
+													</button>
+												{/snippet}
+												{#snippet newFilter(key: string, callback: (f: Filter) => void)}
+													<div id={key} class="popover-fade overflow-y-auto scrollbar absolute inset-auto top-[anchor(top)] p-2 rounded-b-md left-[anchor(right)] shadow-sm" popover="auto">
+														<div class="flex flex-col">
+															<NewSearchFieldFilterOption key="created" oncomplete={callback} />
+															<NewSearchFieldFilterOption key="category" oncomplete={callback} />
+															<NewSearchFieldFilterOption key="status" oncomplete={callback} />
+															<NewSearchFieldFilterOption key="obsoletedBy" oncomplete={callback} />
+															<NewSearchFieldFilterOption key="updatedBy" oncomplete={callback} />
+															<NewSearchFieldFilterOption key="obsoletes" oncomplete={callback} />
+															<NewSearchFieldFilterOption key="updates" oncomplete={callback} />
+															<NewSearchFieldFilterOption key="pullRequests" oncomplete={callback} />
+															{@render wrapFilterOption("And", () => callback(new BooleanFilter("and", [])))}
+															{@render wrapFilterOption("Or", () => callback(new BooleanFilter("or", [])))}
+															{@render wrapFilterOption("Not", () => callback(new NegFilter()))}
+														</div>
+													</div>
+												{/snippet}
+												{#if searchFilter === undefined}
+												<div class="text-lg h-8 w-30 m-1">
+													{@render opButton("add-filter-menu", "Add")}
+													{@render newFilter("add-filter-menu", f => searchFilter = f)}
+												</div>
+												<!-- TODO -->
+												{/if}
+											</div>
+										</div>
+									</div>
+									<input class="h-8 p-1 grow placeholder:italic placeholder:text-base placeholder:opacity-80" placeholder="Type keywords..." />
+									<button class="h-full w-20 flex items-center justify-center cursor-pointer text-theme-header-text hover:text-theme-header-hover-text">
+										<SearchIcon class="fill-current size-5 transition-colors" />
+									</button>
+								</div>
+								<div class="h-10 w-full flex bg-theme-search-bar-border -mb-10 mb-0">
+									<div class="h-full w-20 flex items-center justify-center">Filters:</div>
+								</div>
 							</div>
 						</div>
 					</div>
 				</dialog>
 			</div>
-			<div class="w-full h-1 mb-1 bg-theme-sidebar-divide transition-all peer-[&>button:hover]:scale-y-200 [&:has(+:hover)]:scale-y-200"></div>
+			<div class="w-full h-1 mb-1 bg-theme-sidebar-divide transition-all peer-[&:has(>button:hover)]:scale-y-200 [&:has(+:hover)]:scale-y-200"></div>
 			<div class="flex grow-2 flex-col pt-2 divide-solid divide-theme-sidebar-divide divide-y">
 				{#each Object.keys(data.map) as efp}
 					<a class={{"p-2 hover:bg-theme-sidebar-hover transition-colors": true, "text-theme-sidebar-active font-bold": page.url.pathname === `/efp/${ efp }`}} href="/efp/{ efp }">
@@ -215,18 +184,20 @@
 					onclick={ () => sidebarOpen = !sidebarOpen }>
 					<MenuIcon class="size-5 fill-current transition-colors" />
 				</button>
-				<div class="dropdown">
+				<div>
 					<button aria-controls="theme-menu" popovertarget="theme-menu" popovertargetaction="toggle" class="size-fit outline-none p-2 cursor-pointer rounded-lg hover:text-theme-header-hover-text [&:has(+:popover-open)]:bg-theme-header-active-bg" title="Switch Theme"
 						onclick={ () => themeDropdownOpen = !themeDropdownOpen }>
 						<ThemeIcon class="size-5 fill-current transition-colors" />
 					</button>
-					<div id="theme-menu" role="menu" class="dropdown-menu absolute transition-discrete transition-all left-[anchor(left)] top-[calc(anchor(bottom)+8px)] font-normal text-theme-main-text bg-theme-header-bg border border-theme-header-border overflow-hidden flex-col z-60 rounded-lg shadow-sm" popover>
-						{#each Object.keys(themes) as theme, i}
-							<button tabindex="{i}" role="menuitem" class="p-3 outline-none cursor-pointer hover:bg-theme-header-active-bg transition-colors" class:font-bold={ theme === selectedTheme }
-								onclick={ () => selectTheme(theme as keyof typeof themes) }>
-								{ themes[theme as keyof typeof themes] }
-							</button>
-						{/each}
+					<div id="theme-menu" role="menu" class="absolute popover-fade left-[anchor(left)] top-[calc(anchor(bottom)+8px)] font-normal text-theme-main-text bg-theme-header-bg border border-theme-header-border overflow-hidden z-60 rounded-lg shadow-sm" popover>
+						<div class="size-full flex flex-col">
+							{#each Object.keys(themes) as theme, i}
+								<button tabindex="{i}" role="menuitem" class="p-3 outline-none cursor-pointer hover:bg-theme-header-active-bg transition-colors" class:font-bold={ theme === selectedTheme }
+									onclick={ () => selectTheme(theme as keyof typeof themes) }>
+									{ themes[theme as keyof typeof themes] }
+								</button>
+							{/each}
+						</div>
 					</div>
 				</div>
 				<div class="mx-auto text-xl">

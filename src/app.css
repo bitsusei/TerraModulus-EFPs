@@ -181,14 +181,13 @@ $timing-function: var(--tw-ease, var(--default-transition-timing-function)); */
     animation: fadeInOut var(--tw-duration, var(--default-transition-duration)) var(--tw-ease, var(--default-transition-timing-function));
 }
 
-.dropdown {
-    .dropdown-menu {
-        @apply opacity-0 transition-all transition-discrete animate-fade-in-out-flex;
-        &:popover-open {
-            @apply opacity-100 flex;
-        }
-        @starting-styles &:popover-open {
-            @apply opacity-0;
-        }
-    }
+/* Source: https://stackoverflow.com/a/77042849 */
+@utility popover-fade {
+    @apply transition-all transition-discrete opacity-0 open:opacity-100 starting:open:opacity-0;
+}
+
+@utility dialog-fade {
+    @apply transition-all transition-discrete opacity-0 open:opacity-100 starting:open:opacity-0
+        backdrop:transition-all backdrop:transition-discrete backdrop:opacity-0 open:backdrop:opacity-100
+        starting:open:backdrop:opacity-0;
 }
