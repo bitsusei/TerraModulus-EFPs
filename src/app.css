@@ -33,6 +33,9 @@ body {
     --color-theme-search-button-bg: var(--color-theme-search-button-bg);
     --color-theme-search-bar-bg: var(--color-theme-search-bar-bg);
     --color-theme-search-bar-border: var(--color-theme-search-bar-border);
+    --color-theme-search-filter-primary-bg: var(--color-theme-search-filter-primary-bg);
+    --color-theme-search-filter-secondary-bg: var(--color-theme-search-filter-secondary-bg);
+    --color-theme-search-filter-outline: var(--color-theme-search-filter-outline);
 
     @keyframes fadeInOut {
         0% {
@@ -73,6 +76,9 @@ body {
     --color-theme-search-button-bg: var(--color-neutral-300);
     --color-theme-search-bar-bg: var(--color-neutral-400);
     --color-theme-search-bar-border: var(--color-neutral-500);
+    --color-theme-search-filter-primary-bg: initial;
+    --color-theme-search-filter-secondary-bg: initial;
+    --color-theme-search-filter-outline: initial;
 }
 
 @variant dark {
@@ -98,6 +104,9 @@ body {
     --color-theme-search-button-bg: var(--color-zinc-800);
     --color-theme-search-bar-bg: var(--color-gray-800);
     --color-theme-search-bar-border: var(--color-gray-700);
+    --color-theme-search-filter-primary-bg: var(--color-teal-950);
+    --color-theme-search-filter-secondary-bg: var(--color-cyan-950);
+    --color-theme-search-filter-outline: var(--color-neutral-300);
 }
 
 @utility hyperlink {
@@ -140,15 +149,14 @@ body {
     .section-header {
         @apply flex items-center size-fit;
         .hover-link {
-            @apply inline overflow-hidden size-0 invisible opacity-0 ms-2 text-inherit;
-            transition: visibility 0s, opacity 0.2s linear;
+            @apply hidden transition-all size-fit transition-discrete opacity-0 ms-2 text-inherit;
             svg {
                 @apply size-4 fill-current;
             }
         }
 
-        &:hover .hover-link {
-            @apply size-4 visible opacity-100;
+        &:hover {
+            @apply [&>.hover-link]:inline [&>.hover-link]:opacity-100 starting:[&>.hover-link]:opacity-0;
         }
 
         &:target {
@@ -159,26 +167,6 @@ body {
 
 ol, ul {
     @apply ps-10;
-}
-
-/* $duration: var(--tw-duration, var(--default-transition-duration));
-$timing-function: var(--tw-ease, var(--default-transition-timing-function)); */
-
-@utility animate-fade-in-out-block {
-    --fade-result: block;
-    animation: fadeInOut var(--tw-duration, var(--default-transition-duration)) var(--tw-ease, var(--default-transition-timing-function));
-}
-@utility animate-fade-in-out-inline {
-    --fade-result: inline;
-    animation: fadeInOut var(--tw-duration, var(--default-transition-duration)) var(--tw-ease, var(--default-transition-timing-function));
-}
-@utility animate-fade-in-out-flex {
-    --fade-result: flex;
-    animation: fadeInOut var(--tw-duration, var(--default-transition-duration)) var(--tw-ease, var(--default-transition-timing-function));
-}
-@utility animate-fade-in-out-contents {
-    --fade-result: contents;
-    animation: fadeInOut var(--tw-duration, var(--default-transition-duration)) var(--tw-ease, var(--default-transition-timing-function));
 }
 
 /* Source: https://stackoverflow.com/a/77042849 */

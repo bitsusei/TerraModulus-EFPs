@@ -35,27 +35,46 @@ export class FilterField<T> {
 }
 
 export abstract class FieldFilter<T> implements Filter {
-	constructor(private readonly field: FilterField<T>) {}
+	readonly key: string;
+	constructor(public readonly field: FilterField<T>) { this.key = field.key; }
 	/** final */
 	filter(e: SearchEntry) { return this.filterField(e[this.field.key as keyof SearchEntry] as T); }
 	abstract filterField(val: T): boolean;
 }
 
+enum CmpOp {
+	EQ = "==",
+	NE = "!=",
+	GT = ">",
+	LT = "<",
+	GE = ">=",
+	LE = "<=",
+}
+
 export class RangeFilter<T> extends FieldFilter<T> {
+	static readonly opMap = {
+		"==": CmpOp.EQ,
+		"!=": CmpOp.NE,
+		">": CmpOp.GT,
+		"<": CmpOp.LT,
+		">=": CmpOp.GE,
+		"<=": CmpOp.LE,
+	};
+
 	constructor(
 		field: FilterField<T>,
-		public op: "eq" | "ne" | "gt" | "lt" | "ge" | "le",
+		public op: CmpOp,
 		public val: T,
 		private readonly cmp: Comparator<T>
 	) { super(field); }
 	filterField(val: T) {
 		switch (this.op) {
-			case "eq": return this.cmp.compare(val, this.val) === 0;
-			case "ne": return this.cmp.compare(val, this.val) !== 0;
-			case "gt": return this.cmp.compare(val, this.val) > 0;
-			case "lt": return this.cmp.compare(val, this.val) < 0;
-			case "ge": return this.cmp.compare(val, this.val) >= 0;
-			case "le": return this.cmp.compare(val, this.val) <= 0;
+			case CmpOp.EQ: return this.cmp.compare(val, this.val) === 0;
+			case CmpOp.NE: return this.cmp.compare(val, this.val) !== 0;
+			case CmpOp.GT: return this.cmp.compare(val, this.val) > 0;
+			case CmpOp.LT: return this.cmp.compare(val, this.val) < 0;
+			case CmpOp.GE: return this.cmp.compare(val, this.val) >= 0;
+			case CmpOp.LE: return this.cmp.compare(val, this.val) <= 0;
 		}
 	}
 };

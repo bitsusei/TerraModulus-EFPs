@@ -6,12 +6,14 @@
 	import SearchIcon from "$lib/assets/icons/search.svelte";
 	import CrossIcon from "$lib/assets/icons/cross.svelte";
 	import UpArrowIcon from "$lib/assets/icons/up-arrow.svelte";
-	import { onMount } from 'svelte'
+	import { onMount, type Snippet } from 'svelte'
 	import { page } from '$app/state';
 	import MiniSearch from "minisearch";
 	import FormDialog from './FormDialog.svelte';
-	import { BooleanFilter, FilterField, NegFilter, type Filter, type SearchEntry } from '$lib/search';
+	import { BooleanFilter, filterFields, MatchFilter, NegFilter, RangeFilter, type Filter, type SearchEntry } from './SearchDialog.svelte';
 	import NewSearchFieldFilterOption from './NewSearchFieldFilterOption.svelte';
+	import assert from 'assert';
+	import { App, BiMap } from '$lib';
 
 	let { children, data } = $props();
 	let sidebarOpen = $state(true);
@@ -54,18 +56,72 @@
 	});
 
 	miniSearch.addAll(data.searchEntries);
-	const filterFields = {
-		created: new FilterField<Date>("created"),
-		category: new FilterField<App.EfpData["category"]>("category"),
-		status: new FilterField<App.EfpData["status"]>("status"),
-		obsoletedBy: new FilterField<string>("obsoletedBy"),
-		updatedBy: new FilterField<string>("updatedBy"),
-		obsoletes: new FilterField<string>("obsoletes"),
-		updates: new FilterField<string>("updates"),
-		pullRequests: new FilterField<string>("pullRequests"),
-	};
-	let searchFilter = $state<Filter>();
+	interface FilterSelection {
+		readonly empty: boolean;
+	}
+	class FilterSel implements FilterSelection {
+		empty = false;
+		constructor(
+			public readonly instance: Filter,
+			/** `undefined` if root */
+			public readonly slot?: WrapFilterSlot
+		) {}
+	}
+	interface WrapFilterSlot {
+		setSlot(f: Filter): void
+		removeSlot(): void
+	}
+	interface WrapFilterSlotSelection extends FilterSelection, WrapFilterSlot {}
+	class BooleanFilterSlot implements WrapFilterSlot {
+		constructor(
+			public readonly instance: BooleanFilter,
+			public readonly index: number
+		) { this.instance = $state(instance); }
+		setSlot(f: Filter) {
+			this.instance.val[this.index] = f;
+		}
+		removeSlot() {
+			this.instance.val.splice(this.index, 1);
+		}
+	}
+	class BooleanFilterSlotSel extends BooleanFilterSlot implements WrapFilterSlotSelection {
+		empty = true;
+	}
+	class NegFilterSlot implements WrapFilterSlot {
+		constructor(
+			public readonly instance: NegFilter
+		) { this.instance = $state(instance); }
+		setSlot(f: Filter) {
+			this.instance.val = f;
+		}
+		removeSlot() {
+			this.instance.val = undefined;
+		}
+	}
+	class NegFilterSlotSel extends NegFilterSlot implements WrapFilterSlotSelection {
+		empty = true;
+	}
+	let searchFilter = $state<{ root?: Filter, selection?: FilterSel | BooleanFilterSlotSel | NegFilterSlotSel }>({});
 	let searchDialog = $state<HTMLDialogElement>();
+	/** Selection must not be a slot (`WrapFilterSlotSelection`), thus FilterSel; `wrap` must be empty */
+	const wrapSelectedFilter = (wrap: BooleanFilter | NegFilter) => {
+		// assert(searchFilter.selection instanceof FilterSel); // TypeError: assert is not a function
+		function noop(value: unknown): asserts value {}
+		noop(searchFilter.selection instanceof FilterSel);
+		const old = searchFilter.selection;
+		if (wrap instanceof BooleanFilter)
+			wrap.val[0] = old.instance;
+		else
+			wrap.val = old.instance;
+		if (old.slot === undefined)
+			searchFilter.root = wrap;
+		else {
+			old.slot.setSlot(wrap);
+		}
+
+		searchFilter.selection = new FilterSel(wrap, old.slot);
+	}
+	$inspect(searchFilter);
 </script>
 
 <div class="flex h-lvh overflow-hidden divide-solid divide-x-8 divide-theme-main-bg text-theme-main-text bg-theme-main-bg scrollbar-thumb-theme-scrollbar-thumb scrollbar-track-theme-scrollbar-track" data-theme={ currentTheme }>
@@ -103,54 +159,104 @@
 									<CrossIcon class="fill-current size-5 transition-colors" />
 								</button>
 							</div>
-							<div class="h-fit w-[95%] flex flex-col bg-theme-search-bar-border rounded-[20px] overflow-hidden">
+							<div class={{
+								"h-fit w-[95%] flex flex-col bg-theme-search-bar-border rounded-[20px] overflow-hidden transition-all": true,
+								"[&:has(>*>*>button+div:popover-open)]:rounded-bl-none": searchFilter.root === undefined
+							}}>
 								<div class="h-10 w-full flex items-center bg-theme-search-bar-bg rounded-[40px] overflow-hidden divide-x-2 divide-theme-search-bar-border border-2 border-theme-search-bar-border">
 									<div class="h-full w-20">
 										<button popovertarget="filters-menu" popovertargetaction="toggle" class="flex group/close transform size-full items-center justify-center cursor-pointer text-theme-header-text hover:text-theme-header-hover-text transition-colors">
-											Filters
+											Filter
 											<UpArrowIcon class="fill-current size-2.5 ml-1 transition-all group-hover/close:translate-y-0.5 transform -scale-y-100 group-[&:has(+div:popover-open)]/close:scale-y-100" />
 										</button>
 										<div id="filters-menu" class="popover-fade absolute inset-auto top-[anchor(bottom)] rounded-b-lg left-[calc(anchor(left)-2px)] shadow-sm border-2 border-theme-search-bar-border bg-theme-search-bar-border" popover="auto">
 											<div class="flex flex-col">
-												{#snippet opButton(key: string, name: string)}
-													<button popovertarget={key} popovertargetaction="toggle" class="size-full rounded-lg bg-theme-search-bar-bg flex items-center justify-center cursor-pointer text-theme-header-text hover:text-theme-header-hover-text">
+												{#snippet opPopButton(key: string, name: string)}
+													<button popovertarget={key} popovertargetaction="toggle" class="h-8 w-full rounded-lg bg-theme-search-bar-bg flex items-center justify-center cursor-pointer transition-colors text-theme-header-text hover:text-theme-header-hover-text">
 														{name}
 													</button>
 												{/snippet}
 												{#snippet wrapFilterOption(name: string, callback: () => void)}
-													<button class="flex items-center justify-start" onclick={callback}>
-														<div class="flex items-center justify-center italic text-md h-8 w-8">
+													<button class="flex items-center justify-start cursor-pointer transition-colors hover:text-theme-header-hover-text w-full" onclick={callback}>
+														<div class="flex items-center justify-center italic text-base me-1 h-8 w-12 my-0.5 rounded-lg bg-theme-search-filter-primary-bg">
 															Wrap
 														</div>
-														<div class="p-2">
+														<div class="px-2 grow rounded-lg bg-theme-search-filter-secondary-bg">
 															{name}
 														</div>
 													</button>
 												{/snippet}
-												{#snippet newFilter(key: string, callback: (f: Filter) => void)}
-													<div id={key} class="popover-fade overflow-y-auto scrollbar absolute inset-auto top-[anchor(top)] p-2 rounded-b-md left-[anchor(right)] shadow-sm" popover="auto">
-														<div class="flex flex-col">
-															<NewSearchFieldFilterOption key="created" oncomplete={callback} />
-															<NewSearchFieldFilterOption key="category" oncomplete={callback} />
-															<NewSearchFieldFilterOption key="status" oncomplete={callback} />
-															<NewSearchFieldFilterOption key="obsoletedBy" oncomplete={callback} />
-															<NewSearchFieldFilterOption key="updatedBy" oncomplete={callback} />
-															<NewSearchFieldFilterOption key="obsoletes" oncomplete={callback} />
-															<NewSearchFieldFilterOption key="updates" oncomplete={callback} />
-															<NewSearchFieldFilterOption key="pullRequests" oncomplete={callback} />
-															{@render wrapFilterOption("And", () => callback(new BooleanFilter("and", [])))}
-															{@render wrapFilterOption("Or", () => callback(new BooleanFilter("or", [])))}
-															{@render wrapFilterOption("Not", () => callback(new NegFilter()))}
-														</div>
+												{#snippet filterSelect(key: string, children: Snippet<[]>)}
+												<div id={key} class="popover-fade overflow-y-auto scrollbar absolute inset-auto top-[calc(anchor(top)-52px)] p-1 rounded-lg left-[calc(anchor(right)+4px)] shadow-sm text-theme-header-text bg-theme-search-bar-border" popover="auto">
+													<div class="flex [&>*]:flex-none flex-col basis-auto">
+														{@render children()}
 													</div>
-												{/snippet}
-												{#if searchFilter === undefined}
-												<div class="text-lg h-8 w-30 m-1">
-													{@render opButton("add-filter-menu", "Add")}
-													{@render newFilter("add-filter-menu", f => searchFilter = f)}
 												</div>
-												<!-- TODO -->
-												{/if}
+												{/snippet}
+												{#snippet newFilter(key: string, callback: (f: Filter) => void)}
+													{#snippet children()}
+														<NewSearchFieldFilterOption key="created" oncomplete={callback} />
+														<NewSearchFieldFilterOption key="category" oncomplete={callback} />
+														<NewSearchFieldFilterOption key="status" oncomplete={callback} />
+														<NewSearchFieldFilterOption key="obsoletedBy" oncomplete={callback} />
+														<NewSearchFieldFilterOption key="updatedBy" oncomplete={callback} />
+														<NewSearchFieldFilterOption key="obsoletes" oncomplete={callback} />
+														<NewSearchFieldFilterOption key="updates" oncomplete={callback} />
+														<NewSearchFieldFilterOption key="pullRequests" oncomplete={callback} />
+														{@render wrapFilterOption("And", () => callback(new BooleanFilter("and", [])))}
+														{@render wrapFilterOption("Or", () => callback(new BooleanFilter("or", [])))}
+														{@render wrapFilterOption("Not", () => callback(new NegFilter()))}
+													{/snippet}
+													{@render filterSelect(key, children)}
+												{/snippet}
+												<div class="text-lg h-fit w-30 m-1 [&>button]:my-1">
+													{#if searchFilter.root === undefined}
+													{@render opPopButton("add-filter-menu", "Add")}
+													{@render newFilter("add-filter-menu", f => searchFilter.root = f)}
+													{:else}
+													<button class="h-8 w-full rounded-lg bg-theme-search-bar-bg flex items-center justify-center cursor-pointer text-theme-header-text hover:text-theme-header-hover-text"
+														onclick={ () => searchFilter = {} }>
+														Clear All
+													</button>
+													{#if searchFilter.selection !== undefined}
+													<button class="h-8 w-full rounded-lg bg-theme-search-bar-bg flex items-center justify-center cursor-pointer text-theme-header-text hover:text-theme-header-hover-text"
+														onclick={ () => searchFilter.selection = undefined }>
+														Unselect
+													</button>
+													{#if searchFilter.selection.empty}
+													{@render opPopButton("insert-filter-menu", "Insert")}
+													{@render newFilter("insert-filter-menu", f => {
+														(<WrapFilterSlotSelection> searchFilter.selection).setSlot(f);
+														searchFilter.selection = searchFilter.selection.instance  new FilterSel(f, new BooleanFilterSlot(<WrapFilterSlotSelection> searchFilter.selection))
+													})}
+													{:else}
+													{@render opPopButton("wrap-filter-menu", "Wrap")}
+													{#snippet children()}
+														{@render wrapFilterOption("And", () => wrapSelectedFilter(new BooleanFilter("and", [])))}
+														{@render wrapFilterOption("Or", () => wrapSelectedFilter(new BooleanFilter("or", [])))}
+														{@render wrapFilterOption("Not", () => wrapSelectedFilter(new NegFilter()))}
+													{/snippet}
+													{@render filterSelect("wrap-filter-menu", children)}
+													<button class="h-8 w-full rounded-lg bg-theme-search-bar-bg flex items-center justify-center cursor-pointer text-theme-header-text hover:text-theme-header-hover-text"
+														onclick={() => {
+															assert(searchFilter.selection instanceof FilterSel);
+															if (searchFilter.selection.slot === undefined)
+																searchFilter = {};
+															else {
+																searchFilter.selection.slot.removeSlot();
+																if (searchFilter.selection.slot instanceof BooleanFilterSlot)
+																	searchFilter.selection = new BooleanFilterSlotSel(searchFilter.selection.slot.instance, searchFilter.selection.slot.index)
+																else if (searchFilter.selection.slot instanceof NegFilterSlot)
+																	searchFilter.selection = new NegFilterSlotSel(searchFilter.selection.slot.instance)
+																// no more else but above "if" is due to class extending; it is not sealed
+															}
+														}}>
+														Remove
+													</button>
+													{/if}
+													{/if}
+													{/if}
+												</div>
 											</div>
 										</div>
 									</div>
@@ -159,8 +265,122 @@
 										<SearchIcon class="fill-current size-5 transition-colors" />
 									</button>
 								</div>
-								<div class="h-10 w-full flex bg-theme-search-bar-border -mb-10 mb-0">
+								<div class="h-10 w-full py-1 flex bg-theme-search-bar-border -mb-10 transition-all" class:mb-0={ searchFilter.root !== undefined }>
 									<div class="h-full w-20 flex items-center justify-center">Filters:</div>
+									<div class="h-full grow flex items-center overflow-hidden overflow-x-auto scrollbar-none bg-theme-search-bar-bg rounded-lg">
+										{#if searchFilter.root !== undefined}
+										{#snippet renderFilter(f: Filter)}
+											{@const dialogOpening = (e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) => {
+												(<HTMLDialogElement> e.currentTarget.parentElement!.querySelector(":scope > dialog")).show();
+												e.stopPropagation()
+											}}
+											<!-- svelte-ignore a11y_click_events_have_key_events -->
+											<!-- svelte-ignore a11y_no_static_element_interactions -->
+											<div class={{
+												"h-full w-fit rounded-lg flex [&>*]:flex-none items-center justify-center mx-1 px-2 bg-theme-search-filter-secondary-bg outline-solid outline-2 outline-theme-search-bar-bg": true,
+												"bg-theme-search-filter-primary-bg": f instanceof BooleanFilter || f instanceof NegFilter,
+												"outline-theme-search-filter-outline": searchFilter.selection instanceof FilterSel && f === searchFilter.selection.instance
+											}} onclick={ () => searchFilter.selection = new FilterSel(f) }> <!-- if this is in slot, the wrap filter handles this. -->
+												{#snippet valueDisplay(value: string, editOption: { type: "date" | "idInput" } | { type: "options", param: string[] }, editCallback: (v: any) => void)}
+													<div>
+														<button class="p-1 leading-none cursor-pointer flex items-center justify-center rounded-md bg-theme-search-bar-bg border-2 border-theme-search-filter-primary-bg" onclick={dialogOpening}>
+															{value}
+														</button>
+														<FormDialog items={ { "Value": editOption } } oncomplete={ data => {editCallback(data["Value"]); console.log(editOption)} } />
+													</div>
+												{/snippet}
+												{#snippet operatorDisplay(value: string, editOptions: string[], editCallback: (v: string) => void)}
+													<div>
+														<button class="px-0.5 cursor-pointer flex items-center justify-center font-bold rounded-md bg-theme-search-filter-primary-bg border-2 border-theme-search-bar-border" onclick={dialogOpening}>
+															{value}
+														</button> <!-- Binding is avoided since this is not as a dedicated component -->
+														<FormDialog items={ { "Operator": { type: "options", param: editOptions } } } oncomplete={ data => editCallback(data["Operator"]) } />
+													</div>
+												{/snippet}
+												{#if f instanceof RangeFilter || f instanceof MatchFilter}
+												{@const isRange = f instanceof RangeFilter}
+												<div class="flex items-center justify-center font-bold">
+													{ filterFields[f.key as keyof typeof filterFields].name }
+												</div>
+												{#if isRange}
+												{@render operatorDisplay(f.op, Object.keys(RangeFilter.opMap), v => f.op = RangeFilter.opMap[v as keyof typeof RangeFilter.opMap])}
+												{:else}
+												<div class="p-2 flex items-center justify-center font-bold">
+													==
+												</div>
+												{/if}
+												<!-- Currently only Date and string ID as generic types -->
+												{#if f.val instanceof Date}
+												{@render valueDisplay(
+													`${ f.val.getUTCFullYear() }-${ f.val.getUTCMonth().toString().padStart(2, "0") }-${ f.val.getUTCDate().toString().padStart(2, "0") }`,
+													{ type: "date" }, v => f.val = v
+												)}
+												{:else if f.field === filterFields.category.field}
+												{@render valueDisplay(App.EfpEntry.category.get(f.val),
+													{ type: "options", param: [...App.EfpEntry.category.values()] },
+													v => f.val = App.EfpEntry.category.getKey(v))}
+												{:else if f.field === filterFields.status.field}
+												{@render valueDisplay(App.EfpEntry.status.get(f.val),
+													{ type: "options", param: [...App.EfpEntry.status.values()] },
+													v => {f.val = App.EfpEntry.status.getKey(v); console.log(f); console.log(v)})}
+												{:else if typeof f.val === "string"} <!-- string ID -->
+												{@render valueDisplay(f.val, { type: "idInput" }, v => f.val = v)}
+												{/if}
+												{:else if f instanceof BooleanFilter}
+												{@const map = new BiMap({ and: "&", or: "|" })}
+												{@render operatorDisplay(map.get(f.op), [...map.values()], v => f.op = map.getKey(v))}
+												<div class="flex h-full w-fit items-center justify-center">
+													{#each f.val as ff, i}
+														<div class="flex-none mx-2 h-full w-fit" onclick={e => {
+															// due to bubbling
+															searchFilter.selection = new FilterSel(ff, new BooleanFilterSlot(f, i));
+															e.stopPropagation(); // stop more bubbling
+														}}>
+															{@render renderFilter(ff)}
+														</div>
+													{/each}
+													<button class={{
+														"flex-none mx-1 p-1 h-6 flex items-center justify-center font-bold rounded-md bg-theme-search-filter-secondary-bg hover:bg-theme-search-bar-bg border-2 border-theme-search-bar-border transition-colors": true,
+														"outline-solid outline-2 outline-theme-search-filter-outline": searchFilter.selection instanceof BooleanFilterSlotSel && searchFilter.selection.instance === f
+													}} onclick={e => {
+														searchFilter.selection = new BooleanFilterSlotSel(f, f.val.length);
+														e.stopPropagation(); // stop bubbling
+													}}>
+														+
+													</button>
+												</div>
+												{:else if f instanceof NegFilter}
+												<div class="flex items-center justify-center font-bold rounded-md bg-theme-search-filter-primary-bg">
+													!
+												</div>
+												<div class="flex h-full w-fit items-center justify-center">
+													{#if f.val !== undefined}
+													<div class="flex-none mx-2 h-full w-fit" onclick={e => {
+														// due to bubbling
+														searchFilter.selection = new FilterSel(f.val!, new NegFilterSlot(f));
+														e.stopPropagation(); // stop more bubbling
+													}}>
+														{@render renderFilter(f.val)}
+													</div>
+													{:else}
+													<button class={{
+														"flex-none mx-1 p-1 h-6 flex items-center justify-center font-bold rounded-md bg-theme-search-filter-secondary-bg hover:bg-theme-search-bar-bg border-2 border-theme-search-bar-border transition-colors": true,
+														"outline-solid outline-2 outline-theme-search-filter-outline": searchFilter.selection instanceof NegFilterSlotSel && searchFilter.selection.instance === f
+													}} onclick={e => {
+														searchFilter.selection = new NegFilterSlotSel(f);
+														e.stopPropagation(); // stop bubbling
+													}}>
+														+
+													</button>
+													{/if}
+												</div>
+												<!-- no more else but above "if" is due to class extending; it is not sealed  -->
+												{/if}
+											</div>
+										{/snippet}
+										{@render renderFilter(searchFilter.root)}
+										{/if}
+									</div>
 								</div>
 							</div>
 						</div>

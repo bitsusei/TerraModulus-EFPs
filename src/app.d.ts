@@ -12,8 +12,8 @@ declare global {
 		interface EfpData {
 			id: number;
 			created: Date;
-			category: "informational" | "process" | "standard";
-			status: "draft" | "deferred" | "provisional" | "final";
+			category: import("$lib").App.EfpEntry.CategoryKey;
+			status: import("$lib").App.EfpEntry.StatusKey;
 			title: string;
 			obsoletedBy: string[];
 			updatedBy: string[];
