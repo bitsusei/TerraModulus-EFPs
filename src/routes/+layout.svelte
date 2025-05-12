@@ -16,8 +16,8 @@
 	import { App, BiMap } from '$lib';
 	import { fade } from 'svelte/transition';
 	import highlightWords from 'highlight-words';
-	import trim from "lodash/trim";
 	import { explicitEffect } from './util.svelte';
+	import { escapeRegExp } from 'lodash';
 
 	let { children, data } = $props();
 	let sidebarOpen = $state(true);
@@ -153,15 +153,14 @@
 		Object.entries(meta).forEach(e => {
 			result[e[0]] = highlightWords({
 				text: entry[e[0] as keyof (typeof data.searchEntries)[number]] as string,
-				query: trim(e[1].join(" "), "/"),
-				clipBy: 6,
+				query: `/\\b(${e[1].map(escapeRegExp).join("|")})\\b/gi`,
+				clipBy: e[0] === "title" ? undefined : 6,
 			}).map(c => ({ match: c.match, text: c.text }));
 		});
 		if (result.title === undefined)
 			result.title = [{ match: false, text: entry.title }];
 		else if (result.content === undefined)
 			result.content = [{ match: false, text: entry.content.substring(0, 120) }];
-		console.log(result.title, result.content);
 		return [ result.title, result.content ];
 	};
 </script>
@@ -308,8 +307,8 @@
 										</div>
 									</div>
 									<form class="grow flex items-center h-full divide-x-2 divide-theme-search-bar-border">
-										<div class="h-8 p-1 grow">
-											<input autocomplete="off" class="size-full [anchor-name:--input] peer placeholder:italic placeholder:text-base placeholder:opacity-80" bind:value={searchInput} type="search" placeholder="Type keywords..." onkeydown={e => {
+										<div class="h-8 p-1 grow group/search">
+											<input autocomplete="off" class="size-full [anchor-name:--input] placeholder:italic placeholder:text-base placeholder:opacity-80" bind:value={searchInput} type="search" placeholder="Type keywords..." onkeydown={e => {
 												if (e.code === "Enter") {
 													e.preventDefault();
 													if (searchSuggestionSel === undefined) {
@@ -327,7 +326,7 @@
 												}
 											}} />
 											{#if searchSuggestions.length !== 0}
-											<div transition:fade class="absolute bg-theme-search-bar-bg [position-anchor:--input] inset-auto top-[calc(anchor(bottom)+6px)] left-[anchor(left)] right-[anchor(right)] hidden peer-focus:block transition-all transition-discrete opacity-0 peer-focus:opacity-100 starting:peer-focus:opacity-0">
+											<div transition:fade class="absolute bg-theme-search-bar-bg [position-anchor:--input] inset-auto top-[calc(anchor(bottom)+6px)] left-[anchor(left)] right-[anchor(right)] hidden group-focus-within/search:block transition-all transition-discrete opacity-0 group-focus-within/search:opacity-100 starting:group-focus-within/search:opacity-0">
 												{#each searchSuggestions as suggestion, i}
 													<button class={{
 														"w-full p-2 h-6 truncate flex justify-start items-center hover:bg-theme-search-bar-border transition-colors": true,
@@ -471,28 +470,28 @@
 									{@const [ title, content ] = highlightSearchResult(result)}
 									<a transition:fade class="w-full m-1 p-1 flex flex-col items-center justify-center [&>*]:flex-none rounded-xl bg-theme-search-result-item-bg border-2 border-theme-search-bar-border hover:bg-theme-search-bar-bg transition-colors" href="/efp/{ data.indexMap[result.id] }"
 										onclick={ () => searchDialog!.close() }>
-										{#snippet renderHighlights(content: boolean, meta: { match: boolean, text: string }[])}
+										{#snippet renderHighlights(meta: { match: boolean, text: string }[])}
 											{#each meta as e}
 												{#if e.match}
 												<span class="font-extrabold inline text-theme-search-result-highlight-text">{e.text}</span>
 												{:else}
-												<span class="inline" class:text-theme-search-result-minor-text={content}>{e.text}</span>
+												<span class="inline">{e.text}</span>
 												{/if}
 											{/each}
 										{/snippet}
-										<div class="p-1 w-full flex justify-start items-center [&>*]:flex-none">
+										<div class="w-full flex justify-start items-center [&>*]:flex-none">
 											<div class="mx-1">
 												EFP {result.id}
 											</div>
 											<div class="mx-1">-</div>
 											<p class="p-1 grow truncate">
-												{@render renderHighlights(false, title)}
+												{@render renderHighlights(title)}
 											</p>
 										</div>
-										<hr class="flex-none h-px my-1 bg-theme-search-bar-border border-0">
+										<hr class="flex-none w-full h-px my-1 bg-theme-search-bar-border border-0">
 										<div class="p-1 w-full text-ellipsis flex justify-center items-center">
-											<p class="w-full line-clamp-2">
-												{@render renderHighlights(true, content)}
+											<p class="w-full line-clamp-2 text-theme-search-result-minor-text">
+												{@render renderHighlights(content)}
 											</p>
 										</div>
 									</a>
