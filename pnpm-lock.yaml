@@ -44,6 +44,9 @@ devDependencies:
   dedent-js:
     specifier: ^1.0.1
     version: 1.0.1
+  highlight-words:
+    specifier: ^2.0.0
+    version: 2.0.0
   highlight.js:
     specifier: ^11.11.1
     version: 11.11.1
@@ -975,6 +978,11 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       function-bind: 1.1.2
+    dev: true
+
+  /highlight-words@2.0.0:
+    resolution: {integrity: sha512-If5n+IhSBRXTScE7wl16VPmd+44Vy7kof24EdqhjsZsDuHikpv1OCagVcJFpB4fS4UPUniedlWqrjIO8vWOsIQ==}
+    engines: {node: '>= 20', npm: '>= 9'}
     dev: true
 
   /highlight.js@11.11.1:

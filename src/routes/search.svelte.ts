@@ -61,12 +61,16 @@ export class RangeFilter<T> extends FieldFilter<T> {
 		"<=": CmpOp.LE,
 	};
 
+	public op: CmpOp = $state<any>();
+	public val: T = $state<any>();
+
 	constructor(
 		field: FilterField<T>,
-		public op: CmpOp,
-		public val: T,
+		op: CmpOp,
+		val: T,
 		private readonly cmp: Comparator<T>
-	) { super(field); }
+	) { super(field); this.op = op; this.val = val; }
+
 	filterField(val: T) {
 		switch (this.op) {
 			case CmpOp.EQ: return this.cmp.compare(val, this.val) === 0;
@@ -80,10 +84,14 @@ export class RangeFilter<T> extends FieldFilter<T> {
 };
 
 export class BooleanFilter implements Filter {
+	public op: "and" | "or" = $state<any>();
+	public val: Filter[] = $state<any>();
+
 	constructor(
-		public op: "and" | "or",
-		public val: Filter[]
-	) {}
+		op: "and" | "or",
+		val: Filter[]
+	) { this.op = op; this.val = val; }
+
 	filter(e: SearchEntry) {
 		if (this.val.length === 0) return false;
 		switch (this.op) {
@@ -94,16 +102,18 @@ export class BooleanFilter implements Filter {
 };
 
 export class MatchFilter<T> extends FieldFilter<T> {
+	public val: T = $state<any>();
 	constructor(
 		field: FilterField<T>,
-		public val: T,
+		val: T,
 		private readonly eq: Equalator<T>
-	) { super(field); }
+	) { super(field); this.val = val; }
 	filterField(val: T) { return this.eq.equals(val, this.val); }
 }
 
 export class NegFilter implements Filter {
-	constructor(public val?: Filter) {}
+	public val?: Filter = $state();
+	constructor(val?: Filter) { this.val = val; }
 	filter(e: SearchEntry) { return this.val === undefined ? false : !this.val.filter(e); }
 }
 

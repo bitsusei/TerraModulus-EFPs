@@ -36,6 +36,10 @@ body {
     --color-theme-search-filter-primary-bg: var(--color-theme-search-filter-primary-bg);
     --color-theme-search-filter-secondary-bg: var(--color-theme-search-filter-secondary-bg);
     --color-theme-search-filter-outline: var(--color-theme-search-filter-outline);
+    --color-theme-search-result-bg: var(--color-theme-search-result-bg);
+    --color-theme-search-result-item-bg: var(--color-theme-search-result-item-bg);
+    --color-theme-search-result-highlight-text: var(--color-theme-search-result-highlight-text);
+    --color-theme-search-result-minor-text: var(--color-theme-search-result-minor-text);
 
     @keyframes fadeInOut {
         0% {
@@ -79,6 +83,10 @@ body {
     --color-theme-search-filter-primary-bg: initial;
     --color-theme-search-filter-secondary-bg: initial;
     --color-theme-search-filter-outline: initial;
+    --color-theme-search-result-bg: initial;
+    --color-theme-search-result-item-bg: initial;
+    --color-theme-search-result-highlight-text: initial;
+    --color-theme-search-result-minor-text: initial;
 }
 
 @variant dark {
@@ -107,6 +115,10 @@ body {
     --color-theme-search-filter-primary-bg: var(--color-teal-950);
     --color-theme-search-filter-secondary-bg: var(--color-cyan-950);
     --color-theme-search-filter-outline: var(--color-neutral-300);
+    --color-theme-search-result-bg: #1c2430;
+    --color-theme-search-result-item-bg: #1c2430;
+    --color-theme-search-result-highlight-text: var(--color-amber-400);
+    --color-theme-search-result-minor-text: var(--color-neutral-500);
 }
 
 @utility hyperlink {

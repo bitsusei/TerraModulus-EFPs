@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { App } from "$lib";
-	import { DateCmp, type Filter, filterFields, MatchFilter, RangeFilter, StringEq } from "./SearchDialog.svelte";
+	import { DateCmp, type Filter, filterFields, MatchFilter, RangeFilter, StringEq } from "./search.svelte";
 	import FormDialog from "./FormDialog.svelte";
 
 	let { key, oncomplete }: { key: keyof typeof filterFields, oncomplete: (f: Filter) => void } = $props();
