@@ -49,6 +49,17 @@ declare global {
 				pullRequests: [string, ...string[]],
 			}[];
 		}
+		interface TableOfContents {
+			tree: [{
+				header: string,
+				id: string,
+				tree?: TableOfContents["tree"],
+			}, ...{
+				header: string,
+				id: string,
+				tree?: TableOfContents["tree"],
+			}[]];
+		}
 	}
 }
 

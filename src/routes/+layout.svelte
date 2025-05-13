@@ -6,6 +6,7 @@
 	import SearchIcon from "$lib/assets/icons/search.svelte";
 	import CrossIcon from "$lib/assets/icons/cross.svelte";
 	import UpArrowIcon from "$lib/assets/icons/up-arrow.svelte";
+	import ListIcon from "$lib/assets/icons/list.svelte";
 	import { onMount, type Snippet } from 'svelte'
 	import { page } from '$app/state';
 	import MiniSearch, { type SearchResult } from "minisearch";
@@ -17,11 +18,10 @@
 	import { fade } from 'svelte/transition';
 	import highlightWords from 'highlight-words';
 	import { explicitEffect } from './util.svelte';
-	import { escapeRegExp } from 'lodash';
+	import escapeRegExp from 'lodash/escapeRegExp';
 
 	let { children, data } = $props();
 	let sidebarOpen = $state(true);
-	let themeDropdownOpen = $state(false);
 	const themes = {
 		"auto": "Auto",
 		"light": "Light",
@@ -353,7 +353,7 @@
 										{#if searchFilter.root !== undefined}
 										{#snippet renderFilter(f: Filter)}
 											{@const dialogOpening = (e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) => {
-												(<HTMLDialogElement> e.currentTarget.parentElement!.querySelector(":scope > dialog")).show();
+												(<HTMLDialogElement> e.currentTarget.parentElement!.querySelector(":scope > dialog")).showPopover();
 												e.stopPropagation()
 											}}
 											<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -368,7 +368,7 @@
 														<button class="p-1 leading-none cursor-pointer flex items-center justify-center rounded-md bg-theme-search-bar-bg border-2 border-theme-search-filter-primary-bg" onclick={dialogOpening}>
 															{value}
 														</button>
-														<FormDialog items={ { "Value": editOption } } oncomplete={ data => editCallback(data["Value"]) } />
+														<FormDialog floatingParams={{ selectAnchor: e => e.parentElement!.querySelector(":scope > button")!, offset: 6, shift: 6 }} items={{ "Value": editOption }} oncomplete={ data => editCallback(data["Value"]) } />
 													</div>
 												{/snippet}
 												{#snippet operatorDisplay(value: string, editOptions: string[], editCallback: (v: string) => void)}
@@ -376,7 +376,7 @@
 														<button class="px-0.5 cursor-pointer flex items-center justify-center font-bold rounded-md bg-theme-search-filter-primary-bg border-2 border-theme-search-bar-border" onclick={dialogOpening}>
 															{value}
 														</button> <!-- Binding is avoided since this is not as a dedicated component -->
-														<FormDialog items={ { "Operator": { type: "options", param: editOptions } } } oncomplete={ data => editCallback(data["Operator"]) } />
+														<FormDialog floatingParams={{ selectAnchor: e => e.parentElement!.querySelector(":scope > button")!, offset: 6, shift: 6 }} items={{ "Operator": { type: "options", param: editOptions } }} oncomplete={ data => editCallback(data["Operator"]) } />
 													</div>
 												{/snippet}
 												{#if f instanceof RangeFilter || f instanceof MatchFilter}
@@ -519,8 +519,7 @@
 					<MenuIcon class="size-5 fill-current transition-colors" />
 				</button>
 				<div>
-					<button aria-controls="theme-menu" popovertarget="theme-menu" popovertargetaction="toggle" class="size-fit outline-none p-2 cursor-pointer rounded-lg hover:text-theme-header-hover-text [&:has(+:popover-open)]:bg-theme-header-active-bg" title="Switch Theme"
-						onclick={ () => themeDropdownOpen = !themeDropdownOpen }>
+					<button aria-controls="theme-menu" popovertarget="theme-menu" popovertargetaction="toggle" class="size-fit outline-none p-2 cursor-pointer rounded-lg hover:text-theme-header-hover-text [&:has(+:popover-open)]:bg-theme-header-active-bg" title="Switch Theme">
 						<ThemeIcon class="size-5 fill-current transition-colors" />
 					</button>
 					<div id="theme-menu" role="menu" class="absolute popover-fade left-[anchor(left)] top-[calc(anchor(bottom)+8px)] font-normal text-theme-main-text bg-theme-header-bg border border-theme-header-border overflow-hidden z-60 rounded-lg shadow-sm" popover>
@@ -537,6 +536,11 @@
 				<div class="mx-auto text-xl">
 					The TerraModulus EFP Book
 				</div>
+				{#if page.data.tableOfContents !== undefined}
+				<button aria-label="table-of-contents-toggle" class="size-fit outline-none p-2 cursor-pointer hover:text-theme-header-hover-text" title="Toggle Table of Contents">
+					<ListIcon class="size-5 stroke-current transition-colors" />
+				</button>
+				{/if}
 				<a href="https://github.com/AnvilloyDevStudio/TerraModulus-EFPs">
 					<button aria-label="git-repo" class="size-fit outline-none p-2 cursor-pointer hover:text-theme-header-hover-text" title="GitHub repository">
 						<GithubIcon class="size-5 fill-current transition-colors" />
