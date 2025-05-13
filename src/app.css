@@ -6,7 +6,7 @@
 @custom-variant dark (*:where([data-theme=dark]));
 
 body {
-    @apply font-sans;
+    @apply font-sans overflow-hidden;
 }
 
 @theme {
@@ -177,7 +177,7 @@ body {
     }
 }
 
-ol, ul {
+main :where(ol, ul) {
     @apply ps-10;
 }
 

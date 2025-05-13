@@ -11,6 +11,7 @@ declare global {
 		interface Platform {}
 		interface EfpData {
 			id: number;
+			tableOfContents: TableOfContents;
 			created: Date;
 			category: import("$lib").App.EfpEntry.CategoryKey;
 			status: import("$lib").App.EfpEntry.StatusKey;

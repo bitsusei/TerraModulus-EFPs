@@ -7,6 +7,7 @@
 	import CrossIcon from "$lib/assets/icons/cross.svelte";
 	import UpArrowIcon from "$lib/assets/icons/up-arrow.svelte";
 	import ListIcon from "$lib/assets/icons/list.svelte";
+	import TopIcon from "$lib/assets/icons/top.svelte";
 	import { onMount, type Snippet } from 'svelte'
 	import { page } from '$app/state';
 	import MiniSearch, { type SearchResult } from "minisearch";
@@ -14,11 +15,13 @@
 	import { BooleanFilter, filterFields, MatchFilter, NegFilter, RangeFilter, type Filter, type SearchEntry } from './search.svelte';
 	import NewSearchFieldFilterOption from './NewSearchFieldFilterOption.svelte';
 	// import assert from 'assert';
-	import { App, BiMap } from '$lib';
+	import { App as AppU, BiMap } from '$lib';
 	import { fade } from 'svelte/transition';
 	import highlightWords from 'highlight-words';
 	import { explicitEffect } from './util.svelte';
 	import escapeRegExp from 'lodash/escapeRegExp';
+	import last from 'lodash/last';
+	import path from 'path';
 
 	let { children, data } = $props();
 	let sidebarOpen = $state(true);
@@ -117,8 +120,6 @@
 	let searchResults: SearchResult[] = $state([]);
 	let searchSuggestionSel: number | undefined = $state(undefined);
 	explicitEffect(() => searchSuggestionSel = undefined, () => [searchInput]);
-	$inspect(searchSuggestions)
-	$inspect(searchResults)
 	/** Selection must not be a slot (`WrapFilterSlotSelection`), thus FilterSel; `wrap` must be empty */
 	const wrapSelectedFilter = (wrap: BooleanFilter | NegFilter) => {
 		// assert(searchFilter.selection instanceof FilterSel); // TypeError: assert is not a function
@@ -137,6 +138,23 @@
 
 		searchFilter.selection = new FilterSel(wrap, old.slot);
 	};
+
+	let tableOfContentsOpen = $state(false);
+	let activeSection = $state<string>(); // section ID
+	const sectionHeaders: HTMLElement[] | undefined = $derived.by(() => {
+		const flattenTree = (tree: App.TableOfContents["tree"]): string[] => (
+			tree.flatMap(({ id, tree }) => [id, ...(tree && flattenTree(tree) || [])])
+		);
+		return page.data.tableOfContents && flattenTree((<App.TableOfContents> page.data.tableOfContents).tree)
+			.map(id => document.getElementById(id)!);
+	});
+	let canScrollToTop = $state(false);
+
+	explicitEffect(() => {
+		if (activeSection !== undefined && tableOfContentsOpen) {
+			Array.from(document.getElementById("table-of-contents")!.getElementsByTagName("a")).filter(e => e.getAttribute("href")?.substring(1) === activeSection)[0].scrollIntoView({ behavior: "smooth", block: "center" })
+		}
+	}, () => [activeSection, tableOfContentsOpen]);
 
 	/** Return `value[0]` is the title; `value[1]` is the content */
 	const highlightSearchResult = (r: SearchResult) => {
@@ -165,8 +183,8 @@
 	};
 </script>
 
-<div class="flex h-lvh overflow-hidden divide-solid divide-x-8 divide-theme-main-bg text-theme-main-text bg-theme-main-bg scrollbar-thumb-theme-scrollbar-thumb scrollbar-track-theme-scrollbar-track" data-theme={ currentTheme }>
-	<aside class="flex-shrink-0 w-72 flex flex-col bg-theme-sidebar-bg text-theme-sidebar-text transition-all duration-300 overflow-y-auto scrollbar" class:-ml-72={ !sidebarOpen }>
+<div class="flex h-lvh overflow-hidden text-theme-main-text bg-theme-main-bg scrollbar-thumb-theme-scrollbar-thumb scrollbar-track-theme-scrollbar-track" data-theme={ currentTheme }>
+	<aside class="flex-shrink-0 w-72 me-2 flex flex-col bg-theme-sidebar-bg text-theme-sidebar-text transition-all duration-300 overflow-y-auto scrollbar" class:-ml-74={ !sidebarOpen }>
 		<nav class="relative grow gap-0 flex flex-col mt-4 divide-solid divide-theme-sidebar-divide transition-all">
 			<div class="flex flex-col pb-2 divide-solid divide-theme-sidebar-divide divide-y">
 				{#snippet mainPage(path: string, title: string)}
@@ -398,13 +416,13 @@
 													{ type: "date" }, v => f.val = v
 												)}
 												{:else if f.field === filterFields.category.field}
-												{@render valueDisplay(App.EfpEntry.category.get(f.val)!,
-													{ type: "options", param: [...App.EfpEntry.category.values()] },
-													v => f.val = App.EfpEntry.category.getKey(v))}
+												{@render valueDisplay(AppU.EfpEntry.category.get(f.val)!,
+													{ type: "options", param: [...AppU.EfpEntry.category.values()] },
+													v => f.val = AppU.EfpEntry.category.getKey(v))}
 												{:else if f.field === filterFields.status.field}
-												{@render valueDisplay(App.EfpEntry.status.get(f.val)!,
-													{ type: "options", param: [...App.EfpEntry.status.values()] },
-													v => f.val = App.EfpEntry.status.getKey(v))}
+												{@render valueDisplay(AppU.EfpEntry.status.get(f.val)!,
+													{ type: "options", param: [...AppU.EfpEntry.status.values()] },
+													v => f.val = AppU.EfpEntry.status.getKey(v))}
 												{:else if typeof f.val === "string"} <!-- string ID -->
 												{@render valueDisplay(f.val, { type: "idInput" }, v => f.val = v)}
 												{/if}
@@ -511,16 +529,21 @@
 			</div>
 		</nav>
 	</aside>
-	<div class="flex-1 overflow-y-auto scrollbar justify-center items-start bg-inherit">
+	<div class="flex-1 overflow-y-auto scrollbar justify-center items-start bg-inherit scroll-smooth" id="main-content-container" onscroll={e => {
+		if (sectionHeaders !== undefined) {
+			activeSection = last(sectionHeaders.filter(h => e.currentTarget.scrollTop + h.clientHeight >= h.offsetTop))?.id;
+			canScrollToTop = e.currentTarget.scrollTop > 0;
+		}
+	}}>
 		<header class="p-2 font-semibold bg-theme-header-bg sticky z-50 top-0 shadow border-b text-theme-header-text border-b-theme-header-border">
 			<div class="mx-auto flex items-center content-center gap-x-4 transition-colors">
-				<button aria-label="sidebar-toggle" class={{"size-fit outline-none p-2 cursor-pointer rounded-lg hover:text-theme-header-hover-text": true, "bg-theme-header-active-bg": sidebarOpen}} title="Toggle Nav"
+				<button aria-label="sidebar-toggle" class={{"size-fit outline-none p-2 cursor-pointer rounded-lg hover:text-theme-header-hover-text transition-colors": true, "bg-theme-header-active-bg": sidebarOpen}} title="Toggle Nav"
 					onclick={ () => sidebarOpen = !sidebarOpen }>
 					<MenuIcon class="size-5 fill-current transition-colors" />
 				</button>
 				<div>
-					<button aria-controls="theme-menu" popovertarget="theme-menu" popovertargetaction="toggle" class="size-fit outline-none p-2 cursor-pointer rounded-lg hover:text-theme-header-hover-text [&:has(+:popover-open)]:bg-theme-header-active-bg" title="Switch Theme">
-						<ThemeIcon class="size-5 fill-current transition-colors" />
+					<button aria-controls="theme-menu" popovertarget="theme-menu" popovertargetaction="toggle" class="size-fit outline-none p-2 cursor-pointer rounded-lg hover:text-theme-header-hover-text transition-colors [&:has(+:popover-open)]:bg-theme-header-active-bg" title="Switch Theme">
+						<ThemeIcon class="size-5 fill-current" />
 					</button>
 					<div id="theme-menu" role="menu" class="absolute popover-fade left-[anchor(left)] top-[calc(anchor(bottom)+8px)] font-normal text-theme-main-text bg-theme-header-bg border border-theme-header-border overflow-hidden z-60 rounded-lg shadow-sm" popover>
 						<div class="size-full flex flex-col">
@@ -536,20 +559,52 @@
 				<div class="mx-auto text-xl">
 					The TerraModulus EFP Book
 				</div>
+				<a href="https://github.com/AnvilloyDevStudio/TerraModulus-EFPs">
+					<button aria-label="git-repo" class="size-fit outline-none p-2 cursor-pointer transition-colors hover:text-theme-header-hover-text" title="GitHub repository">
+						<GithubIcon class="size-5 fill-current" />
+					</button>
+				</a>
 				{#if page.data.tableOfContents !== undefined}
-				<button aria-label="table-of-contents-toggle" class="size-fit outline-none p-2 cursor-pointer hover:text-theme-header-hover-text" title="Toggle Table of Contents">
+				<button aria-label="table-of-contents-toggle" class={{ "size-fit outline-none p-2 cursor-pointer rounded-lg hover:text-theme-header-hover-text transition-colors": true, "bg-theme-header-active-bg": tableOfContentsOpen }} title="Toggle Table of Contents"
+					onclick={ () => tableOfContentsOpen = !tableOfContentsOpen }>
 					<ListIcon class="size-5 stroke-current transition-colors" />
 				</button>
 				{/if}
-				<a href="https://github.com/AnvilloyDevStudio/TerraModulus-EFPs">
-					<button aria-label="git-repo" class="size-fit outline-none p-2 cursor-pointer hover:text-theme-header-hover-text" title="GitHub repository">
-						<GithubIcon class="size-5 fill-current transition-colors" />
-					</button>
-				</a>
 			</div>
 		</header>
-		<main class="p-8">
+		<main class="p-8 grow">
 			{@render children()}
 		</main>
 	</div>
+	{#if page.data.tableOfContents !== undefined}
+	{@const tableOfContents = page.data.tableOfContents as App.TableOfContents}
+	<aside class="flex-shrink-0 w-64 flex flex-col transition-all duration-300 text-theme-sidebar-text" class:-mr-64={ !tableOfContentsOpen }>
+		<div class="h-13 mx-7 pt-2 border-b border-theme-header-border font-bold text-xl flex justify-center items-center">
+			Table of Contents
+		</div>
+		<div class="grow mx-3 overflow-y-auto flex flex-col scrollbar" id="table-of-contents">
+			{#snippet renderTree(tree: App.TableOfContents["tree"])}
+				<ol class="ms-3">
+					{#each tree as element, i}
+						<li class="w-full text-wrap">
+							<a href="#{element.id}" class={{ "px-3 py-1 w-full block hover:bg-theme-sidebar-hover transition-colors": true, "font-bold text-theme-sidebar-active": activeSection === element.id }}>{ i + 1 }. {element.header}</a>
+							{#if element.tree !== undefined}
+							{@render renderTree(element.tree)}
+							{/if}
+						</li>
+					{/each}
+				</ol>
+			{/snippet}
+			{@render renderTree(tableOfContents.tree)}
+		</div>
+		<button class="h-fit mx-8 p-3 cursor-pointer transition-all flex justify-center items-center text-theme-header-text hover:text-theme-header-hover-text hover:bg-theme-header-active-bg" class:-mb-12={ !canScrollToTop } onclick={e => {
+			if (canScrollToTop) {
+				document.getElementById("main-content-container")!.scrollTo({ top: 0, behavior: "smooth" });
+				history.pushState(null, document.title, page.url.pathname);
+			}
+		}}>
+			<TopIcon class="fill-current size-6" />
+		</button>
+	</aside>
+	{/if}
 </div>

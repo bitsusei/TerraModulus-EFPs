@@ -147,8 +147,10 @@ const convertHtml = (element: Element) => {
 /** Ugly though */
 const linkLogoSvg = fs.readFileSync("src/lib/assets/icons/link.svelte", "utf-8");
 
-const compileSection = (element: Element, levels: number[]) => {
+const compileSection = (element: Element, levels: number[], table: Partial<TableOfContentElement>) => {
 	const title = element.attributes.getNamedItem("title")!.value;
+	table.header = title;
+	table.id = `section-${ levels.join("-") }`;
 	const ctn: Element | undefined = filterChildElementNodeName(element, "content")[0];
 	let ctnOut: string = "";
 	if (ctn !== undefined) {
@@ -160,13 +162,16 @@ const compileSection = (element: Element, levels: number[]) => {
 	let sectionsOut: string = "";
 	let i = 0;
 	for (const section of filterChildElementNodeName(element, "section")) {
-		sectionsOut += compileSection(section, levels.concat(i++));
+		if (table.tree == undefined) table.tree = [];
+		const element = {};
+		sectionsOut += compileSection(section, levels.concat(i++), element);
+		table.tree.push(element as TableOfContentElement);
 	}
 
 	return dedent(`
-		<div class="section-header" id="section-${ levels.join("-") }">
+		<div class="section-header" id="${table.id}">
 			<h${ levels.length + 1 }>${title}</h${ levels.length + 1 }>
-			<a class="hover-link" href="#section-${ levels.join("-") }">
+			<a class="hover-link" href="#${table.id}">
 				${ linkLogoSvg.replace("class={$$props.class}", "") }
 			</a>
 		</div>
@@ -177,11 +182,15 @@ const compileSection = (element: Element, levels: number[]) => {
 	`)
 }
 
-const compileBody = (element: Element) => {
+type TableOfContentElement = Omit<App.TableOfContents["tree"][0], "tree"> & { tree?: TableOfContentElement[] };
+
+const compileBody = (element: Element, table: TableOfContentElement[]) => {
 	let out = "";
 	filterChildElementNodeName(element, "section").forEach((n, i) => {
-		out += compileSection(n, [i]);
-	})
+		const element = {};
+		out += compileSection(n, [i], element);
+		table.push(element as TableOfContentElement);
+	});
 	return out;
 }
 
@@ -248,6 +257,7 @@ export async function load(): Promise<App.EfpList> {
 				/** Due to the inability of finding a usable package for XSD typing analysis, this is done. */
 				const doc = filterChildElementNodeName(new DOMParser().parseFromString(fs.readFileSync(`efp/${d}/${dd}`, 'utf-8')
 					.replaceAll(`\\${os.EOL}[ \t]*`, ""), "text/xml"), "efp")[0] as Element;
+				const table: TableOfContentElement[] = [];
 				const metadata = filterChildElementNodeName(doc, "metadata")[0];
 				const efp: App.EfpData = {
 					id: parseInt(doc.attributes.getNamedItem("efp")!.value),
@@ -265,7 +275,8 @@ export async function load(): Promise<App.EfpList> {
 						.flatMap(n => filterChildElementNodeName(n, "efp").map(n => n.nodeValue as string)),
 					pullRequests: filterChildElementNodeName(filterChildElementNodeName(metadata, "pullRequests")[0], "pullRequest")
 						.map(n => n.attributes.getNamedItem("id")!.value) as App.EfpData["pullRequests"],
-					body: compileBody(filterChildElementNodeName(doc, "body")[0]),
+					body: compileBody(filterChildElementNodeName(doc, "body")[0], table),
+					tableOfContents: { tree: table as App.TableOfContents["tree"] },
 				}
 				if (dd === "main.xml") {
 					main = efp;
