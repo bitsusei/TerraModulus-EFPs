@@ -15,7 +15,7 @@
 	import { BooleanFilter, filterFields, MatchFilter, NegFilter, RangeFilter, type Filter, type SearchEntry } from './search.svelte';
 	import NewSearchFieldFilterOption from './NewSearchFieldFilterOption.svelte';
 	// import assert from 'assert';
-	import { App as AppU, BiMap } from '$lib';
+	import { App as AppU, BiMap, resolveLink } from '$lib';
 	import { fade } from 'svelte/transition';
 	import highlightWords from 'highlight-words';
 	import { explicitEffect } from './util.svelte';
@@ -196,7 +196,7 @@
 						{title}
 					</a>
 				{/snippet}
-				{@render mainPage("/", "Introduction")}
+				{@render mainPage(resolveLink("/"), "Introduction")}
 			</div>
 			<div class="w-full h-1 mt-1 bg-theme-sidebar-divide transition-all [&:has(+*+*+:hover)]:scale-y-200 [&:has(+*>button:hover)]:scale-y-200"></div>
 			<div class="peer group">
@@ -490,7 +490,7 @@
 							<div class="grow w-[95%] my-5 p-2 bg-theme-search-result-bg rounded-3xl overflow-x-hidden overflow-y-auto">
 								{#each searchResults as result}
 									{@const [ title, content ] = highlightSearchResult(result)}
-									<a transition:fade class="w-full m-1 p-1 flex flex-col items-center justify-center [&>*]:flex-none rounded-xl bg-theme-search-result-item-bg border-2 border-theme-search-bar-border hover:bg-theme-search-bar-bg transition-colors" href="/efp/{ data.indexMap[result.id] }"
+									<a transition:fade class="w-full m-1 p-1 flex flex-col items-center justify-center [&>*]:flex-none rounded-xl bg-theme-search-result-item-bg border-2 border-theme-search-bar-border hover:bg-theme-search-bar-bg transition-colors" href={ resolveLink("/efp/{ data.indexMap[result.id] }") }
 										onclick={ () => searchDialog!.close() }>
 										{#snippet renderHighlights(meta: { match: boolean, text: string }[])}
 											{#each meta as e}
@@ -526,7 +526,8 @@
 			<div class="w-full h-1 mb-1 bg-theme-sidebar-divide transition-all peer-[&:has(>button:hover)]:scale-y-200 [&:has(+:hover)]:scale-y-200"></div>
 			<div class="flex grow-2 flex-col pt-2 divide-solid divide-theme-sidebar-divide divide-y">
 				{#each Object.keys(data.map) as efp}
-					<a class={{"p-2 hover:bg-theme-sidebar-hover transition-colors": true, "text-theme-sidebar-active font-bold": page.url.pathname === `/efp/${ efp }`}} href="/efp/{ efp }">
+					{@const path = resolveLink(`/efp/${ efp }`)}
+					<a class={{"p-2 hover:bg-theme-sidebar-hover transition-colors": true, "text-theme-sidebar-active font-bold": page.url.pathname === path}} href={path}>
 						EFP { data.map[efp].main.id } - { data.map[efp].main.title }
 					</a>
 				{/each}

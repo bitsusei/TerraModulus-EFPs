@@ -80,13 +80,13 @@ body {
     --color-theme-search-button-bg: var(--color-neutral-300);
     --color-theme-search-bar-bg: var(--color-neutral-400);
     --color-theme-search-bar-border: var(--color-neutral-500);
-    --color-theme-search-filter-primary-bg: initial;
-    --color-theme-search-filter-secondary-bg: initial;
-    --color-theme-search-filter-outline: initial;
-    --color-theme-search-result-bg: initial;
-    --color-theme-search-result-item-bg: initial;
-    --color-theme-search-result-highlight-text: initial;
-    --color-theme-search-result-minor-text: initial;
+    --color-theme-search-filter-primary-bg: var(--color-neutral-600);
+    --color-theme-search-filter-secondary-bg: var(--color-neutral-700);
+    --color-theme-search-filter-outline: var(--color-neutral-600);
+    --color-theme-search-result-bg: var(--color-neutral-600);
+    --color-theme-search-result-item-bg: var(--color-neutral-500);
+    --color-theme-search-result-highlight-text: var(--color-amber-300);
+    --color-theme-search-result-minor-text: var(--color-neutral-200);
 }
 
 @variant dark {
