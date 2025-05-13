@@ -21,7 +21,7 @@
 	import { explicitEffect } from './util.svelte';
 	import escapeRegExp from 'lodash/escapeRegExp';
 	import last from 'lodash/last';
-	import path from 'path';
+	import { browser } from '$app/environment';
 
 	let { children, data } = $props();
 	let sidebarOpen = $state(true);
@@ -145,7 +145,7 @@
 		const flattenTree = (tree: App.TableOfContents["tree"]): string[] => (
 			tree.flatMap(({ id, tree }) => [id, ...(tree && flattenTree(tree) || [])])
 		);
-		return page.data.tableOfContents && flattenTree((<App.TableOfContents> page.data.tableOfContents).tree)
+		return browser && page.data.tableOfContents && flattenTree((<App.TableOfContents> page.data.tableOfContents).tree)
 			.map(id => document.getElementById(id)!);
 	});
 	let canScrollToTop = $state(false);
@@ -182,6 +182,10 @@
 		return [ result.title, result.content ];
 	};
 </script>
+
+<svelte:head>
+	<title>{page.data.title} - The TerraModulus EFP Book</title>
+</svelte:head>
 
 <div class="flex h-lvh overflow-hidden text-theme-main-text bg-theme-main-bg scrollbar-thumb-theme-scrollbar-thumb scrollbar-track-theme-scrollbar-track" data-theme={ currentTheme }>
 	<aside class="flex-shrink-0 w-72 me-2 flex flex-col bg-theme-sidebar-bg text-theme-sidebar-text transition-all duration-300 overflow-y-auto scrollbar" class:-ml-74={ !sidebarOpen }>
