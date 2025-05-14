@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 <efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
-     efp="3" created="2025-01-30" category="informational" status="draft" title="Relictus Review Report">
+     efp="3" created="2025-01-30" category="informational" status="final" title="Relictus Review Report">
 	<metadata>
 		<pullRequests>
 			<pullRequest id="4"/>
