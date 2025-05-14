@@ -44,7 +44,7 @@
 </script>
 
 <div class="w-full">
-	<button class="w-full flex items-center justify-start cursor-pointer transition-colors hover:text-theme-header-hover-text" onclick={ () => dialog.showPopover() }>
+	<button class="w-full flex items-center justify-start cursor-pointer transition-colors hover:text-theme-header-hover-text" onclick={ () => dialog.show() }>
 		<div class="flex items-center justify-center italic text-base me-1 h-8 w-12 my-0.5 rounded-lg bg-theme-search-filter-primary-bg">
 			Field
 		</div>
@@ -52,7 +52,7 @@
 			{ filterFields[key].name }
 		</div>
 	</button>
-	<FormDialog floatingParams={{ selectAnchor: e => e.parentElement!.querySelector(":scope > button")!, offset: 6, shift: 6 }} bind:dialog {items} oncomplete={data => {
+	<FormDialog bind:dialog {items} oncomplete={data => {
 		switch (key) {
 			case "created":
 				oncomplete(new RangeFilter(filterFields.created.field, RangeFilter.opMap[data["Operator"] as keyof typeof RangeFilter.opMap], new Date(data["Value"]), new DateCmp()));
