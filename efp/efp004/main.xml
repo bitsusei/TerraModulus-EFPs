@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 <efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
-     efp="4" created="2025-05-16" category="informational" status="draft" title="New Codebase Architecture">
+     efp="4" created="2025-05-16" category="process" status="provisional" title="New Codebase Architecture">
 	<metadata>
 		<pullRequests>
 			<pullRequest id="7"/>
