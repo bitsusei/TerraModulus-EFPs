@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolveLink } from '$lib';
 	import RightArrowIcon from '$lib/assets/icons/right-arrow.svelte';
 	import capitalize from "lodash/capitalize";
 
@@ -50,7 +51,7 @@
 		{#if containerWidth < 1024}
 		<div class="flex mt-4">
 			{#if previousChapter !== -1}
-			<a href="./{ data.indexMap[data.indices[previousChapter]] }" class="grid place-items-center cursor-pointer w-32 h-20 rounded-lg duration-300 hover:bg-theme-nav-button-hover transition-colors" aria-label="previous-chapter" title="Previous chapter">
+			<a href={resolveLink(`/efp/${ data.indexMap[data.indices[previousChapter]] }`)} class="grid place-items-center cursor-pointer w-32 h-20 rounded-lg duration-300 hover:bg-theme-nav-button-hover transition-colors" aria-label="previous-chapter" title="Previous chapter">
 				<RightArrowIcon class="size-10 fill-current scale-x-[-1]" />
 			</a>
 			{:else}
@@ -60,7 +61,7 @@
 			{/if}
 			<div class="grow"></div>
 			{#if nextChapter !== data.indices.length}
-			<a href="./{ data.indexMap[data.indices[nextChapter]] }" class="grid place-items-center cursor-pointer w-32 h-20 rounded-lg duration-300 hover:bg-theme-nav-button-hover transition-colors" aria-label="next-chapter" title="Next chapter">
+			<a href={resolveLink(`/efp/${ data.indexMap[data.indices[nextChapter]] }`)} class="grid place-items-center cursor-pointer w-32 h-20 rounded-lg duration-300 hover:bg-theme-nav-button-hover transition-colors" aria-label="next-chapter" title="Next chapter">
 				<RightArrowIcon class="size-10 fill-current" />
 			</a>
 			{:else}
@@ -73,7 +74,7 @@
 	</div>
 	{#if containerWidth >= 1024}
 	{#if previousChapter !== -1}
-	<a href="./{ data.indexMap[data.indices[previousChapter]] }" class="grid place-items-center [position-anchor:--content-container] cursor-pointer w-32 inset-auto left-[anchor(left)] absolute top-0 bottom-0 duration-300 h-full hover:bg-theme-nav-button-hover transition-colors" aria-label="previous-chapter" title="Previous chapter">
+	<a href={resolveLink(`/efp/${ data.indexMap[data.indices[previousChapter]] }`)} class="grid place-items-center [position-anchor:--content-container] cursor-pointer w-32 inset-auto left-[anchor(left)] absolute top-0 bottom-0 duration-300 h-full hover:bg-theme-nav-button-hover transition-colors" aria-label="previous-chapter" title="Previous chapter">
 		<RightArrowIcon class="size-10 fill-current scale-x-[-1]" />
 	</a>
 	{:else}
@@ -82,7 +83,7 @@
 	</button>
 	{/if}
 	{#if nextChapter !== data.indices.length}
-	<a href="./{ data.indexMap[data.indices[nextChapter]] }" class="grid place-items-center [position-anchor:--content-container] cursor-pointer w-32 inset-auto right-[anchor(right)] absolute top-0 bottom-0 duration-300 h-full hover:bg-theme-nav-button-hover transition-colors" aria-label="next-chapter" title="Next chapter">
+	<a href={resolveLink(`/efp/${ data.indexMap[data.indices[nextChapter]] }`)} class="grid place-items-center [position-anchor:--content-container] cursor-pointer w-32 inset-auto right-[anchor(right)] absolute top-0 bottom-0 duration-300 h-full hover:bg-theme-nav-button-hover transition-colors" aria-label="next-chapter" title="Next chapter">
 		<RightArrowIcon class="size-10 fill-current" />
 	</a>
 	{:else}
