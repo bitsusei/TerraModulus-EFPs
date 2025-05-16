@@ -250,7 +250,7 @@
 													</button>
 												{/snippet}
 												{#snippet filterSelect(key: string, children: Snippet<[]>)}
-												<div id={key} class="popover-fade overflow-y-auto scrollbar absolute inset-auto top-[calc(anchor(top)-52px)] p-1 rounded-lg left-[calc(anchor(right)+4px)] shadow-sm text-theme-header-text bg-theme-search-bar-border" popover="auto">
+												<div id={key} class="popover-fade overflow-visible absolute inset-auto top-[calc(anchor(top)-52px)] p-1 rounded-lg left-[calc(anchor(right)+4px)] shadow-sm text-theme-header-text bg-theme-search-bar-border" popover="auto">
 													<div class="flex [&>*]:flex-none flex-col basis-auto">
 														{@render children()}
 													</div>
@@ -353,7 +353,7 @@
 													<button class={{
 														"w-full p-2 h-6 truncate flex justify-start items-center hover:bg-theme-search-bar-border transition-colors": true,
 														"bg-theme-search-bar-border": i === searchSuggestionSel
-													}} onmouseenter={ () => searchSuggestionSel = i } onclick={ () => searchInput = suggestion.suggestion }>
+													}} onclick={ () => searchInput = suggestion.suggestion }>
 														{suggestion.suggestion}
 													</button>
 												{/each}
@@ -375,7 +375,7 @@
 										{#if searchFilter.root !== undefined}
 										{#snippet renderFilter(f: Filter)}
 											{@const dialogOpening = (e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) => {
-												(<HTMLDialogElement> e.currentTarget.parentElement!.querySelector(":scope > dialog")).showPopover();
+												(<HTMLDialogElement> e.currentTarget.parentElement!.querySelector(":scope > dialog")).show();
 												e.stopPropagation()
 											}}
 											<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -390,7 +390,7 @@
 														<button class="p-1 leading-none cursor-pointer flex items-center justify-center rounded-md bg-theme-search-bar-bg border-2 border-theme-search-filter-primary-bg" onclick={dialogOpening}>
 															{value}
 														</button>
-														<FormDialog floatingParams={{ selectAnchor: e => e.parentElement!.querySelector(":scope > button")!, offset: 6, shift: 6 }} items={{ "Value": editOption }} oncomplete={ data => editCallback(data["Value"]) } />
+														<FormDialog items={{ "Value": editOption }} oncomplete={ data => editCallback(data["Value"]) } />
 													</div>
 												{/snippet}
 												{#snippet operatorDisplay(value: string, editOptions: string[], editCallback: (v: string) => void)}
@@ -398,7 +398,7 @@
 														<button class="px-0.5 cursor-pointer flex items-center justify-center font-bold rounded-md bg-theme-search-filter-primary-bg border-2 border-theme-search-bar-border" onclick={dialogOpening}>
 															{value}
 														</button> <!-- Binding is avoided since this is not as a dedicated component -->
-														<FormDialog floatingParams={{ selectAnchor: e => e.parentElement!.querySelector(":scope > button")!, offset: 6, shift: 6 }} items={{ "Operator": { type: "options", param: editOptions } }} oncomplete={ data => editCallback(data["Operator"]) } />
+														<FormDialog items={{ "Operator": { type: "options", param: editOptions } }} oncomplete={ data => editCallback(data["Operator"]) } />
 													</div>
 												{/snippet}
 												{#if f instanceof RangeFilter || f instanceof MatchFilter}

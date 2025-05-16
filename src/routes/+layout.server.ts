@@ -204,7 +204,7 @@ export async function load(): Promise<App.EfpList> {
 	for (const d of fs.readdirSync("efp")) {
 		let main: App.EfpData | undefined;
 		const subpages: App.EfpEntry["subpages"] = {};
-		const assets: App.EfpEntry["assets"] = {};
+		const assets: App.EfpEntry["assets"] = [];
 		for (const dd of fs.readdirSync(`efp/${d}`)) {
 			if (dd.endsWith(".xml")) {
 				// type sectionType = {
@@ -284,7 +284,7 @@ export async function load(): Promise<App.EfpList> {
 					subpages[dd.substring(0, dd.length - 4)] = efp;
 				}
 			} else {
-				// TODO other assets
+				assets.push(dd);
 			}
 		}
 

@@ -18,6 +18,10 @@
 	let nextChapter = $derived(data.indices.findIndex(i => i === efp.main.id) + 1); // data.indices.length if unavailable
 </script>
 
+<svelte:head>
+	<base href="./{data.efpId}/" />
+</svelte:head>
+
 <div class="h-full w-full [anchor-name:--content-container]" bind:clientWidth={containerWidth}>
 	<div class="max-w-3xl mx-auto flex flex-col [&>*]:flex-none">
 		<h2 class="text-center text-xl">EFP { efp.main.id }</h2>

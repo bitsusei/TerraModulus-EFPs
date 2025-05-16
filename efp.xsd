@@ -172,6 +172,13 @@
 							<xs:attribute name="height" type="xs:string"/>
 						</xs:complexType>
 					</xs:element>
+					<xs:element name="embed">
+						<xs:complexType>
+							<xs:attribute name="src" type="xs:anyURI" use="required"/>
+							<xs:attribute name="width" type="xs:string"/>
+							<xs:attribute name="height" type="xs:string"/>
+						</xs:complexType>
+					</xs:element>
 					<xs:element name="list">
 						<xs:complexType>
 							<xs:sequence>

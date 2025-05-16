@@ -43,7 +43,7 @@
 		</section>
 		<section title="Project Structure">
 			<content>
-				<img src="./architecture.svg" alt="TerraModulus Architecture"/>
+				<embed src="./architecture.svg"/>
 				<p>
 					As demonstrated in the above diagram, the TerraModulus project consists of several elements.
 					It is worth noting that, the scale of this project may not be small; if possible, this project
