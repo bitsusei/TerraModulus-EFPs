@@ -1,0 +1,87 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="4" created="2025-05-16" category="process" status="provisional" title="New Codebase Architecture">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="7"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					As TerraModulus will construct a brand-new architecture to replace the old codebase structure
+					from Minicraft+, all the characteristics should be renewed to meet the modern standards. Notably,
+					the new codebase will be using Kotlin as its base language along with several subprojects and even
+					side projects for enhanced structural plans of this project.
+				</p>
+			</content>
+		</section>
+		<section title="Project Language Level">
+			<content>
+				<p>
+					For the most cases, it is good to keep updated with the latest long-time-support (LTS) versions.
+					If the major language level change is too frequent, it may cause certain maintenance drawbacks.
+					Keeping updated with the latest could make sure the codebase is still meeting with the modern
+					standards while solving stale issues. Since this project is for end product, there is no real
+					need to keep the project language version as old as possible.
+				</p>
+				<p>
+					At the moment, Kotlin has fewer breaking changes than Java Development Kits (JDK), so it would be
+					enough to keep up with Kotlin's latest version, while ensuring latest stable language features
+					are available for project usages. However, for distributions, it is still necessary to release as
+					the latest Java Virtual Machine (JVM) version for security updates and also JVM server features.
+					This part could be aided by having the Launcher project for TerraModulus.
+				</p>
+				<p>
+					For Rust, the latest stable versions could be used without concerns, since new language features
+					are still rolling out. This includes several experimental features that could aid development and
+					quality assurance. However, new editions should be adapted only when they go stabled to ensure
+					the minimal chances of language vulnerabilities.
+				</p>
+			</content>
+		</section>
+		<section title="Project Structure">
+			<content>
+				<img src="./architecture.svg" alt="TerraModulus Architecture"/>
+				<p>
+					As demonstrated in the above diagram, the TerraModulus project consists of several elements.
+					It is worth noting that, the scale of this project may not be small; if possible, this project
+					could greatly grow.
+				</p>
+				<p>
+					On the platform side, the website portal would allow client interactions and also resource
+					management. As an abstract, several elements have to be drafted out to outline this architecture
+					better, but in general, there would be the account system and the game itself, along with
+					user-created content hosted on a marketplace. The Launcher would act as a simple entry layer
+					of an account over the entire platform system, and allow launching the game client instances.
+				</p>
+				<p>
+					For the game instances, there would be the client instance and dedicated server instance, where
+					the client instances also include basic local hosting functionalities. Basically, the dedicated
+					server instance would not have a client user interface but with commands or terminal controls for
+					extensive hosting functions. In the codebase, Kotlin handles the abstraction logic of the game
+					application and Rust handles the low level game engine. The abstraction layer includes the user
+					interface components, including but not limited to graphical and audio elements, as well as world
+					objects; the game engine includes the rendering system, physics logics, networking and raw
+					resource management, as well as other computational heavy tasks.
+				</p>
+				<p>
+					Other than those implementation entities, there is also the Execution Framework Proposal (EFP)
+					system for standardization and general documentation under the TerraModulus community. The EFPs
+					undergo their unique process alongside the implementation parts of the project. The management
+					parts also include the community individuals, interacting with the entire community.
+				</p>
+			</content>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li><a href="https://github.com/AnvilloyDevStudio/TerraModulus/issues/47">
+						Issue TerraModulus#47
+					</a></li>
+				</list>
+			</content>
+		</section>
+	</body>
+</efp>
