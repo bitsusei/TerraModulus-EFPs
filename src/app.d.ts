@@ -30,7 +30,7 @@ declare global {
 			/** Other XML pages */
 			subpages: Record<string, EfpData>;
 			/** Other non-XML files */
-			assets: Record<string, any>;
+			assets: string[];
 		}
 		interface EfpList {
 			map: Record<string, EfpEntry>;
