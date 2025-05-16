@@ -4,7 +4,7 @@
 	import capitalize from "lodash/capitalize";
 
 	const formatEfpList = (list: string[]) => list.map(n => (
-		`<a href="./efp${ n.padStart(3, "0") }" target="_blank" class="hyperlink">EFP ${n}</a>`
+		`<a href="${ resolveLink(`/efp/efp${n.padStart(3, "0")}`) }" target="_blank" class="hyperlink">EFP ${n}</a>`
 	)).join(", ");
 	const formatDate = (date: Date) => {
 		const formatter = new Intl.NumberFormat(undefined, { minimumIntegerDigits: 2 });

@@ -490,7 +490,7 @@
 							<div class="grow w-[95%] my-5 p-2 bg-theme-search-result-bg rounded-3xl overflow-x-hidden overflow-y-auto">
 								{#each searchResults as result}
 									{@const [ title, content ] = highlightSearchResult(result)}
-									<a transition:fade class="w-full m-1 p-1 flex flex-col items-center justify-center [&>*]:flex-none rounded-xl bg-theme-search-result-item-bg border-2 border-theme-search-bar-border hover:bg-theme-search-bar-bg transition-colors" href={ resolveLink("/efp/{ data.indexMap[result.id] }") }
+									<a transition:fade class="w-full m-1 p-1 flex flex-col items-center justify-center [&>*]:flex-none rounded-xl bg-theme-search-result-item-bg border-2 border-theme-search-bar-border hover:bg-theme-search-bar-bg transition-colors" href={ resolveLink(`/efp/${ data.indexMap[result.id] }`) }
 										onclick={ () => searchDialog!.close() }>
 										{#snippet renderHighlights(meta: { match: boolean, text: string }[])}
 											{#each meta as e}

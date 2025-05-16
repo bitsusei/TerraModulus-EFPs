@@ -1,5 +1,20 @@
 import { error } from '@sveltejs/kit';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
+
+export const prerender = true;
+export const entries = () => {
+	const entries = [];
+	for (const d of readdirSync("efp")) {
+		for (const dd of readdirSync(`efp/${d}`)) {
+			if (!dd.endsWith(".xml")) {
+				entries.push({ id: d, asset: dd });
+			}
+		}
+	}
+
+	console.log(entries)
+	return entries;
+}
 
 export async function GET({ params }) {
 	if (params.asset.endsWith(".xml")) throw error(404, "Not Found");
