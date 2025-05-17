@@ -9,15 +9,112 @@
 	<body>
 		<section title="Introduction">
 			<content>
-				The <b>Ferricia Engine</b> is the core component of TerraModulus, consisting of several
-				functionalities, built with low level language <i>Rust</i>. Rust is a powerful language that
-				provides good memory-safe features with excellent performance, favoring computational heavy
-				tasks. This includes rendering, world generation, networking, physics and raw resource management.
+				<p>
+					The <b>Ferricia Engine</b> (later referred as "the Engine") is the core component of TerraModulus,
+					consisting of several functionalities, built with low level language <i>Rust</i>.
+					Rust is a powerful language that provides good memory-safe features with excellent performance,
+					favoring computational heavy tasks.
+					This includes rendering, world generation, networking, physics and raw resource management.
+				</p>
 			</content>
 		</section>
-		<section title="">
+		<section title="Platform">
 			<content>
-
+				<p>
+					Since the Rust library would be directly compiled into native dynamic libraries to be loaded by
+					Java Virtual Machine (JVM) Java Native Interface (JNI), the code must be supported by the targetted
+					platforms. Therefore, when all modern supported platform versions of Windows, macOS and Linux are
+					targetted, the list of variations that should at least fully be supported is:
+				</p>
+				<list>
+					<li>Linux 5+ x64/arm64</li>
+					<li>macOS 10.15+ x64/arm64</li>
+					<li>Windows 10+ x64/x86/arm64</li>
+				</list>
+				<p>
+					Although 32-bit platforms have become rare on personal computers, it is still possible on some
+					Windows laptops, so it may still be supported with some special treatment. The engine would be
+					fully written in Rust, including Foreign Function Interface (FFI) components, but as a general
+					practice, most code should still be hidden from FFI functions to enhance modularity.
+				</p>
+				<p>
+					This would also mean that installation of the game would require distinct distributions of
+					the Engine library targetted to different platforms. In a full release, the Launcher should be
+					able to download the suitable distribution onto user's computer; in beta stage, there might still
+					not the complete Launcher come out yet, so most likely several binary packages (packed in archives)
+					would be released.
+				</p>
+			</content>
+		</section>
+		<section title="Library">
+			<content>
+				<embed src="./architecture.svg"/>
+				<p>
+					Since there is no longer need to write the code that uses various native libraries in Java/Kotlin,
+					there is no actual need to use Lightweight Java Game Library (LWJGL). Also, given the maturity of
+					Simple DirectMedia Layer (SDL) 3, while comparing the functionality supports between SDL 3 and
+					Graphics Library Framework (GLFW), SDL 3 is actually leading its head for various functionalities,
+					though not all supported features would be used. For some features like audio, different libraries
+					for extensive features would be used, like OpenAL Soft.
+				</p>
+				<p>
+					On the other hand, if parallel computing could be adapted, OpenCL might be suitable for a solution
+					enhancing computing power for higher efficiency. Still, this requires hardware acceleration for
+					great enhancement. For graphical computing, OpenGL would still be chosen, and
+					Open Dynamics Engine (ODE) would be used for the physics supporting library. Even for encoding and
+					decoding, using native libraries would enhance the efficiency effectively; this includes Opus and
+					Free Lossless Audio Codec (FLAC), which would be used in the Engine instead of the Kotlin layer.
+				</p>
+			</content>
+		</section>
+		<section title="Debugging">
+			<content>
+				<p>
+					Since logging in a library is challenging to control, logging in production builds should only
+					occur in the Kotlin layer. Thus, the Engine may not have any logs in production builds. However,
+					debugging logs may be printed in development builds, with toggles without affecting much on
+					performance. Also, using flags could be managed better than commenting out logging code.
+				</p>
+				<p>
+					It should be careful when managing what parts of the code should be put in the Kotlin layer and
+					what other parts should be kept in the Engine. If there are important parts requiring logging
+					status and information, they might be put into the Kotlin layer. Moreover, if status could be
+					stored in objects and sent to Kotlin, the information may then be logged by the Kotlin layer,
+					but it depends on whether it is suitable in the specific scenarios.
+				</p>
+			</content>
+		</section>
+		<section title="Resource Management">
+			<content>
+				<p>
+					Most resources that are only used in the Engine, such as textures, rendering models and shaders,
+					should be kept in the Engine without exposing too much interface to the Kotlin layer.
+					It is possible that the controls in the Kotlin layer over these resources may become barely
+					<i>handles</i> without more operations allowed. However, higher level management like registries
+					is still managed in the Kotlin layer, at least with primary management operations like loading
+					and closing. It is not recommended to permit third parties to have further controls over these
+					<i>hidden</i> resources in the Engine via plugins or mods.
+				</p>
+				<p>
+					For any resource, it is always recommended to free up resources when they are no longer used.
+					Also, when possible, resources may still be freed up when unexpected failures or crashes have
+					occurred. Moreover, if there still exists certain resources cannot be freed up when failures
+					or crashes happen, modern operating systems may still be allowed to free them up in the
+					system level.
+				</p>
+			</content>
+		</section>
+		<section title="Threading">
+			<content>
+				<p>
+					Thread would mostly be managed in the Kotlin layer, but the Engine may also have its threading
+					management especially for networking and parallel computing. However, it is possible that in
+					the abstraction of networking, there would already be threading used in the Kotlin layer, without
+					having to use threading in the Engine directly; this still requires clear planning and layout.
+					For computational heavy tasks, if parallel computing is eligible, the Engine would allocate
+					appropriate threads in its thread pool to enhance computing, without abstraction layer's
+					interference.
+				</p>
 			</content>
 		</section>
 		<section title="See also">
