@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 135.46667 135.46667"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-weight:500;font-size:7.05556px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.265;stroke-dasharray:none"
+       x="67.772141"
+       y="12.216049"
+       id="text2"><tspan
+         id="tspan2"
+         style="font-style:italic;font-variant:normal;font-weight:500;font-stretch:normal;font-size:7.05556px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.265;stroke-dasharray:none"
+         x="67.772141"
+         y="12.216049">Ferricia Engine</tspan><tspan
+         style="font-size:7.05556px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.265;stroke-dasharray:none"
+         x="67.772141"
+         y="21.0355"
+         id="tspan3">Architecture Overview</tspan></text>
+    <circle
+       style="fill:none;fill-opacity:1;stroke:#008e86;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       id="path3"
+       cx="69.280365"
+       cy="77.606483"
+       r="46.607121" />
+    <circle
+       style="fill:none;fill-opacity:1;stroke:#00266b;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       id="path4"
+       cx="61.452034"
+       cy="89.521126"
+       r="28.704752" />
+    <text
+       xml:space="preserve"
+       style="font-weight:500;font-size:5.64444px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#00266b;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       x="39.68811"
+       y="61.856049"
+       id="text4"><tspan
+         style="font-size:5.64444px;fill:#00266b;fill-opacity:1;stroke:none;stroke-width:0.529167"
+         x="39.68811"
+         y="61.856049"
+         id="tspan13">Server</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-weight:500;font-size:5.64444px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#008e86;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       x="100.29619"
+       y="34.344391"
+       id="text5"><tspan
+         id="tspan5"
+         style="fill:#008e86;fill-opacity:1;stroke-width:0.529167"
+         x="100.29619"
+         y="34.344391">Client</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       x="61.26268"
+       y="71.505981"
+       id="text9"><tspan
+         id="tspan9"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';stroke-width:0.529167"
+         x="61.26268"
+         y="71.505981">Open Dynamics</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';stroke-width:0.529167"
+         x="61.26268"
+         y="76.797646"
+         id="tspan10">Engine (Physics)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       x="61.26268"
+       y="84.402992"
+       id="text11"><tspan
+         id="tspan11"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';stroke-width:0.529167"
+         x="61.26268"
+         y="84.402992">Reqwest (Networking)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       x="61.285957"
+       y="106.92693"
+       id="text12"><tspan
+         id="tspan12"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';stroke-width:0.529167"
+         x="61.285957"
+         y="106.92693">Raw Resource</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';stroke-width:0.529167"
+         x="61.285957"
+         y="112.2186"
+         id="tspan19">Management</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       x="61.446831"
+       y="99.516319"
+       id="text14"><tspan
+         id="tspan14"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';stroke-width:0.529167"
+         x="61.446831"
+         y="99.516319">Tokio (Threading)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       x="61.338875"
+       y="91.910973"
+       id="text15"><tspan
+         id="tspan15"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';stroke-width:0.529167"
+         x="61.338875"
+         y="91.910973">OpenCL? (Computing)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       x="69.549271"
+       y="41.669937"
+       id="text16"><tspan
+         id="tspan16"
+         style="font-size:4.23333px;stroke-width:0.529167"
+         x="69.549271"
+         y="41.669937">OpenGL (Graphics)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       x="88.767792"
+       y="58.675827"
+       id="text17"><tspan
+         id="tspan17"
+         style="font-size:4.23333px;stroke-width:0.529167"
+         x="88.767792"
+         y="58.675827">OpenAL Soft (Audio)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+       x="69.30143"
+       y="49.698723"
+       id="text18"><tspan
+         id="tspan18"
+         style="font-size:4.23333px;stroke-width:0.529167"
+         x="69.30143"
+         y="49.698723">SDL (Media Device Controls)</tspan></text>
+  </g>
+</svg>
