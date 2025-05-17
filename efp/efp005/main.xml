@@ -1,0 +1,32 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="5" created="2025-05-17" category="process" status="draft" title="Ferricia Engine Architecture">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="8"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				The <b>Ferricia Engine</b> is the core component of TerraModulus, consisting of several
+				functionalities, built with low level language <i>Rust</i>. Rust is a powerful language that
+				provides good memory-safe features with excellent performance, favoring computational heavy
+				tasks. This includes rendering, world generation, networking, physics and raw resource management.
+			</content>
+		</section>
+		<section title="">
+			<content>
+
+			</content>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li><a href="../efp003">EFP 3</a></li>
+					<li><a href="../efp004">EFP 4</a></li>
+				</list>
+			</content>
+		</section>
+	</body>
+</efp>
