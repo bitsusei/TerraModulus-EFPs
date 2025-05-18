@@ -21,10 +21,11 @@
 		<section title="Platform">
 			<content>
 				<p>
-					Since the Rust library would be directly compiled into native dynamic libraries to be loaded by
-					Java Virtual Machine (JVM) Java Native Interface (JNI), the code must be supported by the targetted
-					platforms. Therefore, when all modern supported platform versions of Windows, macOS and Linux are
-					targetted, the list of variations that should at least fully be supported is:
+					Since the Rust library would be directly compiled into native dynamic libraries to be used by
+					the Kotlin layer through Java Virtual Machine (JVM), the code must be supported by the targetted
+					platforms. Therefore, platform support would typically be aligned with
+					Java Runtime Environment (JRE) binary; when all modern supported platform versions of Windows,
+					macOS and Linux are targetted, the list of variations that should at least fully be supported is:
 				</p>
 				<list>
 					<li>Linux 5+ x64/arm64</li>
@@ -64,6 +65,33 @@
 					Open Dynamics Engine (ODE) would be used for the physics supporting library. Even for encoding and
 					decoding, using native libraries would enhance the efficiency effectively; this includes Opus and
 					Free Lossless Audio Codec (FLAC), which would be used in the Engine instead of the Kotlin layer.
+				</p>
+			</content>
+		</section>
+		<section title="Language Communication Layer">
+			<content>
+				<p>
+					Since the Engine would eventually be compiled into native libraries, which are not directly
+					compatible with JVM without an extra layer of transition, which is typical JNI.
+					Despite the emergence of modern projects like Project Panama, UniFFI, and JNR-FFI, which offer
+					alternative tools for bridging native code with JVM-managed code, JNI is still adopted
+					to maintain the neatness of the overall project framework. It helps preserve the clarity of the
+					project's overall framework while streamlining development workflows by relying on the
+					traditional toolset. Detailed workflow and process are still subject to consideration.
+				</p>
+				<p>
+					On the Kotlin layer, several classes wrapping the Engine's functionalities exist, stored in
+					<code>terramodulus.engine.ferricia</code> package. Those classes load the same generated dynamic
+					library built by the Engine project with specified function signatures. In the package of
+					<code>terramodulus.engine</code>, several classes would be made to directly use the classes
+					and functions in <code>terramodulus.engine.ferricia</code>. Please note that all the usages within
+					such classes would be low level, meaning that its code style should not be subject to the high
+					level code style guidelines.
+				</p>
+				<p>
+					To reduce JNI invoking overheads, the exposed functions should contain only essential code with
+					using the least call sites of exposed functions as far as possible for a single scope in
+					abstraction.
 				</p>
 			</content>
 		</section>
