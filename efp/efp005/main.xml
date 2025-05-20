@@ -4,6 +4,7 @@
 	<metadata>
 		<pullRequests>
 			<pullRequest id="8"/>
+			<pullRequest id="9"/>
 		</pullRequests>
 	</metadata>
 	<body>
@@ -47,7 +48,7 @@
 				</p>
 			</content>
 		</section>
-		<section title="Library">
+		<section title="Library and Distribution">
 			<content>
 				<embed src="./architecture.svg"/>
 				<p>
@@ -66,6 +67,52 @@
 					decoding, using native libraries would enhance the efficiency effectively; this includes Opus and
 					Free Lossless Audio Codec (FLAC), which would be used in the Engine instead of the Kotlin layer.
 				</p>
+				<p>
+					For distribution, native library dependencies may be handled by having them dynamically linked,
+					unlike Rust dependencies that are mostly statically linked. Also, keeping them dynamically linked
+					could ensure modularity and size efficiency. On Linux and macOS, when those could be the ones that
+					are system-wide installed or already installed on the system, they could be skipped by the Launcher
+					and the system libraries could be included them in the library path. To load the native
+					dependencies of the Engine, <code>System.loadLibrary</code> could be used, but could be
+					troublesome, thus, leveraging the system library loader to include the paths may be better.
+					In general, Windows searches libraries in the file's parent directory but on Linux and macOS,
+					either <code>LD_LIBRARY_PATH</code>/<code>DYLD_LIBRARY_PATH</code> of the game's native library
+					path has to be set as an environment variable (by <code>process::Command::env</code>) before
+					launching or setting <code>RPATH</code> to the Engine library. The latter may be the most flexible.
+					If there exist some existing libraries or widespread system libraries like <code>libopus</code>,
+					those libraries could be ignored when downloading onto Linux or macOS clients, installing those
+					globally via package manager if not installed and letting system's loader handle.
+					The soname system on Linux and macOS is adopted for library versioning, such that follow a major
+					version should ensure compatibility with future versions with the major version, but except that
+					not all libraries may follow this rule; this is handled for system-installed libraries when
+					required, so bundling them with the Engine without relying on system libraries would avoid this
+					potential incompatibility when such libraries are not widely adapted.
+					Common libraries like <code>libopus</code> and <code>libFLAC</code> both follow Semantic Versioning
+					and Linux's SONAME-based versioning, so they may be used from system libraries.
+					It is also important to check whether the required version is the same or older than the one
+					installed on the system with the same major version and perform update via the system's
+					package manager.
+					This could also ensure common practice on using dynamic libraries on UNIX-like platforms and size
+					efficiency of the Launcher's game native library directory, though not applicable on Windows.
+				</p>
+				<p>
+					For some dependencies of the Engine, there may exist some native dependencies. We may either
+					statically or dynamically link them to the Engine, but the latter might be more favorable to
+					manage better for memory usage and efficiency, as well as the aforementioned modularity
+					allowing system-installed libraries to be used. To distribute the native libraries, we may
+					only either copy the builds built from source during the Engine build process or build separately
+					from the Engine build. For the former method, it seems to be no other ways to locate the built
+					binaries within the build script as build scripts seem to be isolated from other crates' builds;
+					it is only possible to fork an existing <code>*-sys</code> crate or have a custom crate for
+					bindings and native library builds, with code that copies the resultant binaries to the target
+					directory near the Engine binary in the same directory.
+					For the latter method, there must be a workflow to ensure that the source version of the library
+					used by the binding crate is the same as the one separately built or obtained for distribution;
+					as long as the versions are the same, there should be no gap of implementation between the binaries.
+					Since the built binaries use soname, it is necessary to locate the binary with the filename matched
+					exactly the same as the soname of the library when copying binaries to output by following symlinks,
+					to ensure the library could be loaded by library loader.
+				</p>
 			</content>
 		</section>
 		<section title="Language Communication Layer">
@@ -77,7 +124,9 @@
 					alternative tools for bridging native code with JVM-managed code, JNI is still adopted
 					to maintain the neatness of the overall project framework. It helps preserve the clarity of the
 					project's overall framework while streamlining development workflows by relying on the
-					traditional toolset. Detailed workflow and process are still subject to consideration.
+					traditional toolset. Detailed workflow and process are still subject to consideration. Moreover,
+					further researches and investigation may have to be employed to consider whether the certain
+					toolset is suitable for this project architecture.
 				</p>
 				<p>
 					On the Kotlin layer, several classes wrapping the Engine's functionalities exist, stored in
