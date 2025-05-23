@@ -1,0 +1,86 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="6" created="2025-05-23" category="standard" status="draft" title="TerraModulus Game Logging Framework">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="10"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					Logging would become one of the core utilities of the <i>TerraModulus</i> game application, that all
+					other parts would rely on. This proposal discusses all the practices and the structure of the logging
+					framework for the game application.
+				</p>
+			</content>
+		</section>
+		<section title="Service Base">
+			<content>
+				<p>
+					The surface utility would be provided by
+					<a href="https://github.com/oshai/kotlin-logging"><i>kotlin-logging</i></a> with its underlying
+					SLF4J 2 interface. The logging provider would be Log4j 2 with SLF4J bridge. However, all these
+					interfaces should be hidden in the <code>common</code> module of the application, but exposing
+					the configured custom public interface defined in the application for other modules or dependents
+					for usage.
+				</p>
+				<p>
+					There would only be two appenders for the logging framework. Both are formatted using simple
+					patterns, but structural logging is yet not applied until it becomes essential to be fed into
+					the Launcher for log ingestion. The log message should contain full timestamp in the local
+					timestamp, thread ID, log level, full logger name and the message, represented as
+					<code>%d{DEFAULT_NANOS} [%T] [%p] %c: %m%n</code>. There is no standard about how exceptions
+					should be logged, so exception logging relies on the library's default behavior.
+					Please note that logging to console should enable highlighting but disable to non-console
+					standard output for the Launcher to ingest; this is controlled by
+					the American National Standards Institute (ANSI) escape code option.
+				</p>
+				<p>
+					The file logs should be handled in a way that old logs are compressed in LZMA2 with
+					configuration tuned efficiently for text. Therefore, when all logs are logged in a directory
+					of <code>logs</code> from the root of data directory, all existing logs with extensions of
+					<code>.log</code> should be compressed before creating a new log file for the current session.
+					This may be done by defining a custom plugin to be used for configuration. Please note that
+					having more than one instance of the game application running over the same data directory
+					is illegal, so only one instance should hold the new log file, and this should be initialized
+					only when <b>instance duplication</b> checking is completed.
+				</p>
+				<p>
+					All logs from all log levels should be outputted to both the file appender and the console
+					appender. This allows the Launcher to act as a supervisor to ingest and filter logs to
+					display to users from the standard output. However, verbosity should not be <b>too high</b> by
+					default, to prevent unreadable logs to users. Logging should be done in a separate thread
+					or asynchronously to reduce performance impact to other threads; this may be done by using
+					<code>AsyncRoot</code>.
+				</p>
+			</content>
+		</section>
+		<section title="Logging Practice">
+			<content>
+				<p>
+					Logging should always be enabled regardless of target, but certain elements may not trace
+					or debug information when they are <b>too verbose</b>. That is, if they contain too much
+					information for debugging, mixing other information at the same time, they may be used either:
+				</p>
+				<list type="decimal">
+					<li>Only in development debugs, enabled by uncommenting in source code; or</li>
+					<li>By inserting an argument option in launcher arguments for tracing specific parts.</li>
+				</list>
+				<p>
+					When some logs are controlled by launcher arguments, inlined helper functions could be
+					used to simplify the logging code.
+				</p>
+			</content>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li><a href="../efp003">EFP 3</a></li>
+					<li><a href="../efp004">EFP 4</a></li>
+				</list>
+			</content>
+		</section>
+	</body>
+</efp>
