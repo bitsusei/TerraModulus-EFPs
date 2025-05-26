@@ -1,0 +1,167 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="7" created="2025-05-26" category="standard" status="draft"
+     title="Exception and Error Management System">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="11"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					The Exception and Error Management System may be applied to several subprojects as
+					a fundamental architecture with variation of implementation based on the type of the projects.
+					This serves a fundamental base to projects for clear and concrete concepts about managing
+					and handling exceptions, errors, and their derivations. In this document, definite terms
+					may be capitalized.
+				</p>
+			</content>
+		</section>
+		<section title="Fundamental Elements">
+			<content>
+				<p>
+					Basically, there are <b>Exceptions</b>, <b>Failures</b>, <b>Errors</b>, <b>Faults</b>
+					and <b>Crashes</b>. Exceptions are the basic class of all other classes, so for example,
+					Errors are and are derived from Exceptions. The definitions of these terminologies are not
+					associated with specific meanings in a specific programming language but in a technical aspect
+					of literal meanings that may be derived from dictionaries.
+				</p>
+				<p>
+					An <b>Exception</b> is an <b>unexpected event</b> that occurs during a process's execution
+					(as either a series of commands or a logical program thread), disrupting the normal flow.
+					Exceptions are typically handled using mechanisms like try-catch blocks in programming
+					languages like Java or Kotlin or the <code>Error</code> trait in Rust.
+					If there exist cases that are not unexpected but as a part of the expected situation,
+					they should not be regarded as Exceptions and should be handled in a way without involving
+					Exceptions, including using special cases. All the possible Exceptions should be able to
+					be detected according to the domain of inputs. Exceptions usually come with details of
+					reasons about why they occur, that recovering may also use such information for further processing.
+					This means Exceptions should not be abused, especially in Java. However, on the other hand,
+					if such events are not expected to be in the normal flow, signaling abnormal conditions,
+					they may be handled as Exceptions. Unhandled Exceptions are always unrecoverable.
+					At this time, the Exceptions should be <b>recoverable</b> with known solutions;
+					otherwise, they are elevated to Errors.
+				</p>
+				<p>
+					A <b>Failure</b> is a special Exception when a sub-application component or system does not
+					perform its indented functionalities properly, unexpectedly.
+					Failures may involve the overall states of the component or system, but may not be associated
+					with a specific execution of command. This could be misalignment of states in a component
+					or system. They may still be recoverable if there is a viable known solution to the situation;
+					otherwise, they are still elevated to Errors.
+				</p>
+				<p>
+					An <b>Error</b> is the fundamental level of an <b>unrecoverable Exception</b>.
+					Sometimes, Errors could be suppressed when the situation is unrecoverable, in which
+					the unexpected states cannot be resolved by the component or system itself. Suppressed
+					Errors are typically logged or written into a file depending on how events are recorded.
+					Suppressing Errors means the situation is not recoverable, but it is a suboptimal or
+					non-preferred alternative countermeasure to the situation. Recovering should usually be
+					the optimal solution unless the solution may lead to further complex circumstances that
+					suppressing may still be a more favored solution. If the Errors are neither properly
+					recoverable nor suppressible, they may be elevated to Faults.
+				</p>
+				<p>
+					A <b>Fault</b> is an Error that is or due to a <b>defect</b> in a software or hardware,
+					possibly leading to further Faults to the program execution. The defect is neither
+					recoverable nor suppressible by itself without external intervention. Faults could be
+					<b>latent</b> (potential or unimmediate but possibly detected) or <b>active</b>,
+					and introduced during development or appear over time.
+					They may exist in code, hardware, system design, or even implementation.
+					They are typically regarded as bugs when they are confirmed to be defects, but
+					Exceptions that are not Faults could also be bugs, depending on the indented designs
+					and purposes of the component or system. Sometimes when a Fault occurs, subsequent
+					executions or dependents might still be able to suppress the Errors depending on
+					the severity of issues. Faults do not necessarily lead to a Crash.
+				</p>
+				<p>
+					A <b>Crash</b> is a <b>result of an Error</b> occurring in the process's execution, following
+					unresolvable states (for Faults) that the execution must be terminated immediately to
+					prevent further issues to other parts of the component or system, or the component or system
+					could no longer proceed. The termination must be related to the states that are neither
+					recoverable nor suppressible. However, a Crash might not always be essential unless
+					there is no other way to continue the execution of the component or system properly,
+					or there might be a potential data loss, to protect the user. A <b>Crash Report</b> is
+					always advised when a Crash occurs, if it is possible to generate a Report for the Crash.
+					The Report must contain all essential associated information about the reasons and situation
+					as much as possible for debugging.
+				</p>
+			</content>
+		</section>
+		<section title="Implementation Practice">
+			<content>
+				<p>
+					In general, before an event is being categorized as an Exception, it should be an unexpected
+					event that differs from the normal flow of the process. An expected event should not be
+					classified as an Exception, which usually costs more resources than normal cases.
+					When an Exception occurs, it should be recorded in any form possible in the situation
+					according to the severity of the Exception. If the event is originally designed to be
+					an Exception, but in the implementation it is a kind of expected condition,
+					an <code>info</code> (informational) message should be logged. If an Exception is recovered,
+					a <code>warn</code> (warning) message should be logged. If an Error is suppressed,
+					an <code>error</code> message should be logged. Otherwise, a more critical level of message
+					should be logged for Faults and Crashes, possibly in a form of a Crash Report,
+					and typically as a <code>fatal</code> error message.
+				</p>
+				<p>
+					For <b>good Error and Exception management</b>, every part of the program should be assessed
+					carefully and thoroughly according to the function domains and the flows of source code,
+					seeking for any possibility where an Exception may occur depending on the code used and
+					the intention of design. It should ensure that all the Exceptions may be categorized
+					properly as intended, while reducing the situation that expected states and conditions
+					are handled as Exceptions, enhancing <b>User Experience</b> (UX). Due to this, it is also
+					a good strategy to make use of in-application notifications indicating the warnings
+					and errors caused by an Exception.
+				</p>
+				<p>
+					When a Crash occurs, the session of the component, system or program must be terminated
+					with information shown to the user. This should especially be done to fail fast when
+					further potential data corruption is possible. It is also advised to termination when
+					the component or system could no longer run properly as expected due to the occurred Fault.
+					If a Crash does not affect the continuous execution of the parent component or system,
+					a countermeasure to continuity should be done to allow the following execution to run;
+					this signals a termination of session.
+				</p>
+				<p>
+					For operations related to data, including but not limited to user data and transaction data,
+					it should be mindful that, data is not always completely predictable, so the Exceptions
+					related to data likely fall under the category of <b>Errors</b>, that is unrecoverable but
+					likely suppressible. However, when the data corruption causes that the session cannot be
+					initiated, a Crash should be triggered to fail fast immediately.
+				</p>
+				<p>
+					To ensure fast Crash Report generation, it is advised to precache all the essential
+					information about the current session after the initialization of the session.
+					This is especially useful for program or any long-standing session, such as a gameplay
+					world or level. When it occurs within the program, it is better to show the Report within
+					the program; otherwise, all the resources should be cleaned up after the generation of
+					the Crash Report. For the best termination handling, the alert of Crash should be handled
+					by external programs, like a crash handler program or a game launcher, allowing all
+					program resources could be cleaned up as soon as possible after the Crash while allowing
+					the dump of information.
+				</p>
+				<p>
+					For implementation errors, that the actual code does not fully comply with the intended
+					designs, and the execution of program causes an Exception or even an Error; such
+					an Exception is possibly elevated to a Fault as it may be not in a part of normal flows.
+					They are typically regarded as bugs and ideally should be reported and fixed as soon
+					as possible via filed Crash Reports. When an Error is caused by an external source,
+					it may not be reproducible, as such an issue may be related to system events or external
+					states. Moreover, for the conditions where the program or data has been externally
+					modified in a way that is not intended by the design, users might have to take their
+					own risks since it would not be fixable nor a program bug.
+				</p>
+			</content>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li><a href="../efp003">EFP 3</a></li>
+					<li><a href="../efp006">EFP 6</a></li>
+				</list>
+			</content>
+		</section>
+	</body>
+</efp>
