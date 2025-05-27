@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="400"
+   height="600"
+   viewBox="0 0 105.83333 158.75001"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="Triangle"
+       refX="3"
+       refY="0"
+       orient="auto-start-reverse"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135" />
+    </marker>
+  </defs>
+  <g
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;stroke-width:0.529167"
+       x="52.913494"
+       y="10.201567"
+       id="text1"><tspan
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium';stroke-width:0.529167"
+         x="52.913494"
+         y="10.201567">Error and Exception</tspan><tspan
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:6.35px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium';stroke-width:0.529167"
+         x="52.913494"
+         y="18.139067"
+         id="tspan2">System Architecture</tspan></text>
+    <g
+       id="g4"
+       transform="translate(-16.933338,2.1166667)"
+       style="stroke-width:0.264583;stroke-dasharray:none">
+      <rect
+         style="fill:none;stroke:#ff5400;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+         id="rect2"
+         width="33.791096"
+         height="15.063209"
+         x="36.021118"
+         y="24.255507"
+         rx="1.2154942"
+         ry="1.0332763" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:5.64444px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ff5400;fill-opacity:1;stroke:none;stroke-width:0.264583;stroke-dasharray:none;stroke-opacity:1"
+         x="52.874332"
+         y="33.209511"
+         id="text3"><tspan
+           id="tspan3"
+           style="font-size:5.64444px;fill:#ff5400;fill-opacity:1;stroke:none;stroke-width:0.264583;stroke-dasharray:none"
+           x="52.874332"
+           y="33.209511">Exception</tspan></text>
+    </g>
+    <g
+       id="g6"
+       transform="translate(-16.933338,2.1166667)">
+      <rect
+         style="fill:none;stroke:#ff0000;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+         id="rect2-6"
+         width="33.791096"
+         height="15.063209"
+         x="36.021118"
+         y="70.679665"
+         rx="1.2154942"
+         ry="1.0332763" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:5.64444px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-opacity:1"
+         x="52.696533"
+         y="80.198112"
+         id="text3-1"><tspan
+           id="tspan3-3"
+           style="font-size:5.64444px;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.529167"
+           x="52.696533"
+           y="80.198112">Error</tspan></text>
+    </g>
+    <g
+       id="g7"
+       transform="translate(-16.933338,4.9728936)">
+      <rect
+         style="fill:none;stroke:#ff005f;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+         id="rect2-6-0-2"
+         width="33.791096"
+         height="15.063209"
+         x="36.021118"
+         y="96.911591"
+         rx="1.2154942"
+         ry="1.0332763" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:5.64444px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ff005f;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-opacity:1"
+         x="52.719109"
+         y="106.55986"
+         id="text3-1-0-0"><tspan
+           id="tspan3-3-3-4"
+           style="font-size:5.64444px;fill:#ff005f;fill-opacity:1;stroke:none;stroke-width:0.529167"
+           x="52.719109"
+           y="106.55986">Fault</tspan></text>
+    </g>
+    <g
+       id="g8"
+       transform="translate(1.4691161e-6,2.1547965)">
+      <rect
+         style="fill:none;stroke:#ea00ff;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+         id="rect2-6-0-2-5"
+         width="33.791096"
+         height="15.063209"
+         x="36.021118"
+         y="128.81784"
+         rx="1.2154942"
+         ry="1.0332763" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:5.64444px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ea00ff;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-opacity:1"
+         x="52.97311"
+         y="138.46611"
+         id="text3-1-0-0-5"><tspan
+           id="tspan3-3-3-4-2"
+           style="font-size:5.64444px;fill:#ea00ff;fill-opacity:1;stroke:none;stroke-width:0.529167"
+           x="52.97311"
+           y="138.46611">Crash</tspan></text>
+    </g>
+    <g
+       id="g5"
+       transform="translate(-6.7746601,1.4754571)">
+      <rect
+         style="fill:none;stroke:#ff3600;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1"
+         id="rect2-6-6"
+         width="33.791096"
+         height="15.063209"
+         x="66.2164"
+         y="48.108795"
+         rx="1.2154942"
+         ry="1.0332763" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:5.64444px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Medium';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ff3600;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-opacity:1"
+         x="82.982124"
+         y="57.757065"
+         id="text4"><tspan
+           id="tspan4"
+           style="fill:#ff3600;fill-opacity:1;stroke-width:0.529167"
+           x="82.982124"
+           y="57.757065">Failure</tspan></text>
+    </g>
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#6a6a6a;stroke-width:0.396875;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="M 35.983326,41.435381 V 72.796333"
+       id="path8" />
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#6a6a6a;stroke-width:0.396875;stroke-dasharray:2.38125, 0.396875;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 35.983326,41.435381 40.35396,8.14887"
+       id="path9" />
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#6a6a6a;stroke-width:0.396875;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 76.337286,64.647463 -40.35396,8.14887"
+       id="path10" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#505050;fill-opacity:1;stroke:none;stroke-width:0.396875;stroke-dasharray:none;stroke-opacity:1"
+       x="23.048363"
+       y="57.879978"
+       id="text10"><tspan
+         id="tspan10"
+         style="font-size:3.52778px;writing-mode:lr-tb;fill:#505050;fill-opacity:1;stroke:none;stroke-width:0.396875"
+         x="23.048363"
+         y="57.879978">unrecoverable</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#505050;fill-opacity:1;stroke:none;stroke-width:0.396875;stroke-dasharray:none;stroke-opacity:1"
+       x="67.876389"
+       y="71.855194"
+       id="text10-7"><tspan
+         id="tspan10-3"
+         style="font-size:3.52778px;writing-mode:lr-tb;fill:#505050;fill-opacity:1;stroke:none;stroke-width:0.396875"
+         x="67.876389"
+         y="71.855194">unrecoverable</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Italic';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#505050;fill-opacity:1;stroke:none;stroke-width:0.396875;stroke-dasharray:none;stroke-opacity:1"
+       x="69.344193"
+       y="44.165829"
+       id="text11"><tspan
+         id="tspan11"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Italic';fill:#505050;fill-opacity:1;stroke-width:0.396875"
+         x="69.344193"
+         y="44.165829">component/system</tspan></text>
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#6a6a6a;stroke-width:0.396875;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="M 35.983326,87.859541 V 101.88449"
+       id="path11" />
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:#6a6a6a;stroke-width:0.396875;stroke-dasharray:1.5875, 0.396875;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 35.983326,116.94769 16.93334,14.02495"
+       id="path12" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#6a6a6a;stroke-width:0.396875;stroke-dasharray:1.5875, 0.396875;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 35.983326,87.859541 c 0,0 21.959069,3.094302 28.76745,19.383439 3.480699,8.32761 -11.834111,23.72966 -11.834111,23.72966"
+       id="path13" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#505050;fill-opacity:1;stroke:none;stroke-width:0.396875;stroke-dasharray:none;stroke-opacity:1"
+       x="52.041672"
+       y="124.11532"
+       id="text13"><tspan
+         id="tspan13"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Italic';fill:#505050;fill-opacity:1;stroke:none;stroke-width:0.396875"
+         x="52.041672"
+         y="124.11532">result</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#505050;fill-opacity:1;stroke:none;stroke-width:0.396875;stroke-dasharray:none;stroke-opacity:1"
+       x="22.289438"
+       y="95.510544"
+       id="text14"><tspan
+         id="tspan14"
+         style="fill:#505050;fill-opacity:1;stroke-width:0.396875"
+         x="22.289438"
+         y="95.510544">unsuppressible</tspan></text>
+  </g>
+</svg>
