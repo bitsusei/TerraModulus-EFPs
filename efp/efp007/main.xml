@@ -21,6 +21,7 @@
 		</section>
 		<section title="Fundamental Elements">
 			<content>
+				<embed src="./architecture.svg"/>
 				<p>
 					Basically, there are <b>Exceptions</b>, <b>Failures</b>, <b>Errors</b>, <b>Faults</b>
 					and <b>Crashes</b>. Exceptions are the basic class of all other classes, so for example,
