@@ -1,0 +1,71 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="8" created="2025-05-30" category="standard" status="draft"
+     title="TerraModulus Game Multimodal User Interface (MUI) Framework">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="12"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					The backbone of the MUI Framework would be supported by the Ferricia Engine, with
+					Simple DirectMedia Layer (SDL) 3, OpenAL and OpenGL. Due to this, the interactions between
+					the Engine library and the Kotlin interface become essential that should be enough
+					efficient and effective. In this framework, the Graphical Component System (GCS)
+					would also be introduced, as the fundamental graphical system for the Engine's utilization.
+					This Framework is only applicable on client targets but not dedicated server targets.
+				</p>
+			</content>
+		</section>
+		<section title="Multimodal User Interface (MUI) Framework Basis">
+			<content>
+				<p>
+					The MUI Framework consists of window management, rendering, audio processing, input
+					management, user feedback management and interactive simulations. Rendering would
+					mostly be handled using OpenGL with only a single canvas on only a single window;
+					audio processing and simulations would mostly be handled using OpenAL with sources
+					transmitted via networking or resource management; other elements would mostly be
+					handled using other SDL subsystems.
+				</p>
+				<p>
+					macOS enforces that all window-related tasks, including windowing, rendering and
+					input events, to be handled in the main thread. Therefore, the main thread would
+					do all windowing, rendering and <b>primary window event handling</b>, with other tasks
+					delegated to other threads. This should ensure the application could work on every
+					target platform while only minimally allocating the main thread for all essential tasks.
+					Also, this does not include any audio-related task.
+				</p>
+				<p>
+					<b>Primary window events</b> include any raw pointer and key inputs, all window events
+					sent by SDL. Those events would then be sent to GCS Canvas for event handling and
+					processing in the GCS ticking thread. It is important to note that the objects and
+					states in the GCS must be carefully handled so that they could be rendered in
+					the main thread asynchronously safely.
+				</p>
+			</content>
+		</section>
+		<section title="Graphical Component System (GCS)">
+			<content>
+				<p>
+					The GCS would only be implemented in the Kotlin interface with abstractions.
+					Rendering of Graphical Component Objects (GCOs) would be backed by the Engine's
+					rendering system, using the low level Kotlin bindings. All GCOs only serve as
+					graphical wrappers of the underlying objects they manage, such as data entries, states,
+					controls and toggles. However, audio feedbacks triggered by GCOs cannot be managed
+					by GCOs, but another audio user interface manager.
+				</p>
+			</content>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li><a href="../efp003">EFP 3</a></li>
+					<li><a href="../efp005">EFP 5</a></li>
+				</list>
+			</content>
+		</section>
+	</body>
+</efp>
