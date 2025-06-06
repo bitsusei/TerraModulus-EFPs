@@ -203,11 +203,96 @@
 				</p>
 			</content>
 		</section>
+		<section title="Rendering Framework">
+			<content>
+				<p>
+					The entire rendering framework is backed by OpenGL, so the details are mostly based on
+					the features and functionalities provided by OpenGL.
+					Basically, the framework aligns the rendering pipeline of OpenGL and general rendering
+					procedures, such as shaders and textures.
+				</p>
+				<p>
+					On GUI, the camera is fixed, so the view is also fixed and constant.
+					Therefore, in shaders, the view matrix and transformation are omitted and disregarded.
+					The projection should always be orthogonal and thus being a uniform value, while
+					the model transformation would be done per instance as an attribute, but not per vertex.
+				</p>
+				<p>
+					There would be several sets of texture atlases implemented in the Engine.
+					Texture atlases should be used to enhance performance since there would mostly be
+					a large number of texture units used in the game; otherwise frequent texture bindings
+					which are likely expensive operations may occur.
+					In general, one might use <a href="https://gamedev.stackexchange.com/a/49585">
+						<i><b>half pixel correction</b></i>
+					</a> to solve the issue, but the outcome may not be ideal or fit perfectly with
+					the rendering results due to the clipped outermost pixels in a tile as
+					a texture atlas element (later referred as "<i>texel</i>").
+					Therefore, it is more recommended to have paddings or border pixels for each texel
+					in an atlas to keep the outermost pixels rendered well.
+					Even using "<i>nearest neighbor</i>" filters without paddings may not help solve the issue
+					completely because of potential numeric rounding errors.
+					All GUI textures would be managed with an atlas without any mipmapping, while all tile,
+					item and entity textures would be managed with different atlases with mipmapping.
+				</p>
+				<p>
+					Different textures would have different constrains resulting different configurations.
+					Since GUI textures are not supposed to be scaled down, but scaled up depending on
+					the scaling setting with the base layout set based on the lowest reference scaling,
+					mipmapping is not suitable for this.
+					On the other hand, the gameplay region may be scaled up or down, so mipmapping may be
+					applied to enhance the performance of rendering diminished textures.
+					Regardless of whether the atlas would be mipmapped, paddings would be done by repeating
+					the outermost pixels to the desired extent for each texel.
+					However, when the atlas is mipmapped, the padding size would be the number of pixels by
+					two to the power of the maximum mipmap level with the atlas, so paddings still take effect
+					for each mipmap.
+					When the atlas reached the hardware-limited size (known by <code>GL_MAX_TEXTURE_SIZE</code>),
+					a new atlas for the same configurations should be used, but stored together in a managed set.
+					Also, manual mipmapping for each texel is required to avoid edge bleeding during mipmapping;
+					computations of texture atlases would be performed and designed with reference to
+					<a href="https://www.david-colson.com/2020/03/10/exploring-rect-packing.html">
+						the rectangle packing algorithm by David Colson
+					</a> or crates like <code>rectangle-pack</code> and <code>crunch-rs</code>; unless
+					the texels are explicitly constrained to only powers of two, this kind of
+					advanced algorithm would still be used.
+				</p>
+				<p>
+					In general, since the art style tends to be pixelated, mostly "<i>nearest neighbor</i>"
+					would be used to magnify the texels, but blending would be applied for diminishing to
+					simulate the similar colors.
+					At least, the mipmaps would be weighted using linear interpolation, but color filtering
+					could be either one of the available options through settings or launching options due
+					to rendering quality and computational complexity.
+					The maximum mipmapping level would be determined by the greatest power of two from
+					the common factors of all texel dimensions in the specific atlas, for which could be
+					further limited through settings or launching options.
+					Basically, there would still be the enforced constraint to the maximum value like four;
+					the dimensions of tile texels and that of entity texels must be a multiple of 8 and 2
+					respectively.
+				</p>
+				<p>
+					Besides, the application would first enter the early loading stage to render the progress
+					by initializing minimal components required to show the progress bar and the loading screen.
+					So, the logo used in the loading screen would be embedded in the application, and other
+					components would be started loading and tracked after the initialization of the screen.
+					The loading screen may also show during loading of updated resource pack configurations.
+					Moreover, a short animated splashscreen could show before the loading screen.
+				</p>
+			</content>
+		</section>
 		<section title="See also">
 			<content>
 				<list>
 					<li><a href="../efp003">EFP 3</a></li>
 					<li><a href="../efp005">EFP 5</a></li>
+					<li><a href="https://gamedev.stackexchange.com/a/50777">
+						Stack Exchange Game Development: "How to avoid texture bleeding in a texture atlas?"
+						answered by danijar
+					</a></li>
+					<li><a href="https://gamedev.stackexchange.com/a/50037">
+						Stack Exchange Game Development: "How can I prevent seams from showing up on objects
+						using lower mipmap levels?" answered by Panda Pajama
+					</a></li>
 				</list>
 			</content>
 		</section>
