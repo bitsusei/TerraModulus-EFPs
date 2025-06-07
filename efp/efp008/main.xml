@@ -201,6 +201,15 @@
 					This only applied to important interactable or rendered content, general displayed content
 					like the background, miscellaneous margins, paddings and borders are not affected by this.
 				</p>
+				<p>
+					Most graphical elements should be based on textures and the default shaders used with textures.
+					Only if certain geometric shapes are really required, like dynamic or variable lines and curves
+					used to show interactions and associate interactive elements on the GUI, the restriction
+					to use only textures could be bypassed.
+					However, it is still recommended to use customizable properties like colors via resources.
+					In this case, the default shaders which take textures would not be used, but the shaders
+					that take other attributes.
+				</p>
 			</content>
 		</section>
 		<section title="Rendering Framework">
@@ -215,7 +224,8 @@
 					On GUI, the camera is fixed, so the view is also fixed and constant.
 					Therefore, in shaders, the view matrix and transformation are omitted and disregarded.
 					The projection should always be orthogonal and thus being a uniform value, while
-					the model transformation would be done per instance as an attribute, but not per vertex.
+					the model transformation and color filter would be done per instance as uniform values
+					evaluated each frame depending on the specifics, but not per vertex.
 				</p>
 				<p>
 					There would be several sets of texture atlases implemented in the Engine.
@@ -277,6 +287,51 @@
 					components would be started loading and tracked after the initialization of the screen.
 					The loading screen may also show during loading of updated resource pack configurations.
 					Moreover, a short animated splashscreen could show before the loading screen.
+				</p>
+				<p>
+					Any GMO would internally hold an opaque handle managed by the Engine.
+					When a Screen is sent to the active stack, the handle in the Engine would be sent to
+					the internally held state, <code>RenderingState</code>, to be used during rendering.
+					The state internally holds an empty <code>Mutex</code> lock which controls which thread
+					to allow access to only one thread for thread-safety.
+					Ideally, only the GMS ticking thread and the main thread, which performs rendering,
+					would access the state either for modifications or reading for rendering.
+					The state impacts the thread for modifications only when the GMOs are within the state,
+					where the state would internally mark it during transitions.
+					This pipeline could greatly reduce JNI calls during rendering to improve performance
+					with only one call per loop as the general ideas.
+					Note that synchronization must be carefully examined for any data accessed in the Engine.
+				</p>
+				<p>
+					In general, rendering of any GMO should avoid reading framebuffer data drawn by
+					any <i>previous</i> GMO in the rendering loop.
+					This includes applying visual effects like color inverting or copying;
+					this is due to parallelization of shader computations in the render devices.
+					(See <a href="https://gamedev.stackexchange.com/q/10964">the related question</a>.)
+					Various optimizations are also conducted, like reusing same shader programs as much
+					as possible when the previous draw call was also using the same program, eliminating
+					unnecessary OpenGL commands.
+				</p>
+			</content>
+		</section>
+		<section title="Platform Compatibility">
+			<content>
+				<p>
+					As a general idea, the minimal support version is OpenGL 2.0 with some extensions required.
+					Although at the time this is written, most consumer devices in the last decade should
+					support OpenGL 3.0 and above, 2.0 is still targeted as the minimal version for most other
+					potential users.
+					However, when a newer version or usable extension is detected with the OpenGL context,
+					advanced features that may improve performance or even other effects might be available.
+				</p>
+				<p>
+					According to Wikipedia, the GLSL version in OpenGL 2.0 is 1.10, so version 110 would be used
+					as the base GLSL version to use for all the shaders used in the Engine.
+					If a more advanced GLSL version is supported while advanced features are used, the target
+					GLSL version should be specified and the shaders are applied only when the target version
+					is matched for both GL and GLSL versions.
+					This is said, some shaders might be used or available only when they are available provided
+					by the OpenGL context.
 				</p>
 			</content>
 		</section>
