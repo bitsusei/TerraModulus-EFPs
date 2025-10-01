@@ -24,10 +24,4 @@ export namespace App.EfpEntry {
 	export type StatusName = "Draft" | "Deferred" | "Provisional" | "Final";
 }
 
-/** Source: https://github.com/sveltejs/kit/issues/4528#issuecomment-2330313490 */
-export const resolveLink = (link: string) => {
-  if (process.env.NODE_ENV === 'development') return link;
-  if (link === '/') return base;
-	if (link.startsWith(".")) return link;
-  return base + link;
-}
+export const resolveLink = (link: string) => link;
