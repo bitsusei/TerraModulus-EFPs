@@ -24,4 +24,3 @@ The entire EFP architecture is defined in EFP 1. An EFP includes the following s
 
 ## Workflows and Usages
 
-

@@ -109,7 +109,7 @@
 	<xs:element name="section">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="content" type="content"/>
+				<xs:element name="content" type="content" minOccurs="0"/>
 				<xs:element ref="section" maxOccurs="unbounded" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="title" type="xs:string" use="required"/>
@@ -168,6 +168,13 @@
 						<xs:complexType>
 							<xs:attribute name="src" type="xs:anyURI" use="required"/>
 							<xs:attribute name="alt" type="xs:string"/>
+							<xs:attribute name="width" type="xs:string"/>
+							<xs:attribute name="height" type="xs:string"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="embed">
+						<xs:complexType>
+							<xs:attribute name="src" type="xs:anyURI" use="required"/>
 							<xs:attribute name="width" type="xs:string"/>
 							<xs:attribute name="height" type="xs:string"/>
 						</xs:complexType>
