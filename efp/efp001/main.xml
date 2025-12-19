@@ -1,13 +1,54 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 <efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
-	efp="1" created="2025-01-26" category="process" status="provisional" title="EFP Architecture">
+	efp="1" created="2025-01-26" category="process" status="provisional" title="Constitution of the Execution Architecture">
 	<metadata>
 		<pullRequests>
 			<pullRequest id="1"/>
 		</pullRequests>
 	</metadata>
 	<body>
-		<section title="Introduction">
+		<section title="Core Principles and Structures">
+			<section title="Formation">
+				<content>
+					<p>
+						<b>TerraModulus</b> consists of the Community, the Executive Committee and the Executive Leadership.
+						There are several fundamental parts in the Executive Architecture (later referred as "the Architecture")
+						such as Execution Framework Proposals (EFPs), Executive Policy Charters (EPCs) and
+						Executive Research Dossier (ERDs).
+					</p>
+					<p>
+						All the Members in the Community have their own rights and responsibilities in the Architecture.
+					</p>
+				</content>
+			</section>
+			<section title="Purpose and Scope">
+				<content>
+					<p>
+						All behaviors are limited to the scope of the Architecture, including but not limited to its
+						Community and Executives. However, fundamentally the Constitution should still be under
+						the Regulations and Laws on their corresponding local jurisdictions.
+						On the other hand, the Constitution should regulate the operations of the Community and the Executives.
+					</p>
+				</content>
+			</section>
+			<section title="Governance Principles">
+				<content>
+					<p>
+						All the Members should be treated with respects.
+					</p>
+				</content>
+			</section>
+			<section title="Executive Structure">
+				<content>
+					<p>
+						On the whole, over the Community, there are documents such as
+						Community Standards and Guidelines (CSG), EFPs, EPCs and ERDs.
+						All of them have the special roles and purposes by their own definitions.
+					</p>
+				</content>
+			</section>
+		</section>
+		<section title="EFP Process">
 			<content>
 				<p>
 					<b>Execution Framework Proposals</b>, or EFPs, are the structured documents that:
@@ -45,139 +86,147 @@
 					of the repository and the files included.
 				</p>
 			</content>
-		</section>
-		<section title="EFP Structure">
-			<content>
-				<p>
-					An EFP includes the following sections:
-					<list>
-						<li>Introduction</li>
-						<li><i>Main content</i></li>
-						<li>See also (optional)</li>
-						<li><i>References</i></li>
-					</list>
-				</p>
-				<p>
-					The <i>Introduction</i> describes the brief abstract about the topic the EFP is relevant
-					to. The content should be kept short but descriptive enough to open the topic.
-				</p>
-				<p>
-					All the content goes into the <i>Main content</i> with their respective sections with
-					appropriate titles. There is no restriction to the details.
-				</p>
-				<p>
-					If there are other related articles, EFPs or webpages, these may be listed in <i>See also</i>,
-					but it is not mandatory. This only includes highly relevant content, otherwise they may
-					be regarded as off-topic.
-				</p>
-				<p>
-					If there is any reference to particular content mentioned in the EFP, these may be referred
-					with appropriate citation reference. This is handled by the EFP system. Depending on the
-					usages, they may be named or unnamed, but they should be separated. There may be no reference.
-				</p>
-				<p>
-					All EFPs are stored in the same <code>efp</code> folder from the root directory of the
-					repository. For each EFP, all the related files of an EFP is included in a subfolder of
-					the <code>efp</code> folder, named <code>efp&lt;XXX&gt;</code>, where <code>XXX</code> is
-					a 3-digit number assigned identifier of the entire EFP, with leading zeros filled if any.
-					The identifiers are assigned with increments of the latest proposed EFP, to new EFPs.
-					However, it is possible that the identifier later changes to 4 digits. Thus, the format change
-					is different from the EFP content change process, and may be conducted directly, but proposing
-					EFP(s) is still recommended for tracking.
-				</p>
-				<p>
-					All EFP documents are formatted in XML, with XHTML generated accordingly with the Node.js
-					scripts. The XML Schema is defined in <code>efp.xsd</code> at the root directory of the
-					repository. The main XML document is stored as <code>main.xml</code> in the EFP folder.
-					Any other files including images are stored in the same directory and referred in the same
-					directory. It is possible to have child XML documents in the same EFP, but not recommended
-					and instead should all be kept in the same document, even if there is any "<i>appendix</i>".
-				</p>
-			</content>
-		</section>
-		<section title="EFP Categories">
-			<content>
-				EFPs are classified into 3 categories:
-				<list>
-					<li>
-						An <b>Informational</b> EFP is non-normative and describes background, explanations
-						or other information about various topics. It may also provide insights and overviews
-						about some topics.
-					</li>
-					<li>
-						A <b>Process</b> EFP is normative and describes or proposes a change to a community
-						or project process, workflow or governance. It may also provide guidelines, processes,
-						and best practices for the community and/or the project.
-					</li>
-					<li>
-						A <b>Standard</b> EFP is normative and describes about a feature for the project, with descriptive
-						standards, protocols or specifications. It may also include implementation change or
-						interoperability standard for the project.
-					</li>
-				</list>
-			</content>
-		</section>
-		<section title="EFP Workflow">
-			<content>
-				<p>
-					All changes to the content of any EFP are submitted via Pull Requests. Anyone is
-					allowed to submit Pull Requests, but the final decisions of them are conducted by the
-					repository maintainer(s).
-				</p>
-				<p>
-					If the entire EFP document is not completed, it is kept as <i>Draft</i>. The EFP is at
-					the initial stages of development. The EFPs under this status are under construction and
-					open to revisions and additions before they are ready for wider scrutiny.
-				</p>
-				<p>
-					Then, before it is fully accepted or adapted, it becomes <i>Provisional</i>. This stands
-					for "Provisionally Adapted". If it is temporarily adapted without full consensus, and it
-					was a <i>Draft</i> without further changes, it is also <i>Provisional</i>. Any
-					<i>Provisional</i> EFP would not turn back to <i>Draft</i> by any mean.
-				</p>
-				<p>
-					After everything is confirmed, it would become <i>Final</i>. This includes reviewing and
-					revisions. Only subtle and trivial changes are allowed when it has already been<i>Final</i>.
-					Further revisions and changes should be conducted by proposing new EFPs updating or
-					obsoleting the original EFP instead.
-				</p>
-				<p>
-					However, it is possible that if the particular EFP had already been accepted before being
-					drafted, <i>Draft</i> and/or <i>Provisional</i> may be skipped. Only to ensure that the
-					content is definite enough, with appropriate reviews and consensus. <i>Informational</i>
-					EFPs are likely in this case.
-				</p>
-				<p>
-					An EFP may also be <i>Deferred</i>. If there is a particular EFP <i>Draft</i> has been
-					worked on but later paused, the EFP development may be postponed until future evaluation
-					for continuation. Even if an EFP is logically "cancelled", it would still be assigned to
-					this status but with the wording "indefinitely deferred". This would allow potential pick up
-					of the EFP. If there is a new EFP replacing, the EFP could be marked as "Obsoleted" by the
-					new EFP.
-				</p>
-				<p>
-					Numbering of EFP is decided only when the EFP pull request is accepted. A pull request
-					having a request to add an EFP is possible to be rejected or closed.
-				</p>
-			</content>
-		</section>
-		<section title="Usages">
-			<content>
-				Generally, when referring to a particular EFP, one may use "EFP <i>N</i>", where <i>N</i> is
-				a positive integral identifier of the EFP without any leading zero.
-			</content>
-			<section title="In Projects">
+			<section title="EFP Structure">
 				<content>
-					In the GitHub repositories of the particular projects, if there is any Issue or Discussion
-					relates to any EFP, they may be mentioned in the titles by starting with "[EFP <i>N</i>]".
-					Though GitHub labels may be made instead. This should still ensure minimal reachability by
-					the targeted EFPs. If possible, the EFP(s) may also be linked in the content body, by using
-					<code>[EFP <i>N</i>](https://.../efp<i>N</i>)</code> (MarkDown) or
-					<code>&lt;a href="https://.../efp<i>N</i>"&gt;EFP <i>N</i>&lt;/a&gt;</code> (HTML), where
-					the URL is the rendered webpage of the EFP.
+					<p>
+						An EFP includes the following sections:
+						<list>
+							<li>Introduction</li>
+							<li><i>Main content</i></li>
+							<li>See also (optional)</li>
+							<li><i>References</i></li>
+						</list>
+					</p>
+					<p>
+						The <i>Introduction</i> describes the brief abstract about the topic the EFP is relevant
+						to. The content should be kept short but descriptive enough to open the topic.
+					</p>
+					<p>
+						All the content goes into the <i>Main content</i> with their respective sections with
+						appropriate titles. There is no restriction to the details.
+					</p>
+					<p>
+						If there are other related articles, EFPs or webpages, these may be listed in <i>See also</i>,
+						but it is not mandatory. This only includes highly relevant content, otherwise they may
+						be regarded as off-topic.
+					</p>
+					<p>
+						If there is any reference to particular content mentioned in the EFP, these may be referred
+						with appropriate citation reference. This is handled by the EFP system. Depending on the
+						usages, they may be named or unnamed, but they should be separated. There may be no reference.
+					</p>
+					<p>
+						All EFPs are stored in the same <code>efp</code> folder from the root directory of the
+						repository. For each EFP, all the related files of an EFP is included in a subfolder of
+						the <code>efp</code> folder, named <code>efp&lt;XXX&gt;</code>, where <code>XXX</code> is
+						a 3-digit number assigned identifier of the entire EFP, with leading zeros filled if any.
+						The identifiers are assigned with increments of the latest proposed EFP, to new EFPs.
+						However, it is possible that the identifier later changes to 4 digits. Thus, the format change
+						is different from the EFP content change process, and may be conducted directly, but proposing
+						EFP(s) is still recommended for tracking.
+					</p>
+					<p>
+						All EFP documents are formatted in XML, with XHTML generated accordingly with the Node.js
+						scripts. The XML Schema is defined in <code>efp.xsd</code> at the root directory of the
+						repository. The main XML document is stored as <code>main.xml</code> in the EFP folder.
+						Any other files including images are stored in the same directory and referred in the same
+						directory. It is possible to have child XML documents in the same EFP, but not recommended
+						and instead should all be kept in the same document, even if there is any "<i>appendix</i>".
+					</p>
 				</content>
 			</section>
+			<section title="EFP Categories">
+				<content>
+					EFPs are classified into 3 categories:
+					<list>
+						<li>
+							An <b>Informational</b> EFP is non-normative and describes background, explanations
+							or other information about various topics. It may also provide insights and overviews
+							about some topics.
+						</li>
+						<li>
+							A <b>Process</b> EFP is normative and describes or proposes a change to a community
+							or project process, workflow or governance. It may also provide guidelines, processes,
+							and best practices for the community and/or the project.
+						</li>
+						<li>
+							A <b>Standard</b> EFP is normative and describes about a feature for the project, with descriptive
+							standards, protocols or specifications. It may also include implementation change or
+							interoperability standard for the project.
+						</li>
+					</list>
+				</content>
+			</section>
+			<section title="EFP Workflow">
+				<content>
+					<p>
+						All changes to the content of any EFP are submitted via Pull Requests. Anyone is
+						allowed to submit Pull Requests, but the final decisions of them are conducted by the
+						repository maintainer(s).
+					</p>
+					<p>
+						If the entire EFP document is not completed, it is kept as <i>Draft</i>. The EFP is at
+						the initial stages of development. The EFPs under this status are under construction and
+						open to revisions and additions before they are ready for wider scrutiny.
+					</p>
+					<p>
+						Then, before it is fully accepted or adapted, it becomes <i>Provisional</i>. This stands
+						for "Provisionally Adapted". If it is temporarily adapted without full consensus, and it
+						was a <i>Draft</i> without further changes, it is also <i>Provisional</i>. Any
+						<i>Provisional</i> EFP would not turn back to <i>Draft</i> by any mean.
+					</p>
+					<p>
+						After everything is confirmed, it would become <i>Final</i>. This includes reviewing and
+						revisions. Only subtle and trivial changes are allowed when it has already been<i>Final</i>.
+						Further revisions and changes should be conducted by proposing new EFPs updating or
+						obsoleting the original EFP instead.
+					</p>
+					<p>
+						However, it is possible that if the particular EFP had already been accepted before being
+						drafted, <i>Draft</i> and/or <i>Provisional</i> may be skipped. Only to ensure that the
+						content is definite enough, with appropriate reviews and consensus. <i>Informational</i>
+						EFPs are likely in this case.
+					</p>
+					<p>
+						An EFP may also be <i>Deferred</i>. If there is a particular EFP <i>Draft</i> has been
+						worked on but later paused, the EFP development may be postponed until future evaluation
+						for continuation. Even if an EFP is logically "cancelled", it would still be assigned to
+						this status but with the wording "indefinitely deferred". This would allow potential pick up
+						of the EFP. If there is a new EFP replacing, the EFP could be marked as "Obsoleted" by the
+						new EFP.
+					</p>
+					<p>
+						Numbering of EFP is decided only when the EFP pull request is accepted. A pull request
+						having a request to add an EFP is possible to be rejected or closed.
+					</p>
+				</content>
+			</section>
+			<section title="Usages">
+				<content>
+					Generally, when referring to a particular EFP, one may use "EFP <i>N</i>", where <i>N</i> is
+					a positive integral identifier of the EFP without any leading zero.
+				</content>
+				<section title="In Projects">
+					<content>
+						In the GitHub repositories of the particular projects, if there is any Issue or Discussion
+						relates to any EFP, they may be mentioned in the titles by starting with "[EFP <i>N</i>]".
+						Though GitHub labels may be made instead. This should still ensure minimal reachability by
+						the targeted EFPs. If possible, the EFP(s) may also be linked in the content body, by using
+						<code>[EFP <i>N</i>](https://.../efp<i>N</i>)</code> (MarkDown) or
+						<code>&lt;a href="https://.../efp<i>N</i>"&gt;EFP <i>N</i>&lt;/a&gt;</code> (HTML), where
+						the URL is the rendered webpage of the EFP.
+					</content>
+				</section>
+			</section>
 		</section>
+		<section title="EPC Process">
+			<content></content>
+		</section>
+		<section title="ERD Process">
+			<content></content>
+		</section>
+		<section title="Executive Roles and Responsibilities"></section>
+		<section title="Community Roles and Responsibilities"></section>
 		<section title="See also">
 			<content>
 				<list>
