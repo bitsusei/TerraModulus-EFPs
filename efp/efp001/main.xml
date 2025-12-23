@@ -9,44 +9,42 @@
 	</metadata>
 	<body>
 		<section title="Purpose and Scope">
-			<section title="Purpose and Scope">
-				<section title="Establishment">
-					<content>
-						<p>
-							This Constitution establishes the Execution Architecture of the <b>TerraModulus</b> Project
-							as the foundational framework governing the creation, lifecycle and relationship
-							of Execution Framework Proposals (EFPs), Executive Policy Charters (EPCs),
-							Executive Research Dossier (ERDs) and Community Standards and Guidelines (CSG).
-						</p>
-						<p>
-							The Architecture consists of the Community and the Executives.
-							All Members in the Community have their own rights and responsibility with respect
-							to the Project.
-						</p>
-					</content>
-				</section>
-				<section title="Authority">
-					<content>
-						<p>
-							This Constitution is the supreme authority within the Architecture.
-						</p>
-					</content>
-				</section>
-				<section title="Legitimacy">
-					<content>
-						<p>
-							All EFPs, EPCs, ERDs and CSG derive legitimacy from this Constitution.
-						</p>
-					</content>
-				</section>
-				<section title="Scope and Jurisdiction">
-					<content>
-						<p>
-							This Constitution is limited to the scope of the Architecture.
-							All activities within the Architecture are still covered by the local jurisdictions.
-						</p>
-					</content>
-				</section>
+			<section title="Establishment">
+				<content>
+					<p>
+						This Constitution establishes the Execution Architecture of the <b>TerraModulus</b> Project
+						as the foundational framework governing the creation, lifecycle and relationship
+						of Execution Framework Proposals (EFPs), Executive Policy Charters (EPCs),
+						Executive Research Dossier (ERDs) and Community Standards and Guidelines (CSG).
+					</p>
+					<p>
+						The Architecture consists of the Community and the Executives.
+						All Members in the Community have their own rights and responsibility with respect
+						to the Project.
+					</p>
+				</content>
+			</section>
+			<section title="Authority">
+				<content>
+					<p>
+						This Constitution is the supreme authority within the Architecture.
+					</p>
+				</content>
+			</section>
+			<section title="Legitimacy">
+				<content>
+					<p>
+						All EFPs, EPCs, ERDs and CSG derive legitimacy from this Constitution.
+					</p>
+				</content>
+			</section>
+			<section title="Scope and Jurisdiction">
+				<content>
+					<p>
+						This Constitution is limited to the scope of the Architecture.
+						All activities within the Architecture are still covered by the local jurisdictions.
+					</p>
+				</content>
 			</section>
 		</section>
 		<section title="Governance Principles">
