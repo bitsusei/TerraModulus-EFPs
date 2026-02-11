@@ -1,10 +1,11 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 <efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
-	efp="1" created="2025-01-26" category="process" status="provisional" title="Constitution of the Execution Architecture">
+	efp="1" created="2025-01-26" category="process" status="provisional" title="Constitution of the Organizational Architecture">
 	<metadata>
 		<pullRequests>
 			<pullRequest id="1"/>
 			<pullRequest id="3"/>
+			<pullRequest id="15"/>
 		</pullRequests>
 	</metadata>
 	<body>
@@ -12,16 +13,19 @@
 			<section title="Establishment">
 				<content>
 					<p>
-						This Constitution establishes the Execution Architecture of the <b>TerraModulus</b> Project
-						as the foundational framework governing the creation, lifecycle and relationship
-						of Execution Framework Proposals (EFPs), Executive Policy Charters (EPCs),
-						Executive Research Dossier (ERDs) and Community Standards and Guidelines (CSG).
+						This Constitution establishes the Organizational Architecture of the <b>TerraModulus</b> Project
+						as the foundational framework governing the scope of the Project, including
+						the administration of the Community, and the underlying executive parts for the creations,
+						lifecycles and relationships of Execution Framework Proposals (EFPs),
+						Executive Policy Charters (EPCs), Executive Research Dossiers (ERDs) and
+						Community Standards and Guidelines (CSG).
 					</p>
 					<p>
-						The Architecture consists of the Community and the Executives.
+						The Architecture consists of the Project, the Community and the Executives.
 						All Members in the Community have their own rights and responsibility with respect
 						to the Project.
 					</p>
+					<embed src="./constitution.svg"/>
 				</content>
 			</section>
 			<section title="Authority">
@@ -69,7 +73,8 @@
 					</list>
 					<p>
 						Both the Community and the Executives may initiate an EFP to the Architecture.
-						The EFP might also take effects over the Project besides the Community and the Executives.
+						The EFP might also take effects over the entire Architecture besides
+						the Community and the Executives.
 					</p>
 					<p>
 						In general, EFPs do not require the mandatory approval from the Executives.
