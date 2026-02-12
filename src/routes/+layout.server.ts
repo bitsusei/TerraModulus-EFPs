@@ -4,6 +4,7 @@ import { DOMParser, XMLSerializer, Node, Element } from '@xmldom/xmldom'
 import os from "os";
 import dedent from "dedent-js";
 import hljs from 'highlight.js';
+import path from "path";
 
 const filterChildElementNodeName = (node: Node, name: string) => {
 	return node.childNodes.filter(n => n.nodeName === name && n.nodeType == Node.ELEMENT_NODE) as Element[];
@@ -53,7 +54,7 @@ function dedentElementText(element: Element) {
   });
 }
 
-const convertHtml = (element: Element) => {
+const convertHtml = (key: string, element: Element) => {
 	// Simple renaming
 	const renameMap: Record<string, string> = {
 		"code-block": "pre"
@@ -81,7 +82,7 @@ const convertHtml = (element: Element) => {
 				ele.insertBefore(n, dt);
 				const dd = rootDoc.createElement("dd");
 				Array.from(element.childNodes).forEach(child => {
-					dd.appendChild(child.nodeType === Node.ELEMENT_NODE ? convertHtml(child as Element) : child);
+					dd.appendChild(child.nodeType === Node.ELEMENT_NODE ? convertHtml(key, child as Element) : child);
 				});
 				ele.insertBefore(n, dd);
 				ele.removeChild(n);
@@ -117,7 +118,7 @@ const convertHtml = (element: Element) => {
 			}
 
 			Array.from(element.childNodes).forEach(child => {
-				ls.appendChild(child.nodeType === Node.ELEMENT_NODE ? convertHtml(child as Element) : child);
+				ls.appendChild(child.nodeType === Node.ELEMENT_NODE ? convertHtml(key, child as Element) : child);
 			});
 
 			ele = ls;
@@ -125,20 +126,23 @@ const convertHtml = (element: Element) => {
 		case "embed":
 			const container = rootDoc.createElement("div");
 			container.setAttribute("class", "embed-container");
+			element.setAttribute("src", path.posix.join(key, element.getAttribute("src")!))
 			container.appendChild(element);
 			ele = container;
 			break;
 		// Default behavior of links
 		case "a":
+			const href = ele.getAttribute("href")!;
+			if (href.startsWith(".")) ele.setAttribute("href", path.posix.join(key, href))
 			if (!ele.hasAttribute("target")) {
 				// in a new window or tab
-				ele.setAttribute("target", "_blank");
+				ele.setAttribute("target", href.startsWith(".") ? "_self" : "_blank");
 			}
 		default:
 			if (!Object.keys(renameMap).includes(element.nodeName)) {
 				Array.from(ele.childNodes).forEach(child => {
 					if (child.nodeType === Node.ELEMENT_NODE) {
-						const n = convertHtml(child as Element);
+						const n = convertHtml(key, child as Element);
 						if (n !== child)
 							ele.replaceChild(n, child);
 					}
@@ -153,7 +157,7 @@ const convertHtml = (element: Element) => {
 /** Ugly though */
 const linkLogoSvg = fs.readFileSync("src/lib/assets/icons/link.svelte", "utf-8");
 
-const compileSection = (element: Element, levels: number[], table: Partial<TableOfContentElement>) => {
+const compileSection = (key: string, element: Element, levels: number[], table: Partial<TableOfContentElement>) => {
 	const title = element.attributes.getNamedItem("title")!.value;
 	table.header = title;
 	table.id = `section-${ levels.join("-") }`;
@@ -161,7 +165,7 @@ const compileSection = (element: Element, levels: number[], table: Partial<Table
 	let ctnOut: string = "";
 	if (ctn !== undefined) {
 		ctnOut = new XMLSerializer().serializeToString(recreateElementAs(ctn, "div", n => (
-			n.nodeType === Node.ELEMENT_NODE ? convertHtml(n as Element) : n
+			n.nodeType === Node.ELEMENT_NODE ? convertHtml(key, n as Element) : n
 		)));
 	}
 
@@ -170,7 +174,7 @@ const compileSection = (element: Element, levels: number[], table: Partial<Table
 	for (const section of filterChildElementNodeName(element, "section")) {
 		if (table.tree == undefined) table.tree = [];
 		const element = {};
-		sectionsOut += compileSection(section, levels.concat(i++), element);
+		sectionsOut += compileSection(key, section, levels.concat(i++), element);
 		table.tree.push(element as TableOfContentElement);
 	}
 
@@ -190,11 +194,11 @@ const compileSection = (element: Element, levels: number[], table: Partial<Table
 
 type TableOfContentElement = Omit<App.TableOfContents["tree"][0], "tree"> & { tree?: TableOfContentElement[] };
 
-const compileBody = (element: Element, table: TableOfContentElement[]) => {
+const compileBody = (key: string, element: Element, table: TableOfContentElement[]) => {
 	let out = "";
 	filterChildElementNodeName(element, "section").forEach((n, i) => {
 		const element = {};
-		out += compileSection(n, [i], element);
+		out += compileSection(key, n, [i], element);
 		table.push(element as TableOfContentElement);
 	});
 	return out;
@@ -281,7 +285,7 @@ export async function load(): Promise<App.EfpList> {
 						.flatMap(n => filterChildElementNodeName(n, "efp").map(n => n.nodeValue as string)),
 					pullRequests: filterChildElementNodeName(filterChildElementNodeName(metadata, "pullRequests")[0], "pullRequest")
 						.map(n => n.attributes.getNamedItem("id")!.value) as App.EfpData["pullRequests"],
-					body: compileBody(filterChildElementNodeName(doc, "body")[0], table),
+					body: compileBody(d, filterChildElementNodeName(doc, "body")[0], table),
 					tableOfContents: { tree: table as App.TableOfContents["tree"] },
 				}
 				if (dd === "main.xml") {
