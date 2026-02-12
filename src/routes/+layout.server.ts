@@ -122,6 +122,12 @@ const convertHtml = (element: Element) => {
 
 			ele = ls;
 			break;
+		case "embed":
+			const container = rootDoc.createElement("div");
+			container.setAttribute("class", "embed-container");
+			container.appendChild(element);
+			ele = container;
+			break;
 		// Default behavior of links
 		case "a":
 			if (!ele.hasAttribute("target")) {
