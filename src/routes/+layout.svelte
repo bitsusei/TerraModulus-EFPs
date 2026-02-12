@@ -30,19 +30,41 @@
 		"light": "Light",
 		"dark": "Dark",
 	}
-	let selectedTheme = $state<unknown>(undefined);
-	let currentTheme = $state<unknown>(undefined);
-	let systemTheme = $state<unknown>(undefined);
+	let selectedTheme = $state<unknown>(undefined) as keyof typeof themes;
+	let currentTheme = $state<unknown>(undefined) as "dark" | "light";
+	let systemTheme = $state<unknown>(undefined) as "dark" | "light";
+	let leftSide: HTMLDivElement; // Body for this layout (not true "body")
 	onMount(() => {
+		// Hides the left side bar when needed on start, and temporary disables transition
+		leftSide.style.transition = "none";
 		if (window.innerWidth < 1024) sidebarOpen = false;
+		setTimeout(() => leftSide.style.transition = "", 0);
+
+		// Theme initialization
 		selectedTheme = (localStorage.getItem("theme") || "auto") as keyof typeof themes;
 		const mediaQuery = matchMedia("(prefers-color-scheme: dark)");
 		systemTheme = mediaQuery.matches ? "dark" : "light";
 		if (selectedTheme === "auto") currentTheme = systemTheme;
+		else currentTheme = selectedTheme;
 		mediaQuery.addEventListener("change", () => {
 			systemTheme = mediaQuery.matches ? "dark" : "light";
 			if (selectedTheme === "auto") currentTheme = systemTheme;
 		});
+
+		// Makes sure all styles are loaded
+		window.addEventListener('load', () => {
+            if (document.body) {
+                document.body.style.visibility = 'visible';
+				document.body.style.opacity = "1";
+            }
+        });
+		// Just in case
+		if (document.readyState === 'complete') {
+             if (document.body) {
+                document.body.style.visibility = 'visible';
+				document.body.style.opacity = "1";
+            }
+        }
 	});
 	const selectTheme = (theme: keyof typeof themes) => {
 		selectedTheme = theme;
@@ -188,7 +210,7 @@
 </svelte:head>
 
 <div class="flex h-lvh overflow-hidden text-theme-main-text bg-theme-main-bg scrollbar-thumb-theme-scrollbar-thumb scrollbar-track-theme-scrollbar-track" data-theme={ currentTheme }>
-	<aside class="flex-shrink-0 w-72 me-2 flex flex-col bg-theme-sidebar-bg text-theme-sidebar-text transition-all duration-300 overflow-y-auto scrollbar" class:-ml-74={ !sidebarOpen }>
+	<aside bind:this={leftSide} class="flex-shrink-0 w-72 me-2 flex flex-col bg-theme-sidebar-bg text-theme-sidebar-text transition-all duration-300 overflow-y-auto scrollbar" class:-ml-74={ !sidebarOpen }>
 		<nav class="relative grow gap-0 flex flex-col mt-4 divide-solid divide-theme-sidebar-divide transition-all">
 			<div class="flex flex-col pb-2 divide-solid divide-theme-sidebar-divide divide-y">
 				{#snippet mainPage(path: string, title: string)}
