@@ -11,7 +11,6 @@
 
 	let { data } = $props();
 	const efp = $derived(data.efp);
-	$inspect(data)
 </script>
 
 <div class="h-full w-full [anchor-name:--content-container]">
