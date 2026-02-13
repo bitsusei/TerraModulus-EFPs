@@ -35,6 +35,9 @@ const config = {
 		}),
 		prerender: {
 			handleHttpError: "warn",
+		},
+		csrf: {
+			trustedOrigins: ["*"]
 		}
 	}
 };

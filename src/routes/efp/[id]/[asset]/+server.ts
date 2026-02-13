@@ -12,14 +12,13 @@ export const entries = () => {
 		}
 	}
 
-	console.log(entries)
 	return entries;
 }
 
 export async function GET({ params }) {
 	if (params.asset.endsWith(".xml")) throw error(404, "Not Found");
 	try {
-		return new Response(readFileSync(`efp/${params.id}/${params.asset}`));
+		return new Response(readFileSync(`efp/${params.id}/${params.asset}`).buffer as ArrayBuffer);
 	} catch (err) {
 		console.error(err);
 		throw error(404, "Not Found");

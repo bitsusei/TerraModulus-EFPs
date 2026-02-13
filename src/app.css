@@ -122,7 +122,7 @@ body {
 }
 
 @utility hyperlink {
-    @apply text-(--color-theme-hyperlink-text) hover:underline;
+    @apply text-theme-hyperlink-text hover:underline;
 }
 
 #efp-body {
@@ -151,7 +151,7 @@ body {
     }
 
     code {
-        @apply bg-theme-code-bg text-theme-code-text px-[4px] py-[2px] rounded-sm text-[calc(7/8)em];
+        @apply bg-theme-code-bg text-theme-code-text px-1 py-0.5 rounded-sm text-[calc(7/8)em];
     }
 
     p, ol, ul, img, .embed-container {
