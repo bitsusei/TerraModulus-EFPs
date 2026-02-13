@@ -1,0 +1,369 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="9" created="2026-02-12" category="standard" status="draft"
+     title="TerraModulus Game Multimodal User Interface (MUI) Framework Implementation">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="17"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					The backbone of the MUI Framework would be supported by the Ferricia Engine, with
+					Simple DirectMedia Layer (SDL) 3, OpenAL and OpenGL. Different parts play
+					different roles in MUI for the complete UI. Thus, the interoperation of
+					the Engine library and the Kotlin interface becomes essential that should be
+					efficient and effective. In this framework, the Graphical Model System (GMS)
+					would also be introduced, as the fundamental graphical system for the Engine's utilization.
+					This Framework is only applicable to client targets but not dedicated server targets.
+				</p>
+			</content>
+		</section>
+		<section title="Multimodal User Interface (MUI) Roles">
+			<content>
+				<p>
+					The GMS is responsible mostly for the GUI, by communicating with SDL and OpenGL.
+					The AUI communicates with OpenAL for audio processing and output.
+					If there is a Game Controller connected, the HUI may communicate with it via SDL.
+					All other KUI responsibilities are also by communicating with SDL, partially
+					handled by the GMS.
+				</p>
+			</content>
+		</section>
+		<section title="Framework Backend">
+			<content>
+				<p>
+					The entire backend of the MUI Framework would be included in the Engine by interoperating
+					with the native libraries within it. Its responsibilities consist of window management,
+					rendering, audio processing, input management, user feedback management and
+					interactive simulations. Rendering would mostly be handled using OpenGL with only
+					a single canvas on only a single window; audio processing and simulations would mostly
+					be handled using OpenAL with sources transmitted via networking or resource management;
+					other elements would mostly be handled using other SDL subsystems.
+				</p>
+				<p>
+					macOS enforces that all window-related tasks, including windowing, rendering and
+					input events, to be handled in the main thread. Therefore, the main thread would
+					do all windowing, rendering and <i>primary raw event handling</i>, with other tasks
+					delegated to other threads. This should ensure the application could work on every
+					target platform while only minimally allocating the main thread for all essential tasks.
+					Also, this does not include any audio-related task.
+				</p>
+				<p>
+					<i>Primary raw events</i> include any raw pointer and key inputs, all window events
+					sent by SDL. Most events would then be sent to GMS Canvas for event handling and
+					processing in the GMS ticking thread. It is important to note that the objects and
+					states in the GMS must be carefully handled so that they could be rendered in
+					the main thread asynchronously safely.
+				</p>
+			</content>
+			<section title="Primary Raw Event Processing">
+				<content>
+					<p>
+						All the <i>primary raw events</i> are sent by or as a part of the SDL functionalities.
+						It is important to note that there exist several event types that would never be
+						used in the Engine.
+						Also, custom user events would not be handled in SDL, but mostly in the Kotlin interface,
+						so events like <code>SDL_UserEvent</code> and <code>SDL_QuitEvent</code> are not used.
+						Since touchscreen, camera and pen are not the target devices to support,
+						their corresponding events are also not used.
+					</p>
+					<p>
+						Since mobile platforms are not targetted, events primarily designed for mobile platforms
+						are also ignored. However, the mechanism to notify the user through an application warning
+						notification about the system or the heap is running low on memory is possible.
+						Still, it is expected that the application is always optimized at a certain degree that
+						it can still run and proceed properly without overly optimizing any important resources.
+						When the application is low on memory, the user is responsible to manage memory size
+						and reduce memory demands as much as possible depending on the customization configurations;
+						otherwise, there is nothing the application could do to free up memory.
+					</p>
+					<p>
+						The application window could optionally reduce rendering frequency when the window
+						is not <b>active</b>. This includes the conditions when the window is hidden, minimized,
+						or occluded. The maximum number of frames per second (FPS) could be limited at 30 or
+						the half of the display refresh rate. At any time, the window cannot render properly
+						and should stop rendering when the window bounds are out of a single display area;
+						spanning the window to multiple displays is currently an unsupported behavior for
+						behavior correctness and validity.
+						This means functions such as <code>SDL_GetDisplayForWindow</code> are not supported.
+					</p>
+					<p>
+						The application does not rely on system theme but its own textures and themes,
+						so the event of system theme change is not used; the application might use system
+						locale settings to identify which language to use when the game data directory is
+						first initialized, but the value would not change afterward, so the event of
+						system locale change is also not used.
+					</p>
+					<p>
+						Display events may be used only when the application is in fullscreen, but only
+						for the events related to the display the window is rendered on.
+						Otherwise, there is no need to take care of display information.
+						However, when the window is moved or resized, the display and window states must
+						be checked to see whether the window can still be rendered.
+						It is important to note that the controls of rendering are still handled in
+						the Kotlin interface, so the events must be forwarded to the Kotlin side.
+					</p>
+					<p>
+						When the window gained focus, it is assumed that all input device states
+						are all "<b>zero</b>", meaning that all states are cleared or reset to origin.
+						However, this must not always be true, so when the events of resetting states
+						are fired but the states were already "<b>zero</b>", the states remain unchanged,
+						but with warnings (recovered situations) emitted.
+						It is important to note that the set of states in SDL is not used due to this reason.
+						Also, when the window loses focus, all the input device states in the application
+						should be reset to origin and never get updated until the window regains focus.
+						When the cursor is out of the canvas's boundaries, the cursor is not regarded as
+						focussing on the canvas, and the mouse events are not processed until the cursor
+						enters the canvas's region again; the cursor becomes non-existed in the application
+						and hidden in canvas when the cursor is not in the canvas's region.
+					</p>
+					<p>
+						Event timestamps are ignored.
+						When they are polled from the SDL event queue, it is expected that they are sorted
+						in chronological order, so the timestamps should not be enough to affect
+						the synchronization states while they are pumped and polled per frame update.
+					</p>
+					<p>
+						The modifier key states in SDL are not used generally.
+						For text typing, this should normally already be handled by the input editor,
+						which is processed in other events such as text editing or text input.
+						This includes key repeating, which is likely fired by the device or system.
+						The application itself internally holds a set of key states updated by
+						all the primary raw events, but not the keyboard states queried directly.
+						Also, the game is not playable with an external on-screen keyboard tool.
+					</p>
+					<p>
+						Scancodes of the keys would always be used internally, but the keycodes
+						may be used to display the hotkey settings in the application.
+						Therefore, the keycodes in the events are ignored, but for displaying
+						the key to users, a different way would be done.
+						Since scancodes do not change on keyboard layouts, the users have to
+						identify what layouts their keyboards are.
+						This cannot simply be done by SDL functions as some keys may be undistinguishable
+						(for keycodes) or not mapped against layouts between different keyboards (for scancodes).
+						A custom-built layout key mappings could be done to correctly map the keys
+						by user's choice, which is by default QWERTY.
+						It is still a question whether <code>SDL_GetKeyFromScancode</code> could be used
+						safely across different platforms and various devices.
+					</p>
+					<p>
+						There would be two modes for mouse or cursor inputs.
+						By default, system cursor states are tracked and updated to cursor states,
+						which means the cursor motion states are updated each tick to correspond to
+						the cursor position retrieved from SDL.
+						When the game is in gameplay, the cursor mode turns to relative and wraps the cursor
+						in the window, most likely only at the center of the canvas.
+						In this mode, the mouse motion events from SDL are used instead of tracing
+						system cursor position.
+					</p>
+					<p>
+						It is possible to select keyboard and mouse devices to use to exclusively only
+						accept the input events from just one device instead of all.
+						However, by default, all keyboard and mouse devices would be accepted to allow
+						further customization depending on this.
+						There is a possible concern about the application may become unusable when
+						the devices become unusable although other devices could still control the system,
+						so this feature might be reserved.
+					</p>
+					<p>
+						Joystick and gamepad update completion events (<code>SDL_EVENT_JOYSTICK_UPDATE_COMPLETE</code>
+						and <code>SDL_EVENT_GAMEPAD_UPDATE_COMPLETE</code>) are generally not used,
+						since the status updates are done through polling all the events in the certain
+						frame.
+						If any issue has been encountered, such as unideal non-synchronization scenarios
+						or delayed events, this should be reconsidered.
+					</p>
+				</content>
+			</section>
+		</section>
+		<section title="Graphical Model System (GMS)">
+			<content>
+				<p>
+					The GMS would only be implemented in the Kotlin interface with abstractions.
+					Under GMS, all Graphical Model Objects (GMOs) serve as graphical wrappers of
+					the underlying objects they manage, such as data, states, even other GMOs.
+					The hierarchy of GMOs includes <b>Screens</b>, <b>Menus</b> and <b>Components</b>,
+					where one includes the next directly without skipping any stratum.
+					Rendering of them would be backed by the Engine's rendering system,
+					using the low level Kotlin bindings.
+					However, audio feedbacks triggered by GMOs cannot be managed by GMOs but
+					an audio interface manager out of this GMS.
+				</p>
+				<p>
+					The <code>ScreenManager</code> manages Screens stored in a linked list, with one
+					on the top covers the others underneath.
+					The Screen on the top also blocks user interactions via Graphical User Interface (GUI).
+					In the rendering system, the <code>RenderSystem</code> renders the Screens managed
+					by the <code>ScreenManager</code> onto the <code>Canvas</code> backed by the Engine.
+				</p>
+				<p>
+					Rendering of content is not affected by system's display scale; the application itself
+					would include a GUI scale setting to scale the sizes of Menus and Components.
+					However, this only affects the dimensions but not all the margins.
+					In the implementation, margins would most likely use percentages or ratios.
+					Still, the details of implementation about GUI scaling are still subject to confirmation.
+				</p>
+				<p>
+					It is complex to query the window safe area for rendering when it varies device by device.
+					Therefore, it should always assume that the safe area would generally be the canvas area
+					with paddings of 10 pixels, to make sure the rendering behavior is consistent enough
+					across platforms.
+					This only applied to important interactable or rendered content, general displayed content
+					like the background, miscellaneous margins, paddings and borders are not affected by this.
+				</p>
+				<p>
+					Most graphical elements should be based on textures and the default shaders used with textures.
+					Only if certain geometric shapes are really required, like dynamic or variable lines and curves
+					used to show interactions and associate interactive elements on the GUI, the restriction
+					to use only textures could be bypassed.
+					However, it is still recommended to use customizable properties like colors via resources.
+					In this case, the default shaders which take textures would not be used, but the shaders
+					that take other attributes.
+				</p>
+			</content>
+		</section>
+		<section title="Rendering Framework">
+			<content>
+				<p>
+					The entire rendering framework is backed by OpenGL, so the details are mostly based on
+					the features and functionalities provided by OpenGL.
+					Basically, the framework aligns the rendering pipeline of OpenGL and general rendering
+					procedures, such as shaders and textures.
+				</p>
+				<p>
+					On GUI, the camera is fixed, so the view is also fixed and constant.
+					Therefore, in shaders, the view matrix and transformation are omitted and disregarded.
+					The projection should always be orthogonal and thus being a uniform value, while
+					the model transformation and color filter would be done per instance as uniform values
+					evaluated each frame depending on the specifics, but not per vertex.
+				</p>
+				<p>
+					There would be several sets of texture atlases implemented in the Engine.
+					Texture atlases should be used to enhance performance since there would mostly be
+					a large number of texture units used in the game; otherwise frequent texture bindings
+					which are likely expensive operations may occur.
+					In general, one might use <a href="https://gamedev.stackexchange.com/a/49585">
+					<i><b>half pixel correction</b></i>
+				</a> to solve the issue, but the outcome may not be ideal or fit perfectly with
+					the rendering results due to the clipped outermost pixels in a tile as
+					a texture atlas element (later referred as "<i>texel</i>").
+					Therefore, it is more recommended to have paddings or border pixels for each texel
+					in an atlas to keep the outermost pixels rendered well.
+					Even using "<i>nearest neighbor</i>" filters without paddings may not help solve the issue
+					completely because of potential numeric rounding errors.
+					All GUI textures would be managed with an atlas without any mipmapping, while all tile,
+					item and entity textures would be managed with different atlases with mipmapping.
+				</p>
+				<p>
+					Different textures would have different constrains resulting different configurations.
+					Since GUI textures are not supposed to be scaled down, but scaled up depending on
+					the scaling setting with the base layout set based on the lowest reference scaling,
+					mipmapping is not suitable for this.
+					On the other hand, the gameplay region may be scaled up or down, so mipmapping may be
+					applied to enhance the performance of rendering diminished textures.
+					Regardless of whether the atlas would be mipmapped, paddings would be done by repeating
+					the outermost pixels to the desired extent for each texel.
+					However, when the atlas is mipmapped, the padding size would be the number of pixels by
+					two to the power of the maximum mipmap level with the atlas, so paddings still take effect
+					for each mipmap.
+					When the atlas reached the hardware-limited size (known by <code>GL_MAX_TEXTURE_SIZE</code>),
+					a new atlas for the same configurations should be used, but stored together in a managed set.
+					Also, manual mipmapping for each texel is required to avoid edge bleeding during mipmapping;
+					computations of texture atlases would be performed and designed with reference to
+					<a href="https://www.david-colson.com/2020/03/10/exploring-rect-packing.html">
+						the rectangle packing algorithm by David Colson
+					</a> or crates like <code>rectangle-pack</code> and <code>crunch-rs</code>; unless
+					the texels are explicitly constrained to only powers of two, this kind of
+					advanced algorithm would still be used.
+				</p>
+				<p>
+					In general, since the art style tends to be pixelated, mostly "<i>nearest neighbor</i>"
+					would be used to magnify the texels, but blending would be applied for diminishing to
+					simulate the similar colors.
+					At least, the mipmaps would be weighted using linear interpolation, but color filtering
+					could be either one of the available options through settings or launching options due
+					to rendering quality and computational complexity.
+					The maximum mipmapping level would be determined by the greatest power of two from
+					the common factors of all texel dimensions in the specific atlas, for which could be
+					further limited through settings or launching options.
+					Basically, there would still be the enforced constraint to the maximum value like four;
+					the dimensions of tile texels and that of entity texels must be a multiple of 8 and 2
+					respectively.
+				</p>
+				<p>
+					Besides, the application would first enter the early loading stage to render the progress
+					by initializing minimal components required to show the progress bar and the loading screen.
+					So, the logo used in the loading screen would be embedded in the application, and other
+					components would be started loading and tracked after the initialization of the screen.
+					The loading screen may also show during loading of updated resource pack configurations.
+					Moreover, a short animated splashscreen could show before the loading screen.
+				</p>
+				<p>
+					Any GMO would internally hold an opaque handle managed by the Engine.
+					When a Screen is sent to the active stack, the handle in the Engine would be sent to
+					the internally held state, <code>RenderingState</code>, to be used during rendering.
+					The state internally holds an empty <code>Mutex</code> lock which controls which thread
+					to allow access to only one thread for thread-safety.
+					Ideally, only the GMS ticking thread and the main thread, which performs rendering,
+					would access the state either for modifications or reading for rendering.
+					The state impacts the thread for modifications only when the GMOs are within the state,
+					where the state would internally mark it during transitions.
+					This pipeline could greatly reduce JNI calls during rendering to improve performance
+					with only one call per loop as the general ideas.
+					Note that synchronization must be carefully examined for any data accessed in the Engine.
+				</p>
+				<p>
+					In general, rendering of any GMO should avoid reading framebuffer data drawn by
+					any <i>previous</i> GMO in the rendering loop.
+					This includes applying visual effects like color inverting or copying;
+					this is due to parallelization of shader computations in the render devices.
+					(See <a href="https://gamedev.stackexchange.com/q/10964">the related question</a>.)
+					Various optimizations are also conducted, like reusing same shader programs as much
+					as possible when the previous draw call was also using the same program, eliminating
+					unnecessary OpenGL commands.
+				</p>
+			</content>
+		</section>
+		<section title="Platform Compatibility">
+			<content>
+				<p>
+					As a general idea, the minimal support version is OpenGL 2.0 with some extensions required.
+					Although at the time this is written, most consumer devices in the last decade should
+					support OpenGL 3.0 and above, 2.0 is still targeted as the minimal version for most other
+					potential users.
+					However, when a newer version or usable extension is detected with the OpenGL context,
+					advanced features that may improve performance or even other effects might be available.
+				</p>
+				<p>
+					According to Wikipedia, the GLSL version in OpenGL 2.0 is 1.10, so version 110 would be used
+					as the base GLSL version to use for all the shaders used in the Engine.
+					If a more advanced GLSL version is supported while advanced features are used, the target
+					GLSL version should be specified and the shaders are applied only when the target version
+					is matched for both GL and GLSL versions.
+					This is said, some shaders might be used or available only when they are available provided
+					by the OpenGL context.
+				</p>
+			</content>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li><a href="../efp003">EFP 3</a></li>
+					<li><a href="../efp005">EFP 5</a></li>
+					<li><a href="../efp008">EFP 8</a></li>
+					<li><a href="https://gamedev.stackexchange.com/a/50777">
+						Stack Exchange Game Development: "How to avoid texture bleeding in a texture atlas?"
+						answered by danijar
+					</a></li>
+					<li><a href="https://gamedev.stackexchange.com/a/50037">
+						Stack Exchange Game Development: "How can I prevent seams from showing up on objects
+						using lower mipmap levels?" answered by Panda Pajama
+					</a></li>
+				</list>
+			</content>
+		</section>
+	</body>
+</efp>
