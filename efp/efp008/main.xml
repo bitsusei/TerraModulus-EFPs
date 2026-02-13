@@ -1,0 +1,114 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="8" created="2025-05-30" category="standard" status="draft" title="Software Multimodal User Interface (MUI) Framework">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="12"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<embed src="./overview.svg"/>
+				<p>
+					Generally speaking, a software or computer may contain User Interfaces (UIs),
+					as Graphical User Interface (GUI), Acoustic User Interface (AUI), Haptic User Interface (HUI)
+					and Kinesthetic User Interface (KUI). All of them require Human Interface Devices (HIDs)
+					as the media of interactions between the user and the software.
+				</p>
+			</content>
+		</section>
+		<section title="Multimodal User Interface (MUI) Framework Basis">
+			<content>
+				<p>
+					Each UI plays a role in the MUI Framework by their responsibilities.
+					Altogether provides the complete UI framework where users may interact with.
+					Different UI may interoperate differently with different counterparts to integrate
+					the roles to achieve various features users use.
+				</p>
+			</content>
+			<section title="Graphical User Interface (GUI)">
+				<content>
+					<p>
+						The GUI is the most basic part of a UI to display information to users.
+					</p>
+					<p>
+						The rendering information of GUI is transferred to displays for conversions
+						from electronic signals to electromagnetic energy using electrons.
+						Light information is then transmitted to users' eyes for visual experience.
+					</p>
+					<p>
+						Visual information is mostly based on screen coordinates and colors,
+						so the distinguishment of different GUI elements is by the differences in colors
+						and the relative positions of contents.
+					</p>
+				</content>
+			</section>
+			<section title="Acoustic User Interface (AUI)">
+				<content>
+					<p>
+						When there is the GUI, AUI enhances User Experience (UX) by providing another
+						sense of experience to users.
+					</p>
+					<p>
+						The acoustic information of AUI is transferred to speakers for conversions
+						from electronic signals to kinetic energy of particles by vibrations.
+						Sound information is then transmitted to users' ears for aural experience.
+					</p>
+					<p>
+						Auditory information is mostly based on frequencies and amplitudes of sound waves,
+						so different AUI contents are by the qualities of sound waves combined from
+						different audio sources.
+					</p>
+				</content>
+			</section>
+			<section title="Haptic User Interface (HUI)">
+				<content>
+					<p>
+						Occasionally, HUI exists to enhance the immersion of UX to users.
+					</p>
+					<p>
+						The haptic information from HUI is transferred from electronic signals
+						to kinetic energy of mechanical parts of tactile HIDs.
+						Users sense the movement of bodies made by the kinetic energy.
+					</p>
+					<p>
+						Most likely, HUI is geared by motors, for example in mobile phones and
+						game controllers. The initiation would mostly be associated with
+						specific scenarios from other events or user interactions.
+					</p>
+				</content>
+			</section>
+			<section title="Kinesthetic User Interface (KUI)">
+				<content>
+					<p>
+						Essentially, KUI motivates the feedbacks from users to the software or computer.
+					</p>
+					<p>
+						Users may initiate any interactions to the computer via inputs to HIDs.
+						Analog information detected by the HIDs is then transmitted to the computer
+						for analysis of interactions as electronic signals to the software or computer.
+					</p>
+					<p>
+						Most commonly, related HIDs include but not limited to keyboards,
+						pointing devices, motion sensors, trackers and controllers.
+					</p>
+				</content>
+			</section>
+		</section>
+		<section title="Interoperation of UIs">
+			<content>
+				<p>
+					Most of the time, different UIs work together to complete the entire UX to users.
+				</p>
+				<p>
+					Especially for GUI frameworks, KUI typically plays the critical role to feed
+					user interactions back to GUI for further processing. GUI may also sometimes
+					communicate with AUI to play audio indicated by user interactions.
+					In some cases, GUI and AUI may be associated, especially when playing videos
+					with audio channels.
+				</p>
+			</content>
+		</section>
+	</body>
+</efp>
