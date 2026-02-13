@@ -15,7 +15,7 @@
 	import { BooleanFilter, filterFields, MatchFilter, NegFilter, RangeFilter, type Filter, type SearchEntry } from './search.svelte';
 	import NewSearchFieldFilterOption from './NewSearchFieldFilterOption.svelte';
 	// import assert from 'assert';
-	import { App as AppU, BiMap, resolveLink } from '$lib';
+	import { App as AppU, BiMap } from '$lib';
 	import { fade } from 'svelte/transition';
 	import highlightWords from 'highlight-words';
 	import { explicitEffect } from './util.svelte';
@@ -30,19 +30,41 @@
 		"light": "Light",
 		"dark": "Dark",
 	}
-	let selectedTheme = $state<unknown>(undefined);
-	let currentTheme = $state<unknown>(undefined);
-	let systemTheme = $state<unknown>(undefined);
+	let selectedTheme = $state<unknown>(undefined) as keyof typeof themes;
+	let currentTheme = $state<unknown>(undefined) as "dark" | "light";
+	let systemTheme = $state<unknown>(undefined) as "dark" | "light";
+	let leftSide: HTMLElement; // Body for this layout (not true "body")
 	onMount(() => {
+		// Hides the left side bar when needed on start, and temporary disables transition
+		leftSide.style.transition = "none";
 		if (window.innerWidth < 1024) sidebarOpen = false;
+		setTimeout(() => leftSide.style.transition = "", 0);
+
+		// Theme initialization
 		selectedTheme = (localStorage.getItem("theme") || "auto") as keyof typeof themes;
 		const mediaQuery = matchMedia("(prefers-color-scheme: dark)");
 		systemTheme = mediaQuery.matches ? "dark" : "light";
 		if (selectedTheme === "auto") currentTheme = systemTheme;
+		else currentTheme = selectedTheme;
 		mediaQuery.addEventListener("change", () => {
 			systemTheme = mediaQuery.matches ? "dark" : "light";
 			if (selectedTheme === "auto") currentTheme = systemTheme;
 		});
+
+		// Makes sure all styles are loaded
+		window.addEventListener('load', () => {
+            if (document.body) {
+                document.body.style.visibility = 'visible';
+				document.body.style.opacity = "1";
+            }
+        });
+		// Just in case
+		if (document.readyState === 'complete') {
+             if (document.body) {
+                document.body.style.visibility = 'visible';
+				document.body.style.opacity = "1";
+            }
+        }
 	});
 	const selectTheme = (theme: keyof typeof themes) => {
 		selectedTheme = theme;
@@ -188,7 +210,7 @@
 </svelte:head>
 
 <div class="flex h-lvh overflow-hidden text-theme-main-text bg-theme-main-bg scrollbar-thumb-theme-scrollbar-thumb scrollbar-track-theme-scrollbar-track" data-theme={ currentTheme }>
-	<aside class="flex-shrink-0 w-72 me-2 flex flex-col bg-theme-sidebar-bg text-theme-sidebar-text transition-all duration-300 overflow-y-auto scrollbar" class:-ml-74={ !sidebarOpen }>
+	<aside bind:this={leftSide} class="shrink-0 w-72 me-2 flex flex-col bg-theme-sidebar-bg text-theme-sidebar-text transition-all duration-300 overflow-y-auto scrollbar" class:-ml-74={ !sidebarOpen }>
 		<nav class="relative grow gap-0 flex flex-col mt-4 divide-solid divide-theme-sidebar-divide transition-all">
 			<div class="flex flex-col pb-2 divide-solid divide-theme-sidebar-divide divide-y">
 				{#snippet mainPage(path: string, title: string)}
@@ -196,7 +218,7 @@
 						{title}
 					</a>
 				{/snippet}
-				{@render mainPage(resolveLink("/"), "Introduction")}
+				{@render mainPage("/", "Introduction")}
 			</div>
 			<div class="w-full h-1 mt-1 bg-theme-sidebar-divide transition-all [&:has(+*+*+:hover)]:scale-y-200 [&:has(+*>button:hover)]:scale-y-200"></div>
 			<div class="peer group">
@@ -249,7 +271,7 @@
 														</div>
 													</button>
 												{/snippet}
-												{#snippet filterSelect(key: string, children: Snippet<[]>)}
+												{#snippet filterSelect(key: string, children: () => ReturnType<Snippet<[]>>)}
 												<div id={key} class="popover-fade overflow-visible absolute inset-auto top-[calc(anchor(top)-52px)] p-1 rounded-lg left-[calc(anchor(right)+4px)] shadow-sm text-theme-header-text bg-theme-search-bar-border" popover="auto">
 													<div class="flex [&>*]:flex-none flex-col basis-auto">
 														{@render children()}
@@ -490,7 +512,7 @@
 							<div class="grow w-[95%] my-5 p-2 bg-theme-search-result-bg rounded-3xl overflow-x-hidden overflow-y-auto">
 								{#each searchResults as result}
 									{@const [ title, content ] = highlightSearchResult(result)}
-									<a transition:fade class="w-full m-1 p-1 flex flex-col items-center justify-center [&>*]:flex-none rounded-xl bg-theme-search-result-item-bg border-2 border-theme-search-bar-border hover:bg-theme-search-bar-bg transition-colors" href={ resolveLink(`/efp/${ data.indexMap[result.id] }`) }
+									<a transition:fade class="w-full m-1 p-1 flex flex-col items-center justify-center [&>*]:flex-none rounded-xl bg-theme-search-result-item-bg border-2 border-theme-search-bar-border hover:bg-theme-search-bar-bg transition-colors" href={ `/efp/${ data.indexMap[result.id] }` }
 										onclick={ () => searchDialog!.close() }>
 										{#snippet renderHighlights(meta: { match: boolean, text: string }[])}
 											{#each meta as e}
@@ -526,7 +548,7 @@
 			<div class="w-full h-1 mb-1 bg-theme-sidebar-divide transition-all peer-[&:has(>button:hover)]:scale-y-200 [&:has(+:hover)]:scale-y-200"></div>
 			<div class="flex grow-2 flex-col pt-2 divide-solid divide-theme-sidebar-divide divide-y">
 				{#each Object.keys(data.map) as efp}
-					{@const path = resolveLink(`/efp/${ efp }`)}
+					{@const path = `/efp/${ efp }`}
 					<a class={{"p-2 hover:bg-theme-sidebar-hover transition-colors": true, "text-theme-sidebar-active font-bold": page.url.pathname === path}} href={path}>
 						EFP { data.map[efp].main.id } - { data.map[efp].main.title }
 					</a>
@@ -583,7 +605,7 @@
 	</div>
 	{#if page.data.tableOfContents !== undefined}
 	{@const tableOfContents = page.data.tableOfContents as App.TableOfContents}
-	<aside class="flex-shrink-0 w-64 flex flex-col transition-all duration-300 text-theme-sidebar-text" class:-mr-64={ !tableOfContentsOpen }>
+	<aside class="shrink-0 w-64 flex flex-col transition-all duration-300 text-theme-sidebar-text" class:-mr-64={ !tableOfContentsOpen }>
 		<div class="h-13 mx-7 pt-2 border-b border-theme-header-border font-bold text-xl flex justify-center items-center">
 			Table of Contents
 		</div>

@@ -1,5 +1,4 @@
 // place files you want to import through the `$lib` alias in this folder.
-import { base } from '$app/paths';
 import BiMap from 'bidirectional-map';
 
 export { BiMap };
@@ -23,5 +22,3 @@ export namespace App.EfpEntry {
 	export type StatusKey = "draft" | "deferred" | "provisional" | "final";
 	export type StatusName = "Draft" | "Deferred" | "Provisional" | "Final";
 }
-
-export const resolveLink = (link: string) => link;
