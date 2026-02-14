@@ -246,8 +246,8 @@
 					a large number of texture units used in the game; otherwise frequent texture bindings
 					which are likely expensive operations may occur.
 					In general, one might use <a href="https://gamedev.stackexchange.com/a/49585">
-					<i><b>half pixel correction</b></i>
-				</a> to solve the issue, but the outcome may not be ideal or fit perfectly with
+						<i><b>half pixel correction</b></i>
+					</a> to solve the issue, but the outcome may not be ideal or fit perfectly with
 					the rendering results due to the clipped outermost pixels in a tile as
 					a texture atlas element (later referred as "<i>texel</i>").
 					Therefore, it is more recommended to have paddings or border pixels for each texel
@@ -324,6 +324,24 @@
 					Various optimizations are also conducted, like reusing same shader programs as much
 					as possible when the previous draw call was also using the same program, eliminating
 					unnecessary OpenGL commands.
+				</p>
+			</content>
+		</section>
+		<section title="Modularization">
+			<content>
+				<p>
+					In terms of modularization, with the MUI structure, different components could be placed
+					and organized optimally. Besides, the components less related to UI-oriented functions
+					could be separated from the MUI modules. In Kotlin, those "<i>modules</i>" may be
+					Java packages instead.
+				</p>
+				<p>
+					For example, interfaces of input devices could be put into a KUI module and inner details
+					of the devices could be put into a HID module under a possibly I/O module.
+					At the same time, more sophisticated UI components could be put into submodules of
+					their UI modules, like detailed rendering functions could be put into a graphics (GFX)
+					module under the GUI module, though they may be too deep into implementation details
+					to be inside the GUI module.
 				</p>
 			</content>
 		</section>
