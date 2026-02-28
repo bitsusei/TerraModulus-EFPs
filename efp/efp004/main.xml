@@ -1,9 +1,10 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 <efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
-     efp="4" created="2025-05-16" category="process" status="provisional" title="New Codebase Architecture">
+     efp="4" created="2025-05-16" category="process" status="provisional" title="Orryx Framework Architecture">
 	<metadata>
 		<pullRequests>
 			<pullRequest id="7"/>
+			<pullRequest id="18"/>
 		</pullRequests>
 	</metadata>
 	<body>
@@ -17,7 +18,7 @@
 				</p>
 			</content>
 		</section>
-		<section title="Project Language Level">
+		<section title="Project Language Levels">
 			<content>
 				<p>
 					For the most cases, it is good to keep updated with the latest long-time-support (LTS) versions.
@@ -47,30 +48,34 @@
 				<p>
 					As demonstrated in the above diagram, the TerraModulus project consists of several elements.
 					It is worth noting that, the scale of this project may not be small; if possible, this project
-					could greatly grow.
+					could greatly grow. For the convenience of references, several components in the aforementioned
+					Architecture have been named with various code names.
 				</p>
 				<p>
-					On the platform side, the website portal would allow client interactions and also resource
-					management. As an abstract, several elements have to be drafted out to outline this architecture
-					better, but in general, there would be the account system and the game itself, along with
-					user-created content hosted on a marketplace. The Launcher would act as a simple entry layer
-					of an account over the entire platform system, and allow launching the game client instances.
+					On the Platform side, the Website Portal would allow client interactions and also resource
+					management. As an abstract, several elements have to be drafted out to outline this Architecture
+					better, but in general, there would be the Account System named <b>Archora</b> and
+					the game itself named <b>Orryx</b>, along with user-created content hosted on a marketplace.
+					The <b>Mortared</b> Launcher would act as a simple entry layer of an account over
+					the entire platform system named <b>Aetheron</b>, and allow launching the game client instances.
 				</p>
 				<p>
-					For the game instances, there would be the client instance and dedicated server instance, where
-					the client instances also include basic local hosting functionalities. Basically, the dedicated
-					server instance would not have a client user interface but with commands or terminal controls for
-					extensive hosting functions. In the codebase, Kotlin handles the abstraction logic of the game
-					application and Rust handles the low level game engine. The abstraction layer includes the user
-					interface components, including but not limited to graphical and audio elements, as well as world
-					objects; the game engine includes the rendering system, physics logics, networking and raw
-					resource management, as well as other computational heavy tasks.
+					For the game instances <b>Orryx</b>, there would be the client instance as <b>Orryx Client</b>
+					and dedicated server instance as <b>Orryx Server</b>, where the client instances also include
+					basic local hosting functionalities. Basically, Orryx Server would not have a client user interface
+					but with commands or terminal controls for extensive hosting functions. In the codebase,
+					Kotlin handles the abstraction logic of the game application, as <b>Kryon</b>, and Rust handles
+					the low level game engine, as <b>Ferricia</b>. Kryon includes the user interface components,
+					including but not limited to graphical and audio elements, as well as world objects;
+					the game engine includes the rendering system, physics logics, networking and raw resource management,
+					as well as other computational heavy tasks. <b>Primora</b> as the common core of Orryx would
+					be referred to be shared components across Orryx Client and Orryx Server.
 				</p>
 				<p>
 					Other than those implementation entities, there is also the Execution Framework Proposal (EFP)
 					system for standardization and general documentation under the TerraModulus community. The EFPs
 					undergo their unique process alongside the implementation parts of the project. The management
-					parts also include the community individuals, interacting with the entire community.
+					parts also include the community individuals, interacting with the entire community. [EFP 1]
 				</p>
 			</content>
 		</section>
