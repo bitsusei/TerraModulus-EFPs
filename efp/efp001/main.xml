@@ -193,6 +193,12 @@
 						to be included in the related ERDs.
 					</p>
 					<p>
+						EFPs may contain both normative and non-normative content at the same time. It may be up to
+						the decision of the author(s) for the final interpretation of the contents, including but not
+						limited to the parts of whether the related contents are to be normative, non-normative or
+						outdated.
+					</p>
+					<p>
 						Once finalized, the EFPs shall become immutable, but maintenance and errata may be allowed.
 						This includes minor content modifications without effects to the designated meanings and
 						metadata changes of the documents.
@@ -202,28 +208,51 @@
 					</p>
 				</content>
 			</section>
-			<section title="Categories">
+			<section title="Classification">
 				<content>
 					<p>
-						EFPs are classified into three categories:
+						EFPs are first classified into two types:
 					</p>
 					<list>
 						<li>
-							An <b>Informational</b> EFP is non-normative and describes background, explanations
-							or other information about various topics. It may also provide insights and overviews
-							about certain topics.
+							An <b>Informational</b> EFP is non-normative, and describes background, explanations
+							or other information about various topics to the public, without formally proposing anything.
+							It may also provide insights, overviews or advice about certain topics.
 						</li>
 						<li>
-							A <b>Process</b> EFP is normative and describes or proposes a change to a Community
-							or Project process, workflow or governance. It may also provide guidelines, processes,
-							and best practices for the Community and/or the Project.
-						</li>
-						<li>
-							A <b>Standard</b> EFP is normative and describes about a feature for the project, with descriptive
-							standards, protocols or specifications. It may also include implementation change or
-							interoperability standard for the project.
+							A <b>Normative</b> EFP is formal, and describes or propose normative features, changes,
+							mechanisms, processes, workflows, standards, protocols, specifications, or various principles.
+							It may also provide guidelines, recommendations, best practices to the Architecture,
+							or may include implementation change or interoperability standard for the Projects.
+							It may also be a realization or implementation of a standard or specification.
 						</li>
 					</list>
+					<p>
+						And then five categories:
+					</p>
+					<list>
+						<li>
+							<b>Organization</b> EFPs describe the overall system of organization of the Architecture
+							and relationships between different items or projects under the Architecture.
+						</li>
+						<li>
+							<b>Project</b> EFPs describe executions special to a particular project or
+							a specific range of projects for a given case.
+						</li>
+						<li>
+							<b>Governance</b> EFPs describe miscellaneous governing tasks or policies,
+							and management of governing systems like EFP, EPC and ERD.
+						</li>
+						<li>
+							<b>Standard</b> EFPs describe descriptive standards, protocols and specifications.
+						</li>
+						<li>
+							<b>General</b> EFPs describe uncategorized miscellaneous information about anything else.
+						</li>
+					</list>
+					<p>
+						EFP categories can be understood as the scopes where the EFPs are applicable to.
+					</p>
 				</content>
 			</section>
 		</section>
@@ -382,6 +411,11 @@
 					For any future administrative activities in the Architecture, the latest version of this Constitution
 					should always be referred as this Constitution, so the necessity to mention the revision in the EFP
 					document's title is negligible.
+				</p>
+				<p>
+					It is possible that non-normative references to the latest version of this Constitution may be
+					made for the public's reference. In this case, all amendments should be included in the references,
+					and the actual EFPs of this Constitution remain authoritative over the references.
 				</p>
 			</content>
 		</section>
