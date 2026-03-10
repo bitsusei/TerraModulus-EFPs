@@ -1,0 +1,63 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="" created="2026-02-11" category="informational" status="draft"
+     title="String Parsing and Resource Keys Considerations">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="14"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					Strings are useful and extensive in several circumstances, but sometimes it may introduce
+					unnecessary burdens and overheads in different aspects. Conditions must have to be met
+					before adapting string resources in codebase.
+				</p>
+			</content>
+		</section>
+		<section title="Location of Resources">
+			<content>
+				<p>
+					If the resources are planned to be located within code, as hardcoded resources,
+					it typically serves no advantages but disadvantages.
+				</p>
+				<p>
+					Programmatically created resources should be more intuitive and faster than
+					parsing string for deserialization.
+				</p>
+				<p>
+					If the formation of resources is not trivial, object builders could be utilized for
+					advanced construction of objects. Unless the structure of resources are highly bound
+					to the formation of literals, like Regular Expressions, there is no reason to stringify
+					resources in code.
+				</p>
+			</content>
+		</section>
+		<section title="References to Resources">
+			<content>
+				<p>
+					Sometimes, resources may be stored in a hashmap, keyed by strings. However, accessing
+					resources using string keys is more expensive than directly using object references,
+					despite the computational complexity of <i>O(log n)</i>.
+				</p>
+				<p>
+					Sometimes, string keys may be stored for later references using a hashmap. However,
+					the memory usage and hashing computations could be significant when in hot calls.
+				</p>
+				<p>
+					Therefore, when applicable, one should always opt to use object references when
+					there is no special reason of using a string key.
+				</p>
+			</content>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li><a href="../efp003">EFP 3</a></li>
+				</list>
+			</content>
+		</section>
+	</body>
+</efp>
