@@ -79,6 +79,83 @@
 				</p>
 			</content>
 		</section>
+		<section title="Roles in Orryx">
+			<content>
+				<p>
+					In this architecture, there are certain roles for Orryx. Since the game instances may be offline,
+					Archora and Aetheron may not be connected during the sessions on Orryx, but they are likely
+					always connected when connecting to other server instances of Orryx over Ethernet or the Internet.
+					Thus, authentication and verification of accounts shall only be done when connecting to any server.
+					Version and instance management of Orryx shall only be done in the Mortared Launcher instead of
+					in the instances of Orryx, except for the assets for an instance of Orryx.
+				</p>
+				<p>
+					The Internet conection in an instance of Orryx may not be required during a session. However,
+					when the features requiring Internet connections are in use, the online status should be
+					constantly checked to ensure consistency and data integrity. This keeps data synchronization
+					and checks over session timeouts, especially from a server's perspective.
+				</p>
+			</content>
+		</section>
+		<section title="Building">
+			<content>
+				<p>
+					In order to ensure unified management of metadata and configurations, a single standard place
+					for management should be done. Metadata of a Build should be generated during building
+					of Orryx binaries, with the entries saved as a file entry named <code>version.metadata</code>
+					in built binaries. Also, a Build Profile as a project file named <code>build.profile</code>
+					shall be available in the repository root for the use of generation of certain Metadata.
+				</p>
+				<p>
+					Primary Metadata shall be directed by the Build Profile, for values of versions and stability status
+					(as an entry named <code>stable</code>). It is not trivial to determine stability status
+					by version strings, while development builds may still use version strings of stable versions.
+					The primary version of Orryx would be saved as an entry named <code>id</code>, purely as
+					an identifier without being analyzed in code, due to the complexity of the version strings and
+					the uselessness of the value. Logics using properties of versioning rely on other version values,
+					like the world format version.
+				</p>
+				<p>
+					There would be several generated Metadata, for build time (as an entry named <code>build_time</code>)
+					and series name (as an entry named <code>series</code>). The build time would be the timestamp
+					when this Metadata is being built while the series name would be directly the branch name of
+					the Version Control System (VCS).
+				</p>
+				<p>
+					In code, there would be a class or struct representing the Metadata loaded during initialization,
+					with all the values read-only. Such may be available in both Kryon and Ferricia.
+				</p>
+				<p>
+					The Build Profile would be in the format of Simple Plain Key-Value Entries without any
+					additional features, with the constraints that: entry keys must only consist of lower Latin letters,
+					underscores and periods in the ASCII table; there are two data types: string and boolean,
+					depending on exact keys, while boolean values must be either <code>true</code> or <code>false</code>.
+				</p>
+			</content>
+		</section>
+		<section title="Versioning">
+			<content>
+				<p>
+					In Orryx, there are several versioning systems for different components of Orryx. Except for
+					the Primary Version, all other versioning values should be comparable.
+				</p>
+				<p>
+					The Primary Version represents a release build of the entire Orryx in production environment.
+					Since there may not be only one release series, while the main series would strictly follow
+					the Compact Staged Versioning, others may not, so those version strings acting as identifiers
+					may not always be comparable. However, those identifiers shall always and be guaranteed to be
+					unique and only refer to exactly one version of a release build.
+				</p>
+				<p>
+					Certain Application Public Interfaces (APIs) may utilize Semantic Versioning (SemVer) for
+					extensive and comprehensive versioning controls, although more standardized versioning would
+					be recommended for more manageability.
+				</p>
+				<p>
+					Other versioning systems should be introduced when their components are being introduced.
+				</p>
+			</content>
+		</section>
 		<section title="See also">
 			<content>
 				<list>
