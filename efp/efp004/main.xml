@@ -79,6 +79,44 @@
 				</p>
 			</content>
 		</section>
+		<section title="Project Modules and Packages">
+			<content>
+				<p>
+					To better organize different contents from different Projects, separate Java package names may
+					simplify organization. For the domain part, <code>net.terramodulus</code> should be used
+					for the core behaviors built in Orryx; and <code>mod.terramodulus</code> should be used for
+					AMX Projects officially held by TerraModulus while there is no actual Top-Level Domain (TLD)
+					registered named ".mod". Therefore, for the Orryx Project, the former should always be used.
+					Besides, other Projects not fully managed under TerraModulus may not use such domains.
+				</p>
+				<p>
+					For the modules in the Gradle project structure, there would be three main components:
+					<code>main</code>, <code>test</code> and <code>demo</code>.
+					While the <code>main</code> module would be separate into <code>internal</code> and <code>kernel</code>,
+					each submodule in the <code>main</code> module would consist of <code>common</code>, <code>client</code>
+					and <code>server</code>; the <code>common</code> modules are directly Primora while the others are
+					self-explained. The <code>internal</code> module only communicate with Ferricia Engine with simple
+					representations of wrappers via Java Native Interface (JNI) without directly exposing native functions
+					while providing higher level re-representation of structs in Ferricia Engine.
+				</p>
+				<p>
+					Tests must be performed to ensure certain quality assurance over common simple issues.
+					For unit tests in Ferricia Engine, they may be directly be done in its Project without unit tests
+					in the scope of the <code>internal</code> module. Unit tests and simple integration tests in Kryon
+					may be in the <code>test</code> module; all tests in this module must be directly measurable
+					programmatically, and if possible, tests may indirectly test integrations involving
+					the <code>internal</code> module.
+				</p>
+				<p>
+					Demos shall be in the <code>demo</code> module, acting as experiencing functionality tests.
+					Demos may be sets of executable programs that test certain functionalities that are
+					experienced via user interfaces. Demos should be independent and may be immutable, so that
+					arguments (in command lines or untracked local files) may be inputted for different
+					scenarios or environments with arguments suggested by Pull Request authors for testing purposes.
+					Benchmarking, however, is not suitable here.
+				</p>
+			</content>
+		</section>
 		<section title="Roles in Orryx">
 			<content>
 				<p>
