@@ -193,6 +193,53 @@
 					Other versioning systems should be introduced when their components are being introduced.
 				</p>
 			</content>
+			<section title="Primary Version">
+				<content>
+					<p>
+						The complete view of streams of Primary Versions may not be always semantic, but rather logical
+						and chronological. The main stream as the primary branch for all stable functions and
+						all-time evolving channel of production, would use an extended Compact Staged Versioning
+						with extended rules described below. Without using a general identifying rule separating
+						main stream Primary Versions from other versions, arbitrary naming would be used for other branches.
+					</p>
+				</content>
+				<section title="Main Stream">
+					<content>
+						<p>
+							Stable releases shall strictly follow Compact Staged Versioning, but unstable releases
+							shall follow extra rules. General sense of snapshots may not occur, so other meanings may
+							be used instead.
+						</p>
+						<p>
+							For release builds testing certain unstable functionalities may use a suffix of "-ext."
+							and a positive integer appended. Those are described to be Extension Releases.
+							The number may be incremented chronologically depending on releasing schedules.
+							In this case, the release builds are based on the version without the suffix,
+							so they may not imply an upcoming future version. Usually, those builds would
+							likely be released before the future releases of the based version; otherwise, branching
+							would likely be recommended.
+						</p>
+						<p>
+							For release builds planning to be pre-releases or release candidates for an upcoming stable
+							release may use a suffix of "-pre." and a positive integer appended to the upcoming version.
+							Those are described to be Pre-Releases. The series of pre-releases on a certain
+							stable version should be strictly incremented, including the codebase and assets.
+						</p>
+						<p>
+							It is also possible for release builds of Extension Releases to be based on Pre-Releases.
+							In such cases, the suffix of "-ext." with the integer would be appended after
+							the suffix of "-pre." with the integer.
+						</p>
+					</content>
+				</section>
+				<section title="Other Branches">
+					<content>
+						<p>
+							Exact versioning for other branches should be decided later when they are being made.
+						</p>
+					</content>
+				</section>
+			</section>
 		</section>
 		<section title="See also">
 			<content>
