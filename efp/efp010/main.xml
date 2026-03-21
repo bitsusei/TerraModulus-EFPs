@@ -93,6 +93,32 @@
 				</p>
 			</content>
 		</section>
+		<section title="Classification">
+			<content>
+				<p>
+					A guideline for clear boundaries between different contents for different aspects and categories
+					should be suggested. When certain requirements are met, separate proposals should be made.
+					Also, when certain standards or specifications could be generalized, such should be firstly made
+					as <b>Standard</b> Proposals, then adapting proposals are to be made, for potential future reusing
+					of standards or specifications in similar concepts, simplifying organizations of executions.
+				</p>
+				<p>
+					Certain proposals like proposals of new standards and specifications may include examples, samples,
+					or other formats of specifications as affiliated files in the Entries. They may be for reference or
+					basic demonstration purposes.
+				</p>
+				<p>
+					In the future, it is possible that when unified references to or dedicated management of standards are required.
+					For such, it may be worth to consider whether there is a need to form a new System to govern
+					all existing standards and specifications.
+				</p>
+				<p>
+					At the moment, this Classification should well encompass all significant and effective proposals
+					potentially present in the future. However, it is still possible for new Classification to occur;
+					for such, the Constitution shall also be amended.
+				</p>
+			</content>
+		</section>
 		<section title="Amendment to Non-Finalized EFP Entries">
 			<content>
 				<p>
@@ -111,6 +137,11 @@
 					Unlike usual Request For Comments (RFCs) on the Internet, changes to EFPs may be tracked easily
 					using a Version Control System (VCS). Thus, errata may be directly made as commits without
 					having to specifically track them.
+				</p>
+				<p>
+					Errata commits may describe the exact changes in the commit messages, while thematic changes may
+					also be described in the corresponding Pull Requests. However, for minor changes, commit messages
+					are more preferred than comments in Pull Requests.
 				</p>
 			</content>
 		</section>
