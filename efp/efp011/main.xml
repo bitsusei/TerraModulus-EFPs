@@ -1,0 +1,61 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="11" created="2026-03-21" category="process" status="draft" title="Orryx Alpha Stage">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="21"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					Alpha and Beta Stages of Orryx would be proposed separately. Until the end of the Stage,
+					its proposal would be held <b>Provisional</b>.
+				</p>
+				<p>
+					In Alpha Stage, versions are under the theme of "Basis of Basics", with the major version zero.
+					During this Stage, no storage systems and customizations would be implemented, but rather
+					demonstrations of basic mechanisms of Orryx. This is unlike demo testing.
+				</p>
+			</content>
+		</section>
+		<section title="Version Schedules">
+			<content>
+				<p>
+					All versions are incremented only on the minor version in the Primary Version, starting from
+					version 0.0.1.
+				</p>
+			</content>
+			<section title="v0.0.1: Physics">
+				<content>
+					<p></p>
+				</content>
+			</section>
+			<section title="v0.0.2: Menus">
+				<content>
+					<p></p>
+				</content>
+			</section>
+			<section title="v0.0.3: World">
+				<content>
+					<p></p>
+				</content>
+			</section>
+			<section title="v0.0.4: Generation">
+				<content>
+					<p></p>
+				</content>
+			</section>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li>
+						<a href=""></a>
+					</li>
+				</list>
+			</content>
+		</section>
+	</body>
+</efp>
