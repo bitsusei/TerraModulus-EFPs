@@ -18,6 +18,19 @@
 				</p>
 			</content>
 		</section>
+		<section title="User Interface Devices (UIDs)">
+			<content>
+				<p>
+					User Interface Devices (UIDs) are indispensable in this Framework. UIDs are certain classes of
+					HIDs, for what may refer to HID Usage Table for the exact classes to be included in this Framework.
+				</p>
+				<p>
+					In order to interact with UIDs via various UIs, Communication Interface standards are necessary.
+					The Communication Interface may generalize certain activities to a higher level where elements
+					may act consistently across different devices in the same class.
+				</p>
+			</content>
+		</section>
 		<section title="Multimodal User Interface (MUI) Framework Basis">
 			<content>
 				<p>
@@ -92,6 +105,16 @@
 					<p>
 						Most commonly, related HIDs include but not limited to keyboards,
 						pointing devices, motion sensors, trackers and controllers.
+					</p>
+				</content>
+			</section>
+			<section title="State-Reacting Interface (SRI)">
+				<content>
+					<p>
+						Certain UIDs may not be interacted by the above UIs for those that are designed to output
+						user understandable states without using the above UIs. For such miscellaneous devices,
+						there may be no dedicated standardized protocols for communications, but likely generic
+						protocols for various types of devices.
 					</p>
 				</content>
 			</section>
