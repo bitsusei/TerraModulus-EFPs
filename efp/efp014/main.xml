@@ -1,0 +1,41 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="14" created="2026-03-24" category="standard" status="draft" title="Feature Enabling Platform (FEP)">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="24"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					Due to the mechanisms and properties of TerraModulus, resulting games produced based on it may be
+					across several genres from sandbox survival to closed world role-playing. Therefore, ensuring
+					the potentials of mechanisms being feasible to be implemented is important. Thus, FEPs should be
+					proposed to confirm the possibilities of features or interfaces of certain functionalities.
+				</p>
+			</content>
+		</section>
+		<section title="Practices">
+			<content>
+				<p>
+					When proposing FEPs, most likely those would be outlines on about what kinds of features shall
+					be implemented and supported. However, certain working examples may also be available to examine
+					whether the requirements of an FEP proposal are fulfilled to complete.
+					Also, since those exact features and requirements are likely subject to change and update, they
+					may not be proposed via EFPs but filed Repository Issues.
+				</p>
+				<p>
+					Works about a certain FEP should be done on the corresponding Issue. Only authorized Team Members
+					are allowed to file such FEP tracking Issues, but other Community Members are allowed to propose
+					FEP drafts and Team Members may formally file a FEP Issue aligning and possibly extending the drafts.
+				</p>
+				<p>
+					When FEPs are completed, they may be standardized and informed via EFPs. Extensions of such FEPs
+					may rely on new FEPs or updating EFPs, for further features and functionalities.
+				</p>
+			</content>
+		</section>
+	</body>
+</efp>
