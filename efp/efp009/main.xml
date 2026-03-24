@@ -1,7 +1,7 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 <efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
      efp="9" created="2026-02-12" category="standard" status="draft"
-     title="TerraModulus Game Multimodal User Interface (MUI) Framework Implementation">
+     title="Orryx Implementation of Multimodal User Interface (MUI) Framework">
 	<metadata>
 		<pullRequests>
 			<pullRequest id="17"/>
@@ -15,7 +15,7 @@
 					Simple DirectMedia Layer (SDL) 3, OpenAL and OpenGL. Different parts play
 					different roles in MUI for the complete UI. Thus, the interoperation of
 					the Engine library and the Kotlin interface becomes essential that should be
-					efficient and effective. In this framework, the Graphical Model System (GMS)
+					efficient and effective. In this framework, the Abstract Graphical Interface Model (AGIM)
 					would also be introduced, as the fundamental graphical system for the Engine's utilization.
 					This Framework is only applicable to client targets but not dedicated server targets.
 				</p>
@@ -24,11 +24,11 @@
 		<section title="Multimodal User Interface (MUI) Roles">
 			<content>
 				<p>
-					The GMS is responsible mostly for the GUI, by communicating with SDL and OpenGL.
+					The AGIM is responsible mostly for the GUI, by communicating with SDL and OpenGL.
 					The AUI communicates with OpenAL for audio processing and output.
 					If there is a Game Controller connected, the HUI may communicate with it via SDL.
 					All other KUI responsibilities are also by communicating with SDL, partially
-					handled by the GMS.
+					handled by the AGIM System.
 				</p>
 			</content>
 		</section>
@@ -59,6 +59,36 @@
 					the main thread asynchronously safely.
 				</p>
 			</content>
+			<section title="UID Communication Interface">
+				<content>
+					<p>
+						In order to communicate with UIDs in MUI with standardized protocols, there must be defined
+						sets of protocols for interactions and interoperability. This includes having standard protocols
+						to interact with input devices, for various generic types of input devices.
+					</p>
+					<p>
+						Input devices include pointing devices, keying devices, gamepads, joysticks, etc.
+						Basic input control schemes for Interactions on Screens and Menus would be: <b>Baseline</b>,
+						keying devices only; and, <b>Hybrid</b>, combo of keying devices and pointing devices.
+						Extensive schemes may configure input devices even further, like using relative or absolute
+						pointing devices for different types of input controls. Gameplay input control schemes may be
+						based on the above configurations. In order to ensure certain usability and controllability
+						when primary input devices are not available, fallback schemes should be configured, or else
+						users may have to edit configurations outside the application. Also, application should not
+						assume that a keyboard must be available at any time in the system levels.
+					</p>
+					<p>
+						Pointing devices are a class of input devices. They include mice, trackballs, touchpads,
+						touch screens, pointing sticks, pen tablets, etc. Standardized protocols to interact with
+						certain behavior patterns of input controls shall be defined. However, eligible pointing
+						equipment with at least two axes (type of axes depends on scheme) and two main buttons must be
+						available; without eligible equipment, this may be unavailable, though it may be a combination
+						of multiple devices. Also, for the main buttons, while two main buttons are necessary,
+						other buttons must be considered assistive or optional, or otherwise such controls may not
+						be accessible in common setups.
+					</p>
+				</content>
+			</section>
 			<section title="Primary Raw Event Processing">
 				<content>
 					<p>
@@ -179,23 +209,23 @@
 				</content>
 			</section>
 		</section>
-		<section title="Graphical Model System (GMS)">
+		<section title="Abstract Graphical Interface Model (AGIM)">
 			<content>
 				<p>
-					The GMS would only be implemented in the Kotlin interface with abstractions.
-					Under GMS, all Graphical Model Objects (GMOs) serve as graphical wrappers of
-					the underlying objects they manage, such as data, states, even other GMOs.
-					The hierarchy of GMOs includes <b>Screens</b>, <b>Menus</b> and <b>Components</b>,
-					where one includes the next directly without skipping any stratum.
+					The AGIM would only be implemented in the Kryon layer with abstractions.
+					Under AGIM, all AGIM Objects (AGIMOs) serve as graphical wrappers of
+					the underlying objects they manage, such as data, states, even other AGIMOs.
+					The hierarchy of AGIMOs includes <b>Screens</b>, <b>Menus</b> and <b>Components</b>,
+					where one includes the next directly possibly without skipping any stratum.
 					Rendering of them would be backed by the Engine's rendering system,
 					using the low level Kotlin bindings.
-					However, audio feedbacks triggered by GMOs cannot be managed by GMOs but
-					an audio interface manager out of this GMS.
+					However, audio reactions triggered by AGIMOs cannot be managed by AGIMOs but
+					an audio interface manager in MUI out of AGIM.
 				</p>
 				<p>
 					The <code>ScreenManager</code> manages Screens stored in a linked list, with one
 					on the top covers the others underneath.
-					The Screen on the top also blocks user interactions via Graphical User Interface (GUI).
+					The Screen on the top also blocks user interactions via GUI.
 					In the rendering system, the <code>RenderSystem</code> renders the Screens managed
 					by the <code>ScreenManager</code> onto the <code>Canvas</code> backed by the Engine.
 				</p>
@@ -324,6 +354,20 @@
 					Various optimizations are also conducted, like reusing same shader programs as much
 					as possible when the previous draw call was also using the same program, eliminating
 					unnecessary OpenGL commands.
+				</p>
+			</content>
+		</section>
+		<section title="Audio System">
+			<content>
+				<p>
+					Basically, an audio mixing public interface may be implemented for usages by other modules.
+					It should also provide various configurations in preferences for the exact controls over mixing,
+					like using software mixers or native sound cards directly, or even setting equalizers or compressors.
+					Modules may also add other mixers for other usages, or even using external software.
+				</p>
+				<p>
+					Across the application, there shall be a top-level generic manager of audio. In the scope of gameplay,
+					there should be another subsystem of gameplay audio as another manager under the top-level one.
 				</p>
 			</content>
 		</section>
