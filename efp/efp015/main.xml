@@ -1,0 +1,95 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="15" created="2026-03-27" category="standard" status="draft" title="Orryx Ferricia Physics Engine">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="25"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					Physics is the most basic feature for an open-world game to run. "Physics" here only refers to the
+					interactions between and kinetics of physical objects in a World, without interference from other energy.
+					In Orryx, physics may be parameterized for Application Extensive Modules (AXMs) to extend and
+					customize physics behaviors for their own implementations of worlds. Most of the computations
+					related to physics shall be run in Ferricia, with certain parameters and attributes configurable
+					by the Kryon layer. Some of them may even be sometimes constant while variable the other times.
+				</p>
+				<p>
+					While the entire physics engine is based on Open Dynamics Engine (ODE), most working details would
+					likely be explained in terms of it. However, several conceptual ideas may also be explained in mechanical
+					physics, likely with related theories, laws, algorithms and formulae.
+				</p>
+			</content>
+		</section>
+		<section title="Basic Concepts">
+			<content>
+				<p>
+					Since TerraModulus is tile-based, or <i>block</i>-based, in most of the time, Tiles should be stationary
+					and rigid with contact of other Tiles. However, Entities may act in any way, with various possible
+					motions and combinations, even potentially with joints and islands.
+				</p>
+				<p>
+					Units and coordinate system in physics engine should one-to-one align with the ones seen in Kryon.
+					This means, the x-axis, y-axis, z-axis must comply exactly the same across those systems.
+					For basic units, meters and Newtons may also be used, as they are the units used in ODE.
+				</p>
+				<p>
+					There would likely be special measures for moving Tiles. Since Tiles are expected to be aligned with
+					integral coordinates, moving instances that do not meet this criterion may be undefined.
+					Therefore, moving Tiles shall likely be implemented as special Entities with some effects being Tiles,
+					unless Tiles are instantly moved without any transition.
+				</p>
+				<p>
+					Most likely all bodies shall have uniform mass, although implementations may still use ununiform
+					masses in certain bodies for special games. Most bodies likely do not rotate except for certain
+					bodies in certain Entities, so forces applied on should be uniform without causing torques.
+				</p>
+				<p>
+					Certain geometry objects would be implemented with special meanings. World boundaries should be
+					planes, while others may be created in any way for Tiles and Entities. However, Tiles as non-placeable
+					may be as collision spaces containing several geometry objects including boxes. Some objects without
+					certain shapes may be made as meshes, but this should not be common. There is no plan to include
+					arbitrary Worlds, so heightfield and convex shall not be used. Other than these, no custom classes
+					shall be implemented. It is a question whether Tiles should be implemented as composite bodies.
+				</p>
+			</content>
+		</section>
+		<section title="Implementations">
+			<content>
+				<p>
+					Although, there is likely no default complete physics implementation, certain common configurations
+					may still be possible to be made officially as simple implementations for ready-for-production
+					developments of other contents without having to implement their own ones by their own.
+				</p>
+			</content>
+			<section title="Simple Terra">
+				<content>
+					<p>
+						As a simple interpretation of an open world with simple and common interactions in various games,
+						this implementation may be simple, though certain parameters may still be made. This may resemble
+						the physics as on Earth, but gravity may be configurable for authors with a default value.
+					</p>
+					<p>
+						Most Tiles and Entities should be inelastic; world boundaries should also be completely inelastic.
+						However, certain Tiles and Entities may be elastic, from configurations by authors.
+						Without specific settings, those bodies should be inelastic, including collisions between Entities.
+					</p>
+					<p>
+						There would likely be two modes for Tiles, where for one, all Tiles fall while the other only
+						certain selections of Tiles may fall.
+					</p>
+				</content>
+			</section>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li><a href="https://ode.org/wiki/index.php">Open Dynamics Engine (ODE) Community Wiki</a></li>
+				</list>
+			</content>
+		</section>
+	</body>
+</efp>
