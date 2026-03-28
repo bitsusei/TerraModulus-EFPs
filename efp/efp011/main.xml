@@ -29,8 +29,51 @@
 			</content>
 			<section title="v0.0.1: Physics">
 				<content>
-					<p></p>
+					<p>
+						Demonstration may be basically based on physics implementation of Simple Terra with certain
+						extra features to interact with the World. At least, some functionalities should have been
+						available in this version.
+					</p>
+					<p>
+						Random bodies may be generated to test for collisions and various features. Those bodies may
+						resemble certain kinds of Tiles and Entities. Players may control a sphere around the World.
+						For bodies, it may be possible to test for mechanisms for continuous Tiles in physics.
+						Tiles may be kinematic to be static for other moving bodies.
+					</p>
+					<p>
+						On start, there would be no menus, but directly in a physics World after an animation.
+					</p>
 				</content>
+				<section title="Physics">
+					<content>
+						<p>
+							Various functionalities would be reserved for later implementations of other features.
+							However, for basic functions, basic body, mass and collision information should be done.
+							Later in the future if possible, it is possible to also test Bullet's Engine, as a comparison.
+						</p>
+						<p>
+							An instance for each of <code>PhyEnv</code>, <code>World</code> and <code>HashSpace</code>
+							would be created on start of application. All <code>Geom</code> instances would be added
+							to the same Hash Space, with a Body of a Sphere the Player-controlled. Those instances
+							would include Boxes, Spheres, Capsules and Cylinders. There would also be a Plane at y=-100,
+							without other World boundaries.
+						</p>
+						<p>
+							Some Objects in the World would not be associated with any Body to be static. Certain Geom
+							may also be implemented as Composite Bodies to test for difference in functionalities.
+							Some Bodies with sets of continuous cubes with length of one meter with 3D random patterns
+							may also be generated in the World.
+						</p>
+					</content>
+				</section>
+				<section title="Rendering">
+					<content>
+						<p>
+							For rendering, parallel projection over the level of the player character would be done.
+							Also, players would be able to fly around and move on the surface in any way.
+						</p>
+					</content>
+				</section>
 			</section>
 			<section title="v0.0.2: Menus">
 				<content>
