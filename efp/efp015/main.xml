@@ -81,6 +81,35 @@
 						There would likely be two modes for Tiles, where for one, all Tiles fall while the other only
 						certain selections of Tiles may fall.
 					</p>
+					<p>
+						Physics Engine shall be initiated via <code>PhyEnv</code> when a World is being initiated
+						along with other World resources. Then, other World, Space, Body and Geom instances are
+						created as initialization of resources. With <code>PhyWorld</code> created under <code>PhyEnv</code>,
+						where <code>PhyEnv</code> handles <code>OdeHandle</code>; <code>PhyWorld</code> also handles
+						<code>OdeWorld</code>, <code>TopLevelSpace</code> and a list of <code>PhyObj</code>, where
+						<code>OdeWorld</code> is a representation of ODE World, and <code>TopLevelSpace</code>
+						is the top-most ODE Space, with each of them handling underlying <code>OdeBody</code> and
+						<code>OdeGeom</code>; <code>PhyObj</code> has two implementations, <code>PhyBody</code> and
+						<code>PhyGeom</code>, where <code>PhyBody</code> is the physics representation of a Body
+						which is either or both associated with an <code>OdeBody</code>, or having one or more
+						<code>OdePlaceableGeom</code>. Associations of ODE Geom and ODE Body are handled by
+						the abstraction of them, <code>PhyBody</code>; ODE Bodies are always created in <code>OdeWorld</code>
+						while ODE Geoms are always created in <code>TopLevelSpace</code>.
+					</p>
+					<p>
+						User-defined data should not be stored in ODE objects, but only on our side with those handling
+						the interactions with those ODE objects. Mostly, <code>phy::ode</code> module handles abstraction
+						of actions provided by ODE's interface, while other higher level operations should reside in
+						<code>phy</code> module directly. Seemingly, Kryon's internal would directly interact with
+						objects in <code>phy</code>, and indirectly with objects in <code>phy::ode</code>.
+					</p>
+					<p>
+						<code>PhyEnv</code> shall also handle collision activities observed by executing ODE's loop.
+						<code>CollisionHandler</code> from <code>PhyEnv</code> handles collisions by generating
+						<code>OdeContactJoint</code> from <code>OdeContactGeom</code>, while all parameters depend on
+						properties of objects in interaction. Those properties should be defined by properties of
+						Tiles and Entities, so they are fully up and subject to Kryon.
+					</p>
 				</content>
 			</section>
 		</section>
