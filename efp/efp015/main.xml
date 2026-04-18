@@ -82,19 +82,25 @@
 						certain selections of Tiles may fall.
 					</p>
 					<p>
-						Physics Engine shall be initiated via <code>PhyEnv</code> when a World is being initiated
-						along with other World resources. Then, other World, Space, Body and Geom instances are
-						created as initialization of resources. With <code>PhyWorld</code> created under <code>PhyEnv</code>,
-						where <code>PhyEnv</code> handles <code>OdeHandle</code>; <code>PhyWorld</code> also handles
-						<code>OdeWorld</code>, <code>TopLevelSpace</code> and a list of <code>PhyObj</code>, where
-						<code>OdeWorld</code> is a representation of ODE World, and <code>TopLevelSpace</code>
-						is the top-most ODE Space, with each of them handling underlying <code>OdeBody</code> and
-						<code>OdeGeom</code>; <code>PhyObj</code> has two implementations, <code>PhyBody</code> and
-						<code>PhyGeom</code>, where <code>PhyBody</code> is the physics representation of a Body
-						which is either or both associated with an <code>OdeBody</code>, or having one or more
-						<code>OdePlaceableGeom</code>. Associations of ODE Geom and ODE Body are handled by
-						the abstraction of them, <code>PhyBody</code>; ODE Bodies are always created in <code>OdeWorld</code>
-						while ODE Geoms are always created in <code>TopLevelSpace</code>.
+						Physics Engine shall be initiated via <code>PhyEnv</code> as the root handler when a World
+						is being initiated along with other World resources. Then, other World, Space, Body and Geom
+						instances are created as initialization of resources. A <code>PhyWorld</code> holding
+						all physics objects belonging to it is created by<code>PhyEnv</code>. Most likely all physics
+						objects should have respective handles, and the <code>PhyWorld</code> only hold references to them.
+						<code>PhyObj</code> has two implementations, <code>PhyBody</code> and <code>PhyGeom</code>,
+						where <code>PhyBody</code> is the physics representation of a Body or Geom. <code>PhyRawGeom</code>
+						fully holds a Geom but translation to <code>PhyGeom</code> destroys it.
+					</p>
+					<p>
+						In the structures with ODE, <code>PhyEnv</code> shall hold <code>OdeHandle</code> handling library
+						utilities and <code>CollisionManager</code> for collision handling assistance.
+						<code>PhyWorld</code> shall hold <code>OdeWorld</code>, <code>TopLevelSpace</code> and a list of
+						<code>PhyObj</code>. <code>TopLevelSpace</code> is the top-most Space, holding <code>OdeSpace</code>.
+						<code>OdeWorld</code> is used to handle <code>OdeBody</code> while <code>OdeSpace</code> is used
+						to handle <code>OdeGeom</code>. <code>PhyBody</code> holds either or both an <code>OdeBody</code>,
+						or one or more references of <code>OdePlaceableGeom</code>. Associations of ODE Geom and ODE Body
+						are handled by the abstraction of them in <code>PhyBody</code>. ODE Bodies are always created in
+						<code>OdeWorld</code> while ODE Geoms are always created in <code>TopLevelSpace</code>.
 					</p>
 					<p>
 						User-defined data should not be stored in ODE objects, but only on our side with those handling
@@ -102,6 +108,11 @@
 						of actions provided by ODE's interface, while other higher level operations should reside in
 						<code>phy</code> module directly. Seemingly, Kryon's internal would directly interact with
 						objects in <code>phy</code>, and indirectly with objects in <code>phy::ode</code>.
+					</p>
+					<p>
+						For flexibility to support other physics libraries, the abstraction layer in <code>phy</code>
+						module should be generalized enough with certain supporting functions. This includes that
+						library-dependent interfaces should not be exposed across the Java-Native Interface.
 					</p>
 					<p>
 						<code>PhyEnv</code> shall also handle collision activities observed by executing ODE's loop.
