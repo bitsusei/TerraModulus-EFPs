@@ -1,0 +1,38 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="12" created="2026-03-24" category="process" status="draft" title="Adaptions of External Standards and Specifications">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="22"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					Highly rights-protected standards (regarded as closed standards) would be completely not
+					adapted or employed in our areas. In this Architecture, we shall draft open standards for
+					the uses within this open Community, and possibly even the industries, if possible.
+					Using such closed standards may risk violations of rights of other bodies or parties.
+				</p>
+			</content>
+		</section>
+		<section title="Scopes and Practices">
+			<content>
+				<p>
+					This includes ALL International Organization for Standardization (ISO) standards as an example,
+					except for certain materials that are publicly available or widespread.
+					Most contents in such standards are highly copyrighted, and the targets of those are seemingly
+					to be commercial bodies and industrial people that are urged to follow certain standards.
+				</p>
+				<p>
+					For such cases, when we are to draft standards for our own usages in our fields, our own versions
+					of standards and specifications may be produced regardless of those external (independent)
+					official recognitions, due to their complete uselessness for our states of affairs.
+					In other cases, we should do our best to adapt widely recognized standards and specifications
+					whenever they suit our perspectives, attitudes, policies and works.
+				</p>
+			</content>
+		</section>
+	</body>
+</efp>
