@@ -1,0 +1,51 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="" created="2026-02-11" category="informational" status="draft" title="Programming Levels">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="13"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					This document introduces an advisory explanation of programming levels, widely categorized
+					as "<i>low level</i>" and "<i>high level</i>" in different contexts.
+				</p>
+			</content>
+		</section>
+		<section title="General Meaning">
+			<content>
+				<p>
+					In general, low-level programming indicates that the specific piece of code with
+					a certain level of raw manipulation of computer resources. Thus, extra caution is always
+					necessary as this structure may contain unobvious but critical code that may lead to
+					unintended behaviors.
+				</p>
+				<p>
+					In this case, usually compiler warnings or errors, or even runtime errors, may not
+					indicate the actual issues induced by a previous change, for the reason of extra caution.
+					As a general advice, checking the compliance to intended behaviors by debugging the code,
+					and checking the previous change may typically help.
+				</p>
+			</content>
+		</section>
+		<section title="Abstraction Levels">
+			<content>
+				<p>
+					Sometimes, abstraction programming may also contain, so-called "<i>low-level</i>" code.
+					In this sense, when a piece of abstract code contain a little amount of abstraction,
+					it may be said to be <i>low-level</i>. In the codebase written in high abstraction code,
+					low abstraction code may still be used somewhere, to act as a backbone of the higher-level
+					counterparts.
+				</p>
+				<p>
+					When low-level abstraction code is to be handled, it should be treated like generally
+					low-level code. However, low-level code patterns should not be present in high-level
+					code to maintain the level of code.
+				</p>
+			</content>
+		</section>
+	</body>
+</efp>
