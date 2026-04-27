@@ -73,9 +73,9 @@
 							a fixed way for main character and spawn point cube. In the creation of <code>World</code>,
 							an instance of <code>Ymir</code> as the representative of preceding management in Client
 							with association to rendering and its properties. Ideally, generations of objects shall be
-							in parallel such that progress may be tracked on UI, without any invocation to OpenGL
-							during generation but after the end of generation when the role of generation handed back
-							to the main thread.
+							in parallel such that progress may be tracked on Graphical UI (GUI), without any invocation
+							to OpenGL during generation but after the end of generation when the role of generation
+							handed back to the main thread.
 						</p>
 						<p>
 							<code>GameplayScreen</code> handles initialization of <code>World</code> and rendering of it.
@@ -111,17 +111,65 @@
 							Later in the future if possible, it is possible to also test Bullet's Engine, as a comparison.
 						</p>
 						<p>
-							An instance for each of <code>PhyEnv</code>, <code>World</code> and <code>HashSpace</code>
-							would be created on start of application. All <code>Geom</code> instances would be added
-							to the same Hash Space, with a Body of a Sphere the Player-controlled. Those instances
-							would include Boxes, Spheres, Capsules and Cylinders. There would also be a Plane at y=-100,
+							The physics of World shall be initiated starting from <code>PhyEnv</code> along with other
+							top-level managers like <code>PhyWorld</code> and their internal management, upon creation.
+							All Geom instances along with just a single <code>OdeGeom</code> without a Body shall be added
+							to the same lower-level Hash Space; another Geom if Sphere with a Body shall be Player-controlled,
+							stored directly in the Top-Level Space. There shall also be a Plane at y=-100 as a floor boundary,
 							without other World boundaries.
 						</p>
 						<p>
-							Some Objects in the World would not be associated with any Body to be static. Certain Geom
-							may also be implemented as Composite Bodies to test for difference in functionalities.
-							Some Bodies with sets of continuous cubes with length of one meter with 3D random patterns
-							may also be generated in the World.
+							The <code>PhyWorld</code> holding all physics objects belonging to it is created by<code>PhyEnv</code>.
+							Most likely all physics objects should have respective owned handles, and the <code>PhyWorld</code>
+							and its underlying structures should only hold references to them. <code>PhyObj</code> has
+							two implementations, <code>PhyBody</code> and <code>PhyGeom</code>, where <code>PhyBody</code>
+							is the physics representation of a Body or Geom, and <code>PhyGeom</code> is the physics
+							representation of a non-placeable Geom. <code>PhyRawGeom</code> fully holds a Geom initially
+							upon creation but translation to <code>PhyGeom</code> destroys it.
+						</p>
+						<p>
+							In the structures with ODE, <code>PhyEnv</code> shall hold <code>OdeHandle</code> handling library
+							utilities and <code>CollisionManager</code> for collision handling assistance.
+							<code>PhyWorld</code> shall hold <code>OdeWorld</code>, <code>TopLevelSpace</code> and a list of
+							<code>PhyObj</code>. <code>TopLevelSpace</code> is the top-most Space, holding <code>OdeSpace</code>.
+							<code>OdeWorld</code> is used to handle <code>OdeBody</code> while <code>OdeSpace</code> is used
+							to handle <code>OdeGeom</code>. <code>PhyBody</code> holds either or both an <code>OdeBody</code>,
+							or one or more references of <code>OdePlaceableGeom</code>. Associations of ODE Geom and ODE Body
+							are handled by the abstraction of them in <code>PhyBody</code>. ODE Bodies are always created in
+							<code>OdeWorld</code> while ODE Geoms are always created in <code>TopLevelSpace</code>.
+						</p>
+						<p>
+							User-defined data should not be stored in ODE objects, but only on our side with those handling
+							the interactions with those ODE objects. Mostly, <code>phy::ode</code> module handles abstraction
+							of actions provided by ODE's interface, while other higher level operations should reside in
+							<code>phy</code> module directly. Seemingly, Kryon's internal would directly interact with
+							objects in <code>phy</code>, and indirectly with objects in <code>phy::ode</code>.
+						</p>
+						<p>
+							For flexibility to support other physics libraries, the abstraction layer in <code>phy</code>
+							module should be generalized enough with certain supporting functions in the future development
+							for the flexibility for other physics backends, most likely using traits as abstraction, with
+							the actual implementations initiated during initialization. This includes that library-dependent
+							interfaces should not be exposed across the Java-Native Interface.
+						</p>
+						<p>
+							Some Objects in the World would not be associated with any Body to be static. If some Objects
+							need to move but without inference from other Objects, they still need to be kinematic Bodies.
+							In a later stage, some Objects may be associated with a same Body as a Composite Body to test
+							for Body dynamics of Bodies composite of multiple Geom instances.
+						</p>
+						<p>
+							<code>PhyEnv</code> shall also handle collision activities observed by executing ODE's loop.
+							<code>PhyCollisionManager</code> from <code>PhyEnv</code> handles collisions via underlying
+							<code>OdeContactManager</code> by generating <code>OdeJoint</code> from <code>OdeContactParams</code>
+							in <code>near_callback</code>, while all parameters depend on properties of objects in interaction.
+							Those properties should be later defined by properties of Tiles and Entities, so they should
+							be fully up and subject to Kryon.
+						</p>
+						<p>
+							At this stage, very basic optimization on the collision algorithm shall be done. This includes
+							benchmarked methods of using collision bits, intra-Space collision detection ignore list,
+							and a finer Hash Space for the Space of cubes.
 						</p>
 					</content>
 				</section>
@@ -136,20 +184,54 @@
 							like maze generation that are branched from the origin and other branches.
 						</p>
 						<p>
-							All objects must be in unit size of one meter in range of [-1,1] for local space.
-							However, for unit objects with only a single shape, its dimensions must align the limits.
-							This means the diameters or widths of the shapes should be two meters. As unit objects,
-							rotation and scaling may be identity, but must be scaled half in model transformation.
+							Currently, only geometries of unit sizes, lengths of one, are being generated. However,
+							at later stage, more geometries shall be tested for support of more complex models that
+							may appear in certain Tiles and Entities in reality. Also, those objects shall never rotate
+							upon external forces as torques are mostly not valid in the principles of mechanisms in TerraModulus.
 						</p>
 						<p>
 							Cubes shall be generated randomly in three colors, plain red, plain green and plain blue,
-							while the sphere shall be in full white.
+							while the sphere shall be in full white. Since the colors are plain, the differentiation
+							to identify relative location would likely be difficult without shadows or other mechanisms
+							that may help distinguishing distances of objects.
 						</p>
 						<p>
-							The sphere shall move at the speed of pi meters per second for each direction without
-							unit vector normalization. At each frame, the position of objects are fetched to render
-							the geometries, especially for the sphere. Also, players would be able to fly around and
-							move on the surface in any way, affected by collisions with other objects.
+							In order to support feedbacks of collisions, the strategy to set velocities upon movement
+							may not be compatible, as those impacts seemed to be handled by instantaneous forces, which
+							result in calculated velocities. This means movements and other activities shall also act
+							forces on it to make effects in motions of the objects to avoid conflicts and malfunctions.
+							Therefore, movement shall be done by the unit direction vector resulted from player-directed
+							movement direction commands via keys of movement commanding, which shall be <kbd>W</kbd>,
+							<kbd>S</kbd>, <kbd>A</kbd>, <kbd>D</kbd>, <kbd>Shift</kbd> and <kbd>Space</kbd>. The movement
+							commands should direct the intended direction for forces to be exerted on.
+						</p>
+						<p>
+							The recommended amounts of forces and limits to be applied on should be well tested, so they
+							may not be fixed even in the coming versions for balancing testing purposes. With plain
+							guessing of effects without actual calculations, those numbers currently are:
+						</p>
+						<list>
+							<li>The sphere has a mass of exactly 1.0, but in real implementation this may be larger.</li>
+							<li>Maximal speed exerted by movement is π*π.</li>
+							<li>Maximal acceleration exerted instantaneously is π*π.</li>
+							<li>Minimal non-zero acceleration exerted instantaneously is 0.1, as epsilon.</li>
+							<li>Default gravity is y=-9.81.</li>
+							<li>Maximal gravity condition before multiplication is 20, meaning possibly 39.24.</li>
+							<li>Maximal gravity condition before multiplication is 20, meaning possibly 39.24.</li>
+							<li>Minimal gravity condition before division is 1, meaning possibly 0.613125.</li>
+							<li>Possible frictions include zero, finite and infinity.</li>
+							<li>Minimal finite frictions is 1/16.</li>
+							<li>Maximal finite frictions is 64.</li>
+						</list>
+						<p>
+							The movement calculation shall be done when the direction is not zero. Acceleration may not
+							be applied at a tick when maximal velocity (as speed) has been attained with that direction.
+							This is done by scalar projection of the instantaneous velocity on the target direction.
+							If the scalar projection is less than the maximal speed, an acceleration shall be applied.
+							Subtraction of the projection from the maximal speed is the maximal velocity to attain,
+							but it has to be clamped by the epsilon and the maximal acceleration. The final force exerted
+							shall be multiplication of the acceleration product of delta velocity and direction, and
+							a mass of 1.0.
 						</p>
 					</content>
 				</section>
@@ -161,28 +243,112 @@
 							World rendering shall be handled by <code>GameplayScreen</code> via functions of GWR.
 						</p>
 						<p>
-							For rendering, orthogonal projection over the level of the player character would be done;
-							all objects shall be rendered without perspective transformation and culling.
+							During rendering, Geom objects shall be sorted first by y ascendingly, then z ascendingly.
+							At the moment, depth buffer is not yet used to render better z-ordering for occlusion.
+							There are currently only simple shapes and geometries being rendered, yet no more complex
+							rendering at this stage, but more different rendering properties shall be tested later.
 						</p>
 						<p>
-							For camera and sizing, standard scaling shall be 64 screen pixels per meter in World space,
-							while normally it is expected that each Tile is rendered as 32-pixel width textures.
-							This means each texture pixel should be rendered as two times two screen pixels.
+							All Geom objects must be in unit size of one meter in range of [-1,1] for local space.
+							However, for unit objects with only a single shape, its dimensions must align the limits.
+							This means the diameters or widths of the shapes should be two meters. As unit objects,
+							rotation and scaling may be identity, but must be scaled half in model transformation.
+						</p>
+						<p>
+							Graphical Menu Presentation (GMP) rendering is placed under <code>mui::rendering</code>
+							while Gameplay Field Visualization (GFV) rendering is placed under <code>mui::rendering3d</code>,
+							but ideally, certain functionalities and mechanisms should have been generalized out of them.
+							GMP may involve both two-dimensional (2D) and three-dimensional (3D) rendering but GFV only
+							involves 3D rendering in a different style from GMP rendering, so it may be complex handling.
+							In general, GMP may composite simpler geometries and general graph rendering; GFV may involve
+							composited meshes and combinations of different geometries as a whole.
+							"Field" of GFV indicates the <i>Field of Camera View</i> (FVC) while GMP may be described as
+							<i>Plane Interface</i>; Gameplay Scene Depiction (GSD) is the underlying environment of GFV.
+						</p>
+						<p>
+							There are special treatments for View and Projection matrices in GFV. For the View,
+							it is done by having a direction downward with an inclination of 30 degrees towards negative
+							z-axis. For the Projection, the dimensions are constrained directly by canvas dimensions while
+							there is no z-culling from viewpoint, along with magnification scaling and offset centering.
+							Perspective transformation is invalid as per the Principles, but culling should be applied
+							for most of the time to represent the Field in perspective of Player Character; this shall
+							be implemented and tested at later stage.
+						</p>
+						<p>
+							For Camera and sizing in GFV, standard magnification scaling shall be defined by 64 screen pixels
+							per meter in World space, while normally it is expected that each Tile is rendered as 32-pixel
+							width textures. This means each texture pixel should be rendered as two times two screen pixels.
+						</p>
+						<p>
+							There is simple basic light rendering to help differentiate the faces of geometries being
+							rendered in GFV, by a single directional light towards between negative y-axis and positive
+							z-axis, in addition to 10% ambient effect. Currently, they are all white light. However,
+							advanced light rendering like perspective occlusion and shadows shall be implemented later.
+						</p>
+						<p>
+							Among 3D Geom structures in <code>mui::rendering3d</code>, only the Mesh variant is used.
+							In order to simplify the codebase and amount of work, utilizing an existing geometry library
+							that provides sufficient but not excessive functionalities shall be preferred in production.
+							At later stage, refactoring the codebase to utilize more existing libraries to avoid reinventing
+							the wheels shall be conducted under proper examination of libraries without violations to
+							the intended features and functionalities, but with feasible flexibilities and adaptions.
+						</p>
+					</content>
+				</section>
+				<section title="Functions">
+					<content>
+						<p>
+							Basically, users can control the sphere using the aforementioned hotkeys, along with other
+							debugging hotkeys. Those keys can query states of the World and the sphere, and modify
+							attributes of those, including World gravity, gravity influence, friction attributes given
+							the capabilities of the physics engine.
+						</p>
+						<p>
+							In details, movement keys add direction vectors when held; other hotkeys and functions include:
+						</p>
+						<list>
+							<li><kbd>Q</kbd>: Query position of sphere.</li>
+							<li><kbd>R</kbd>: Query velocity of sphere.</li>
+							<li><kbd>U</kbd>: Query gravity of world and gravity mode of (influence to) sphere.</li>
+							<li><kbd>I</kbd>: Toggle gravity mode of (influence to) sphere.</li>
+							<li><kbd>O</kbd>: Increase world gravity.</li>
+							<li><kbd>P</kbd>: Decrease world gravity.</li>
+							<li><kbd>J</kbd>: Query friction states.</li>
+							<li><kbd>K</kbd>: Toggle friction mode.</li>
+							<li><kbd>L</kbd>: Increase friction (for Limited mode).</li>
+							<li><kbd>M</kbd>: Decrease friction (for Limited mode).</li>
+							<li><kbd>N</kbd>: Reset velocity of sphere to zero.</li>
+							<li><kbd>=</kbd>: Zoom in camera.</li>
+							<li><kbd>-</kbd>: Zoom out camera.</li>
+						</list>
+						<p>
+							The units of vectors are directly come from the underlying physics engine. It is worth noting
+							that resulted acceleration or force is hidden and difficult to be queried, so it is ignored.
+							This includes the situation when multiple force sources exist to exert on, resulting a complex
+							state to be queried directly, so effective frictions can be hard to be examined easily.
+							The sphere can be either be influenced or not influenced by World gravity, according to
+							the effective mode; there are value boundaries for gravity to be tweaked, and there is
+							currently the parameter of downward (negative y-axis) gravity. There are three modes for
+							friction: Zero, Limited and Infinite; where Limited friction means a finite value of
+							the friction parameter shall be exerted, with a limited range of values. There was an
+							attempt to reset coordinates of the sphere to the spawn point, but the consistency of
+							physical states is difficult to be resolved, and thus currently only the velocity can be reset.
+							Zoom level of camera ranged from 1/4 to 4, with 1 the default scaling factor.
 						</p>
 					</content>
 				</section>
 			</section>
-			<section title="v0.0.2: Menus">
+			<section title="v0.0.2: Graphics">
 				<content>
 					<p></p>
 				</content>
 			</section>
-			<section title="v0.0.3: World">
+			<section title="v0.0.3: Mechanics">
 				<content>
 					<p></p>
 				</content>
 			</section>
-			<section title="v0.0.4: Generation">
+			<section title="v0.0.4: Genetics">
 				<content>
 					<p></p>
 				</content>
