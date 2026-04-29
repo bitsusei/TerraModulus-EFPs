@@ -1,5 +1,9 @@
 # TerraModulus EFPs
 
+> [!IMPORTANT]
+> This EFP systme is being migrated into the new [Governancing System](https://github.com/bitsusei/TerraModulus-Gov).
+> New updates to EFPs are being paused and awaiting migration into the new system.
+
 ## Execution Framework Proposals (EFPs)
 
 > **EFPs** \[...] provide standards, methods, and structured execution plans.
