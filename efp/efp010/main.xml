@@ -1,0 +1,164 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="10" created="2026-03-20" category="process" status="draft" title="Proposal for EFP Process">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="19"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					As established in the Constitution, Execution Framework Proposals (EFPs) are community-driven,
+					execution-defining, and immutable once finalized. They provide standards, methods,
+					and structured execution plans, as well as records of executive procedures in the governance
+					framework in the Constitution, like this Proposal.
+				</p>
+				<p>
+					An approved EFP may represent the current state of affairs in the Constitution. It includes
+					when certain procedures are being processed or certain proposals of ideas are created.
+					An EFP may or may not take effects to change any aspects of affairs in the Constitution depending
+					on the status of the said EFP. Other than the basic Rules defined in the Constitution, this
+					Proposal refines further for detailed steps and procedures for EFPs.
+				</p>
+			</content>
+		</section>
+		<section title="Initiation of EFP">
+			<content>
+				<p>
+					Any natural or artificial person as a participant in the Constitution should be able to initiate
+					an EFP regardless of their positions and responsibilities, except when those participants are
+					prohibited from participations in Governing Activities. Primary Roles of people should have been
+					defined in the Constitution in advance for the participants in the Procedures.
+				</p>
+				<p>
+					Once the identifier is assigned and the Pull Request of the Initiation is merged, the identifier
+					is no longer free. It is possible that when the related parties have accepted before the creation
+					of the Pull Request, the identifier is assigned in advance, so before closing the Pull Request,
+					the identifier should still be reserved.
+				</p>
+			</content>
+		</section>
+		<section title="Structure of EFP Entries">
+			<content>
+				<p>
+					The structures for an EFP should not be fixed for the contents, but the metadata.
+					Besides, while contents other than the Contents are classified as Metadata, References are
+					classified as Metadata even though they are shown aside the Contents in the Document Body.
+				</p>
+				<p>
+					There should be no special restriction for what to be in the Contents, but probably later
+					authoring guidelines for the Contents of EFPs may be introduced. This includes the References.
+				</p>
+				<p>
+					The creation date should be the Coordinated Universal Time (UTC) date at the time the Document
+					being created by the Author, however it is up to the Author's preference whenever the date is
+					not after the UTC date the Pull Request is being created.
+				</p>
+				<p>
+					Guidelines for how to use References should later be written for the suggestions of using them.
+					Citation is recommended, but not necessary.
+				</p>
+			</content>
+		</section>
+		<section title="Structure of the Repository">
+			<content>
+				<p>
+					The directory structure of the Repository should be explained in the words from the root directory.
+				</p>
+				<p>
+					The directory names for the Entries may change if the naming rules of the identifiers change.
+				</p>
+				<p>
+					The reserved idea of having more than one XML file in an Entry was to provide extra information
+					like appendices, but so far there is no yet a use case, so it is still reserved.
+				</p>
+			</content>
+		</section>
+		<section title="Lifecycles of EFPs">
+			<content>
+				<p>
+					Having "<b>Provisional</b>" status may be redundant when considering how EFPs are used.
+					It stands for "Provisionally Adapted", comes from Python Enhancement Proposal (PEP).
+					In general governance, having a temporarily adapted proposal while plans are mutable could be
+					problematic in management, and thus fragile.
+				</p>
+				<p>
+					"<b>Deferred</b>" EFPs may mean those EFPs are still incomplete, but not effective or used
+					at the moment, so this status may be problematic if such EFPs are not properly handled.
+				</p>
+				<p>
+					It is recommended to update the status system of EFPs by the above comments and concerns.
+				</p>
+			</content>
+		</section>
+		<section title="Classification">
+			<content>
+				<p>
+					A guideline for clear boundaries between different contents for different aspects and categories
+					should be suggested. When certain requirements are met, separate proposals should be made.
+					Also, when certain standards or specifications could be generalized, such should be firstly made
+					as <b>Standard</b> Proposals, then adapting proposals are to be made, for potential future reusing
+					of standards or specifications in similar concepts, simplifying organizations of executions.
+				</p>
+				<p>
+					Certain proposals like proposals of new standards and specifications may include examples, samples,
+					or other formats of specifications as affiliated files in the Entries. They may be for reference or
+					basic demonstration purposes.
+				</p>
+				<p>
+					In the future, it is possible that when unified references to or dedicated management of standards are required.
+					For such, it may be worth to consider whether there is a need to form a new System to govern
+					all existing standards and specifications.
+				</p>
+				<p>
+					At the moment, this Classification should well encompass all significant and effective proposals
+					potentially present in the future. However, it is still possible for new Classification to occur;
+					for such, the Constitution shall also be amended.
+				</p>
+			</content>
+		</section>
+		<section title="Amendment to Non-Finalized EFP Entries">
+			<content>
+				<p>
+					Unlike usual Request For Comments (RFCs) on the Internet, minor changes to EFPs are quite easily
+					tracked using a public Repository. Thus, it is kind of difficult to draw a line whether
+					a Pull Request should be enough ready to be merged while being sufficient for public's references.
+					Therefore, most likely when thematic changes are completed, such a Pull Request may be reviewed
+					for merging, but the stage may be incomplete while there is no a true draft before official assignments.
+					Unstable staging may exist due to the aforementioned reasons.
+				</p>
+			</content>
+		</section>
+		<section title="Amendment to Finalized EFP Entries">
+			<content>
+				<p>
+					Unlike usual Request For Comments (RFCs) on the Internet, changes to EFPs may be tracked easily
+					using a Version Control System (VCS). Thus, errata may be directly made as commits without
+					having to specifically track them.
+				</p>
+				<p>
+					Errata commits may describe the exact changes in the commit messages, while thematic changes may
+					also be described in the corresponding Pull Requests. However, for minor changes, commit messages
+					are more preferred than comments in Pull Requests.
+				</p>
+			</content>
+		</section>
+		<section title="Amendment to Formatting">
+			<content>
+				<p>
+					Amendments to Formatting of Governance Documents may affect all the Document files in all the Entries,
+					so an EFP should be introduced for the conduction of it.
+				</p>
+			</content>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li><a href="../efp001">EFP 1 (Constitution)</a></li>
+				</list>
+			</content>
+		</section>
+	</body>
+</efp>
