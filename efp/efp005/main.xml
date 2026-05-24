@@ -4,6 +4,7 @@
 	<metadata>
 		<pullRequests>
 			<pullRequest id="8"/>
+			<pullRequest id="9"/>
 		</pullRequests>
 	</metadata>
 	<body>
@@ -21,10 +22,11 @@
 		<section title="Platform">
 			<content>
 				<p>
-					Since the Rust library would be directly compiled into native dynamic libraries to be loaded by
-					Java Virtual Machine (JVM) Java Native Interface (JNI), the code must be supported by the targetted
-					platforms. Therefore, when all modern supported platform versions of Windows, macOS and Linux are
-					targetted, the list of variations that should at least fully be supported is:
+					Since the Rust library would be directly compiled into native dynamic libraries to be used by
+					the Kotlin layer through Java Virtual Machine (JVM), the code must be supported by the targetted
+					platforms. Therefore, platform support would typically be aligned with
+					Java Runtime Environment (JRE) binary; when all modern supported platform versions of Windows,
+					macOS and Linux are targetted, the list of variations that should at least fully be supported is:
 				</p>
 				<list>
 					<li>Linux 5+ x64/arm64</li>
@@ -46,7 +48,7 @@
 				</p>
 			</content>
 		</section>
-		<section title="Library">
+		<section title="Library and Distribution">
 			<content>
 				<embed src="./architecture.svg"/>
 				<p>
@@ -64,6 +66,87 @@
 					Open Dynamics Engine (ODE) would be used for the physics supporting library. Even for encoding and
 					decoding, using native libraries would enhance the efficiency effectively; this includes Opus and
 					Free Lossless Audio Codec (FLAC), which would be used in the Engine instead of the Kotlin layer.
+				</p>
+				<p>
+					For distribution, native library dependencies may be handled by having them dynamically linked,
+					unlike Rust dependencies that are mostly statically linked. Also, keeping them dynamically linked
+					could ensure modularity and size efficiency. On Linux and macOS, when those could be the ones that
+					are system-wide installed or already installed on the system, they could be skipped by the Launcher
+					and the system libraries could be included them in the library path. To load the native
+					dependencies of the Engine, <code>System.loadLibrary</code> could be used, but could be
+					troublesome, thus, leveraging the system library loader to include the paths may be better.
+					In general, Windows searches libraries in the file's parent directory but on Linux and macOS,
+					either <code>LD_LIBRARY_PATH</code>/<code>DYLD_LIBRARY_PATH</code> of the game's native library
+					path has to be set as an environment variable (by <code>process::Command::env</code>) before
+					launching or setting <code>RPATH</code> to the Engine library. The latter may be the most flexible.
+					If there exist some existing libraries or widespread system libraries like <code>libopus</code>,
+					those libraries could be ignored when downloading onto Linux or macOS clients, installing those
+					globally via package manager if not installed and letting system's loader handle.
+					The soname system on Linux and macOS is adopted for library versioning, such that follow a major
+					version should ensure compatibility with future versions with the major version, but except that
+					not all libraries may follow this rule; this is handled for system-installed libraries when
+					required, so bundling them with the Engine without relying on system libraries would avoid this
+					potential incompatibility when such libraries are not widely adapted.
+					Common libraries like <code>libopus</code> and <code>libFLAC</code> both follow Semantic Versioning
+					and Linux's SONAME-based versioning, so they may be used from system libraries.
+					It is also important to check whether the required version is the same or older than the one
+					installed on the system with the same major version and perform update via the system's
+					package manager.
+					This could also ensure common practice on using dynamic libraries on UNIX-like platforms and size
+					efficiency of the Launcher's game native library directory, though not applicable on Windows.
+				</p>
+				<p>
+					For some dependencies of the Engine, there may exist some native dependencies. One may either
+					statically or dynamically link them to the Engine, but the latter might be more favorable to
+					manage better for memory usage and efficiency, as well as the aforementioned modularity
+					allowing system-installed libraries to be used. To distribute the native libraries, one may
+					only either copy the builds built from source during the Engine build process or build separately
+					from the Engine build. For the former method, it seems to be no other ways to locate the built
+					binaries within the build script as build scripts seem to be isolated from other crates' builds;
+					it is only possible to fork an existing <code>*-sys</code> crate or have a custom crate for
+					bindings and native library builds, with code that copies the resultant binaries to the target
+					directory near the Engine binary in the same directory.
+					For the latter method, there must be a workflow to ensure that the source version of the library
+					used by the binding crate is the same as the one separately built or obtained for distribution;
+					as long as the versions are the same, there should be no gap of implementation between the binaries.
+					Since the built binaries use soname, it is necessary to locate the binary with the filename matched
+					exactly the same as the soname of the library when copying binaries to output by following symlinks,
+					to ensure the library could be loaded by library loader.
+				</p>
+			</content>
+		</section>
+		<section title="Language Communication Layer">
+			<content>
+				<p>
+					Since the Engine would eventually be compiled into native libraries, which are not directly
+					compatible with JVM without an extra layer of transition, which is typical JNI.
+					Despite the emergence of modern projects like Project Panama, UniFFI, and JNR-FFI, which offer
+					alternative tools for bridging native code with JVM-managed code, JNI is still adopted
+					to maintain the neatness of the overall project framework. It helps preserve the clarity of the
+					project's overall framework while streamlining development workflows by relying on the
+					traditional toolset. Detailed workflow and process are still subject to consideration. Moreover,
+					further researches and investigation may have to be employed to consider whether the certain
+					toolset is suitable for this project architecture.
+				</p>
+				<p>
+					On the Kotlin layer, several classes wrapping the Engine's functionalities exist, stored in
+					<code>terramodulus.engine.ferricia</code> package. Those classes load the same generated dynamic
+					library built by the Engine project with specified function signatures. All these functions must
+					be used internally, so they should be marked with <code>internal</code> visibility in their
+					signatures. In the package of<code>terramodulus.engine</code>, several classes would be made to
+					directly use the classes and functions in <code>terramodulus.engine.ferricia</code>.
+					Please note that all the usages within such classes would be low level, meaning that its code style
+					should not be subject to the high level code style guidelines. It is good to separate client-only
+					and server-only classes into different modules so that they could be loaded with the built binary
+					with crate feature selected. Moreover, it may eventually come to the situation that the Kotlin
+					abstraction of the Engine itself could be made an isolated module named <code>internal</code> with
+					public interface exposed to other modules, to hide the low level components directly accessing
+					the Engine.
+				</p>
+				<p>
+					To reduce JNI invoking overheads, the exposed functions should contain only essential code with
+					using the least call sites of exposed functions as far as possible for a single scope in
+					abstraction.
 				</p>
 			</content>
 		</section>
@@ -101,6 +184,18 @@
 					occurred. Moreover, if there still exists certain resources cannot be freed up when failures
 					or crashes happen, modern operating systems may still be allowed to free them up in the
 					system level.
+				</p>
+				<p>
+					When there exist some encapsulated, hidden or opaque native objects in the Engine, that are
+					supposed to be persisted out of the scope of single exported native function invocation,
+					the specific data structures may be defined within the Engine code without having the abstraction
+					form of the data objects defined in the Kotlin layer. The allocated objects should be
+					converted into a form of pointer by initializing a <code>Box</code> and casting to a raw pointer
+					as <code>long</code> via <code>Box::into_raw</code>; intermedia value read and write may be
+					performed from a dereference with borrow to the raw pointer passed from the Kotlin layer;
+					destruction of the objects should be invoked with <code>Box::from_raw</code>. All the object
+					management is handled within the internal part of the Kotlin communication layer with
+					the low level interface of the Engine.
 				</p>
 			</content>
 		</section>
