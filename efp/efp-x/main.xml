@@ -1,0 +1,64 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="" created="2026-03-21" category="standard" status="draft" title="Compact Staged Versioning">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="20"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					This versioning system is suitable for a major end product consisting several versioned systems.
+					This refers to Semantic Versioning (SemVer) for basic reference.
+					In certain scenarios, it may be difficult to version an end product when underlying components
+					evolve in different extents and directions, so this basic methodology is introduced.
+				</p>
+			</content>
+		</section>
+		<section title="Basics">
+			<content>
+				<p>
+					Version string format is as below:
+				</p>
+				<code-block lang="ABNF">
+					version = &lt;stage&gt; "." &lt;major&gt; "." &lt;minor&gt;
+					stage = "0" / "1"
+					major = number
+					minor = number
+					number = *&lt;positive-digit&gt; &lt;digit&gt;
+					positive-digit = %x31-39 ; 1-9
+					digit = %x30-39 ; 0-9
+				</code-block>
+				<p>
+					For <code>stage</code>, zero ("0") means Early Development and one ("1") means Mature State.
+					For <code>major</code>, frequent incrementation would be expected with breaking changes often occurring.
+					For <code>minor</code>, insignificant miscellaneous changes may instead increment this value,
+					but not any breaking changes should be included while patches are often included here.
+				</p>
+			</content>
+		</section>
+		<section title="Extension">
+			<content>
+				<p>
+					Implementers may extend this string format in any way meaningful for their purposes.
+					This includes allowing pre-releases or snapshots, or branched releases.
+					Extending this basic Rule by the pre-release version rules defined in SemVer is also compatible.
+				</p>
+				<p>
+					Often, in Early Development, zero <code>major</code> may mean Alpha stage of development while
+					non-zero values may imply Beta stage of development. In this case, when <code>major</code> is zero,
+					<code>minor</code> may include breaking changes as this stage implies unstabilities.
+				</p>
+			</content>
+		</section>
+		<section title="See also">
+			<content>
+				<list>
+					<li><a href="https://semver.org/spec/v2.0.0.html">SemVer v2.0.0</a></li>
+				</list>
+			</content>
+		</section>
+	</body>
+</efp>
