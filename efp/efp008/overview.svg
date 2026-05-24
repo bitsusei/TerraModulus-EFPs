@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="768" height="512" version="1.1" viewBox="0 0 203.2 135.47" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <marker id="Triangle" overflow="visible" markerHeight="1" markerWidth="1" orient="auto-start-reverse" preserveAspectRatio="xMidYMid" refX="3" viewBox="0 0 1 1">
+   <path transform="scale(.5)" d="m5.77 0-8.65 5v-10z" fill="context-stroke" fill-rule="evenodd" stroke="context-stroke" stroke-width="1pt"/>
+  </marker>
+ </defs>
+ <g stroke-linecap="round" stroke-linejoin="bevel">
+  <rect x="82.205" y="20.861" width="39.224" height="15.339" fill="none" stroke="#000" stroke-width=".52917"/>
+  <text x="101.23592" y="14.469487" fill="#000000" font-family="'Noto Sans'" font-size="9.2604px" letter-spacing="0px" stroke-width=".52917" text-align="center" text-anchor="middle" word-spacing="0px" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="101.23592" y="14.469487" fill="#000000" font-family="'Noto Sans'" font-size="9.2604px" stroke-width=".52917" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">MUI Framework Overview</tspan></text>
+  <text x="101.63412" y="30.651484" fill="#000000" font-family="'Noto Sans'" font-size="6.35px" letter-spacing="0px" stroke-width=".39513" text-align="center" text-anchor="middle" word-spacing="0px" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="101.63412" y="30.651484" font-size="6.35px" stroke-width=".39513">Software</tspan></text>
+  <g fill="none" stroke="#f70" stroke-width=".52917">
+   <rect x="23.944" y="61.858" width="29.59" height="16.349"/>
+   <rect x="62.75" y="61.176" width="33.892" height="17.712"/>
+   <rect x="109.77" y="61.308" width="28.129" height="17.447"/>
+   <rect x="147.79" y="60.238" width="31.417" height="19.589"/>
+  </g>
+  <g fill="#ff7700" font-family="'Noto Sans'" letter-spacing="0px" text-anchor="middle" word-spacing="0px">
+   <g font-size="6.35px">
+    <text x="38.43145" y="71.683029" stroke-width=".32797" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="38.43145" y="71.683029" fill="#ff7700" font-size="6.35px" stroke-width=".32797">Display</tspan></text>
+    <text x="79.676773" y="71.683029" stroke-width=".30065" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="79.676773" y="71.683029" fill="#ff7700" font-size="6.35px" stroke-width=".30065">Speakers</tspan></text>
+    <text x="123.66788" y="72.267235" stroke-width=".42346" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="123.66788" y="72.267235" fill="#ff7700" font-size="6.35px" stroke-width=".42346">Motors</tspan></text>
+    <text x="163.32893" y="68.298477" stroke-width=".29694" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="163.32893" y="68.298477">Input</tspan><tspan x="163.32893" y="76.235977">Devices</tspan></text>
+   </g>
+   <text transform="rotate(90)" x="69.825653" y="-184.88687" font-size="7.9375px" stroke-width=".52917" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="69.825653" y="-184.88687" fill="#ff7700" font-size="7.9375px" stroke-width=".52917">HIDs</tspan></text>
+  </g>
+  <g fill="none" stroke="#00f">
+   <path d="m101.82 36.2-63.077 25.657" marker-end="url(#Triangle)" stroke-width=".52917"/>
+   <path d="m101.82 36.2-22.121 24.976" marker-end="url(#Triangle)" stroke-width=".52917"/>
+   <path d="m101.82 36.2 61.677 24.037" marker-start="url(#Triangle)" stroke-width=".52917"/>
+  </g>
+  <g fill="#0000ff" font-family="'Noto Sans'" font-size="6.35px" letter-spacing="0px" stroke-width=".52917" text-anchor="middle" word-spacing="0px">
+   <text x="65.255363" y="48.646988" stroke="#000000" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="65.255363" y="48.646988" fill="#0000ff" font-size="6.35px" stroke="none" stroke-width=".52917">GUI</tspan></text>
+   <g>
+    <text x="82.070328" y="50.932987" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="82.070328" y="50.932987" fill="#0000ff" font-size="6.35px" stroke-width=".52917">AUI</tspan></text>
+    <text x="121.51562" y="50.989605" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="121.51562" y="50.989605" fill="#0000ff" font-size="6.35px" stroke-width=".52917">HUI</tspan></text>
+    <text x="137.39848" y="47.987701" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="137.39848" y="47.987701" fill="#0000ff" font-size="6.35px" stroke-width=".52917">KUI</tspan></text>
+   </g>
+  </g>
+  <path d="m101.82 36.2 22.016 25.108" fill="none" marker-end="url(#Triangle)" stroke="#00f" stroke-width=".52917"/>
+  <rect x="82.469" y="109.61" width="39.224" height="15.339" fill="none" stroke="#000" stroke-width=".52917"/>
+  <text x="101.8987" y="119.40392" fill="#000000" font-family="'Noto Sans'" font-size="6.35px" letter-spacing="0px" stroke-width=".39513" text-align="center" text-anchor="middle" word-spacing="0px" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="101.8987" y="119.40392" font-size="6.35px" stroke-width=".39513">User</tspan></text>
+  <g fill="none" stroke="#0ff">
+   <path d="m38.739 78.207 63.342 31.407" marker-end="url(#Triangle)" stroke-width=".52917"/>
+   <path d="m79.696 78.888 22.386 30.726" marker-end="url(#Triangle)" stroke-width=".52917"/>
+   <path d="m123.83 78.756-21.752 30.858" marker-end="url(#Triangle)" stroke-width=".52917"/>
+   <path d="m163.49 79.826-61.413 29.787" marker-start="url(#Triangle)" stroke-width=".52917"/>
+  </g>
+  <g fill="#00ffff" font-family="'Noto Sans'" font-size="5.2917px" letter-spacing="0px" stroke-width=".52917" text-anchor="middle" word-spacing="0px">
+   <text x="56.794151" y="96.018829" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="56.794151" y="96.018829">Light</tspan><tspan x="56.794151" y="102.63342">Energy</tspan></text>
+   <text x="73.563446" y="84.112572" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="73.563446" y="84.112572">Sound</tspan><tspan x="73.563446" y="90.727158">Energy</tspan></text>
+   <text x="132.61838" y="83.461708" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="132.61838" y="83.461708">Kenetic</tspan><tspan x="132.61838" y="90.076294">Energy</tspan></text>
+   <text x="149.28096" y="98.520432" text-align="center" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal" xml:space="preserve"><tspan x="149.28096" y="98.520432" fill="#00ffff" font-size="5.2917px" stroke-width=".52917">Activities</tspan></text>
+  </g>
+ </g>
+</svg>
