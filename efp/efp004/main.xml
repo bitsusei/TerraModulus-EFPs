@@ -1,9 +1,10 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 <efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
-     efp="4" created="2025-05-16" category="process" status="provisional" title="New Codebase Architecture">
+     efp="4" created="2025-05-16" category="process" status="provisional" title="Orryx Framework Architecture">
 	<metadata>
 		<pullRequests>
 			<pullRequest id="7"/>
+			<pullRequest id="18"/>
 		</pullRequests>
 	</metadata>
 	<body>
@@ -17,7 +18,7 @@
 				</p>
 			</content>
 		</section>
-		<section title="Project Language Level">
+		<section title="Project Language Levels">
 			<content>
 				<p>
 					For the most cases, it is good to keep updated with the latest long-time-support (LTS) versions.
@@ -47,32 +48,198 @@
 				<p>
 					As demonstrated in the above diagram, the TerraModulus project consists of several elements.
 					It is worth noting that, the scale of this project may not be small; if possible, this project
-					could greatly grow.
+					could greatly grow. For the convenience of references, several components in the aforementioned
+					Architecture have been named with various code names.
 				</p>
 				<p>
-					On the platform side, the website portal would allow client interactions and also resource
-					management. As an abstract, several elements have to be drafted out to outline this architecture
-					better, but in general, there would be the account system and the game itself, along with
-					user-created content hosted on a marketplace. The Launcher would act as a simple entry layer
-					of an account over the entire platform system, and allow launching the game client instances.
+					On the Platform side, the Website Portal would allow client interactions and also resource
+					management. As an abstract, several elements have to be drafted out to outline this Architecture
+					better, but in general, there would be the Account System named <b>Archora</b> and
+					the game itself named <b>Orryx</b>, along with user-created content hosted on a marketplace.
+					The <b>Mortared</b> Launcher would act as a simple entry layer of an account over
+					the entire platform system named <b>Aetheron</b>, and allow launching the game client instances.
 				</p>
 				<p>
-					For the game instances, there would be the client instance and dedicated server instance, where
-					the client instances also include basic local hosting functionalities. Basically, the dedicated
-					server instance would not have a client user interface but with commands or terminal controls for
-					extensive hosting functions. In the codebase, Kotlin handles the abstraction logic of the game
-					application and Rust handles the low level game engine. The abstraction layer includes the user
-					interface components, including but not limited to graphical and audio elements, as well as world
-					objects; the game engine includes the rendering system, physics logics, networking and raw
-					resource management, as well as other computational heavy tasks.
+					For the game instances <b>Orryx</b>, there would be the client instance as <b>Orryx Client</b>
+					and dedicated server instance as <b>Orryx Server</b>, where the client instances also include
+					basic local hosting functionalities. Basically, Orryx Server would not have a client user interface
+					but with commands or terminal controls for extensive hosting functions. In the codebase,
+					Kotlin handles the abstraction logic of the game application, as <b>Kryon</b>, and Rust handles
+					the low level game engine, as <b>Ferricia</b>. Kryon includes the user interface components,
+					including but not limited to graphical and audio elements, as well as world objects;
+					the game engine includes the rendering system, physics logics, networking and raw resource management,
+					as well as other computational heavy tasks. <b>Primora</b> as the common core of Orryx would
+					be referred to be shared components across Orryx Client and Orryx Server.
 				</p>
 				<p>
 					Other than those implementation entities, there is also the Execution Framework Proposal (EFP)
 					system for standardization and general documentation under the TerraModulus community. The EFPs
 					undergo their unique process alongside the implementation parts of the project. The management
-					parts also include the community individuals, interacting with the entire community.
+					parts also include the community individuals, interacting with the entire community. [EFP 1]
 				</p>
 			</content>
+		</section>
+		<section title="Project Modules and Packages">
+			<content>
+				<p>
+					To better organize different contents from different Projects, separate Java package names may
+					simplify organization. For the domain part, <code>net.terramodulus</code> should be used
+					for the core behaviors built in Orryx; and <code>mod.terramodulus</code> should be used for
+					AMX Projects officially held by TerraModulus while there is no actual Top-Level Domain (TLD)
+					registered named ".mod". Therefore, for the Orryx Project, the former should always be used.
+					Besides, other Projects not fully managed under TerraModulus may not use such domains.
+				</p>
+				<p>
+					For the modules in the Gradle project structure, there would be three main components:
+					<code>main</code>, <code>test</code> and <code>demo</code>.
+					While the <code>main</code> module would be separate into <code>internal</code> and <code>kernel</code>,
+					each submodule in the <code>main</code> module would consist of <code>common</code>, <code>client</code>
+					and <code>server</code>; the <code>common</code> modules are directly Primora while the others are
+					self-explained. The <code>internal</code> module only communicate with Ferricia Engine with simple
+					representations of wrappers via Java Native Interface (JNI) without directly exposing native functions
+					while providing higher level re-representation of structs in Ferricia Engine.
+				</p>
+				<p>
+					Tests must be performed to ensure certain quality assurance over common simple issues.
+					For unit tests in Ferricia Engine, they may be directly be done in its Project without unit tests
+					in the scope of the <code>internal</code> module. Unit tests and simple integration tests in Kryon
+					may be in the <code>test</code> module; all tests in this module must be directly measurable
+					programmatically, and if possible, tests may indirectly test integrations involving
+					the <code>internal</code> module.
+				</p>
+				<p>
+					Demos shall be in the <code>demo</code> module, acting as experiencing functionality tests.
+					Demos may be sets of executable programs that test certain functionalities that are
+					experienced via user interfaces. Demos should be independent and may be immutable, so that
+					arguments (in command lines or untracked local files) may be inputted for different
+					scenarios or environments with arguments suggested by Pull Request authors for testing purposes.
+					Benchmarking, however, is not suitable here.
+				</p>
+			</content>
+		</section>
+		<section title="Roles in Orryx">
+			<content>
+				<p>
+					In this architecture, there are certain roles for Orryx. Since the game instances may be offline,
+					Archora and Aetheron may not be connected during the sessions on Orryx, but they are likely
+					always connected when connecting to other server instances of Orryx over Ethernet or the Internet.
+					Thus, authentication and verification of accounts shall only be done when connecting to any server.
+					Version and instance management of Orryx shall only be done in the Mortared Launcher instead of
+					in the instances of Orryx, except for the assets for an instance of Orryx.
+				</p>
+				<p>
+					The Internet conection in an instance of Orryx may not be required during a session. However,
+					when the features requiring Internet connections are in use, the online status should be
+					constantly checked to ensure consistency and data integrity. This keeps data synchronization
+					and checks over session timeouts, especially from a server's perspective.
+				</p>
+			</content>
+		</section>
+		<section title="Building">
+			<content>
+				<p>
+					In order to ensure unified management of metadata and configurations, a single standard place
+					for management should be done. Metadata of a Build should be generated during building
+					of Orryx binaries, with the entries saved as a file entry named <code>version.metadata</code>
+					in built binaries. Also, a Build Profile as a project file named <code>build.profile</code>
+					shall be available in the repository root for the use of generation of certain Metadata.
+				</p>
+				<p>
+					Primary Metadata shall be directed by the Build Profile, for values of versions and stability status
+					(as an entry named <code>stable</code>). It is not trivial to determine stability status
+					by version strings, while development builds may still use version strings of stable versions.
+					The primary version of Orryx would be saved as an entry named <code>id</code>, purely as
+					an identifier without being analyzed in code, due to the complexity of the version strings and
+					the uselessness of the value. Logics using properties of versioning rely on other version values,
+					like the world format version.
+				</p>
+				<p>
+					There would be several generated Metadata, for build time (as an entry named <code>build_time</code>)
+					and series name (as an entry named <code>series</code>). The build time would be the timestamp
+					when this Metadata is being built while the series name would be directly the branch name of
+					the Version Control System (VCS).
+				</p>
+				<p>
+					In code, there would be a class or struct representing the Metadata loaded during initialization,
+					with all the values read-only. Such may be available in both Kryon and Ferricia.
+				</p>
+				<p>
+					The Build Profile would be in the format of Simple Plain Key-Value Entries without any
+					additional features, with the constraints that: entry keys must only consist of lower Latin letters,
+					underscores and periods in the ASCII table; there are two data types: string and boolean,
+					depending on exact keys, while boolean values must be either <code>true</code> or <code>false</code>.
+				</p>
+			</content>
+		</section>
+		<section title="Versioning">
+			<content>
+				<p>
+					In Orryx, there are several versioning systems for different components of Orryx. Except for
+					the Primary Version, all other versioning values should be comparable.
+				</p>
+				<p>
+					The Primary Version represents a release build of the entire Orryx in production environment.
+					Since there may not be only one release series, while the main series would strictly follow
+					the Compact Staged Versioning, others may not, so those version strings acting as identifiers
+					may not always be comparable. However, those identifiers shall always and be guaranteed to be
+					unique and only refer to exactly one version of a release build.
+				</p>
+				<p>
+					Certain Application Public Interfaces (APIs) may utilize Semantic Versioning (SemVer) for
+					extensive and comprehensive versioning controls, although more standardized versioning would
+					be recommended for more manageability.
+				</p>
+				<p>
+					Other versioning systems should be introduced when their components are being introduced.
+				</p>
+			</content>
+			<section title="Primary Version">
+				<content>
+					<p>
+						The complete view of streams of Primary Versions may not be always semantic, but rather logical
+						and chronological. The main stream as the primary branch for all stable functions and
+						all-time evolving channel of production, would use an extended Compact Staged Versioning
+						with extended rules described below. Without using a general identifying rule separating
+						main stream Primary Versions from other versions, arbitrary naming would be used for other branches.
+					</p>
+				</content>
+				<section title="Main Stream">
+					<content>
+						<p>
+							Stable releases shall strictly follow Compact Staged Versioning, but unstable releases
+							shall follow extra rules. General sense of snapshots may not occur, so other meanings may
+							be used instead.
+						</p>
+						<p>
+							For release builds testing certain unstable functionalities may use a suffix of "-ext."
+							and a positive integer appended. Those are described to be Extension Releases.
+							The number may be incremented chronologically depending on releasing schedules.
+							In this case, the release builds are based on the version without the suffix,
+							so they may not imply an upcoming future version. Usually, those builds would
+							likely be released before the future releases of the based version; otherwise, branching
+							would likely be recommended.
+						</p>
+						<p>
+							For release builds planning to be pre-releases or release candidates for an upcoming stable
+							release may use a suffix of "-pre." and a positive integer appended to the upcoming version.
+							Those are described to be Pre-Releases. The series of pre-releases on a certain
+							stable version should be strictly incremented, including the codebase and assets.
+						</p>
+						<p>
+							It is also possible for release builds of Extension Releases to be based on Pre-Releases.
+							In such cases, the suffix of "-ext." with the integer would be appended after
+							the suffix of "-pre." with the integer.
+						</p>
+					</content>
+				</section>
+				<section title="Other Branches">
+					<content>
+						<p>
+							Exact versioning for other branches should be decided later when they are being made.
+						</p>
+					</content>
+				</section>
+			</section>
 		</section>
 		<section title="See also">
 			<content>
