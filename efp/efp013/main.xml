@@ -1,0 +1,54 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<efp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../efp.xsd"
+     efp="13" created="2026-03-24" category="standard" status="draft" title="Orryx Application Extensive Modules (AXMs)">
+	<metadata>
+		<pullRequests>
+			<pullRequest id="23"/>
+		</pullRequests>
+	</metadata>
+	<body>
+		<section title="Introduction">
+			<content>
+				<p>
+					"<i>Mod</i>", is commonly known to be an abbreviation of "Modification", but here, since there are
+					not <i>actually core contents</i>, there is nothing can be said to be "Modification".
+					Thus, informally, "Mods" may be referred to be Modules or Application Extensive Modules (AXMs),
+					and "Modding" can be referred to be a system of AXM; AXM System is a general system for
+					application extensive behaviors (AXBs), while AXBs may also be known as
+					Downloadable Contents (DLCs) in commonly known terminology.
+					Types of AXBs include Resource Packs, Mods, Integrated Gameplay Packages, Maps (Game Worlds), etc.
+				</p>
+			</content>
+		</section>
+		<section title="Default Contents">
+			<content>
+				<p>
+					By the game itself, if no AXM is loaded, there should be no any gameplay contents.
+					However, the Launcher may provide default AXMs to be installed for officially default gameplay
+					contents as the basic contents, which may be in the sandbox survival genre.
+					Other than this, Orryx is purely an engine without any gameplay contents built-in except for some
+					essential supporting modules.
+				</p>
+				<p>
+					There is no "default" contents as the concept, but built-in functionalities, algorithms and systems
+					within the frameworks. For examples, there may be built-in algorithms provided by the Core for
+					world generators.
+				</p>
+			</content>
+		</section>
+		<section title="Namespacing">
+			<content>
+				<p>
+					All AXMs must have a namespace, with optionally subnamespaces. All resources provided by the AXMs
+					must be under its namespace; while being referred, they may be under its AXM's namespace.
+				</p>
+				<p>
+					Certain contents may be Core AXMs for officially supported AXMs, including Application Public
+					Interfaces (APIs) and playable contents; however, additional official AXMs that are not Core but
+					other Projects may also be available. Therefore, namespaces of "core", starting with "core-" or
+					containing the words "terramodulus" or "terramod" shall be reserved and prohibited for public's uses.
+				</p>
+			</content>
+		</section>
+	</body>
+</efp>
