@@ -12,11 +12,12 @@
 			<content>
 				<p>
 					The backbone of the MUI Framework would be supported by the Ferricia Engine, with
-					Simple DirectMedia Layer (SDL) 3, OpenAL and OpenGL. Different parts play
-					different roles in MUI for the complete UI. Thus, the interoperation of
-					the Engine library and the Kotlin interface becomes essential that should be
-					efficient and effective. In this framework, the Abstract Graphical Interface Model (AGIM)
-					would also be introduced, as the fundamental graphical system for the Engine's utilization.
+					Simple DirectMedia Layer (SDL) 3, OpenAL Soft and various graphics backends.
+					Different parts play different roles in MUI for the complete UI architecture.
+					Thus, the interoperation of the Engine library and the Kotlin interface becomes
+					essential that should be efficient and effective.
+					In this framework, the Abstract Graphical Interface Model (AGIM) would also be introduced,
+					as the fundamental graphical system for the Engine's utilization.
 					This Framework is only applicable to client targets but not dedicated server targets.
 				</p>
 			</content>
@@ -24,7 +25,7 @@
 		<section title="Multimodal User Interface (MUI) Roles">
 			<content>
 				<p>
-					The AGIM is responsible mostly for the GUI, by communicating with SDL and OpenGL.
+					AGIM is responsible mostly for the GUI, by communicating with SDL and OpenGL.
 					The AUI communicates with OpenAL for audio processing and output.
 					If there is a Game Controller connected, the HUI may communicate with it via SDL.
 					All other KUI responsibilities are also by communicating with SDL, partially
@@ -38,8 +39,8 @@
 					The entire backend of the MUI Framework would be included in the Engine by interoperating
 					with the native libraries within it. Its responsibilities consist of window management,
 					rendering, audio processing, input management, user feedback management and
-					interactive simulations. Rendering would mostly be handled using OpenGL with only
-					a single canvas on only a single window; audio processing and simulations would mostly
+					interactive simulations. Rendering would mostly be handled with only a single canvas on
+					only a single window as a single viewport; audio processing and simulations would mostly
 					be handled using OpenAL with sources transmitted via networking or resource management;
 					other elements would mostly be handled using other SDL subsystems.
 				</p>
@@ -49,11 +50,11 @@
 					do all windowing, rendering and <i>primary raw event handling</i>, with other tasks
 					delegated to other threads. This should ensure the application could work on every
 					target platform while only minimally allocating the main thread for all essential tasks.
-					Also, this does not include any audio-related task.
+					Meanwhile, this does not include any audio-related task.
 				</p>
 				<p>
 					<i>Primary raw events</i> include any raw pointer and key inputs, all window events
-					sent by SDL. Most events would then be sent to GMS Canvas for event handling and
+					sent by SDL. Most events would then be sent to AGIM Screen for event handling and
 					processing in the GMS ticking thread. It is important to note that the objects and
 					states in the GMS must be carefully handled so that they could be rendered in
 					the main thread asynchronously safely.
@@ -219,8 +220,8 @@
 					where one includes the next directly possibly without skipping any stratum.
 					Rendering of them would be backed by the Engine's rendering system,
 					using the low level Kotlin bindings.
-					However, audio reactions triggered by AGIMOs cannot be managed by AGIMOs but
-					an audio interface manager in MUI out of AGIM.
+					However, other aspects of MUI triggered by AGIMOs cannot be managed by AGIMOs but
+					dedicated interface managers in MUI out of AGIM.
 				</p>
 				<p>
 					The <code>ScreenManager</code> manages Screens stored in a linked list, with one
@@ -253,109 +254,216 @@
 					In this case, the default shaders which take textures would not be used, but the shaders
 					that take other attributes.
 				</p>
+				<p>
+					Styles of AGIMOs shall be handled via Abstract Style Description (ASD).
+					Layouts of AGIMOs shall follow the styles specified, without any fallback to fail fast.
+				</p>
 			</content>
+			<section title="Abstract Style Description (ASD)">
+				<content>
+					<p>
+						In sources, ASD would be presented in binary formats provided by modules or embedded files.
+						Although in some aspects, ASD is similar to CSS, but there are significant differences.
+						From binary, ASD has to be parsed in the Engine and then presented to Kyon side.
+					</p>
+					<p>
+						When compared with CSS, there are several features that are not supported.
+						Geometric decorators may not be greatly supported, but textures.
+						Margins in ASD are not always available, possibly prohibited, but in another sense.
+						Overflowing is strictly prohibited for simplicity and structural safety.
+						Stacking and layering as in CSS are not implemented.
+						Inheritance and Cascading as in CSS are very different.
+					</p>
+					<p>
+						Main uses of ASD include spacing, sizing, positioning, alignment, layout, images, textures,
+						patterns and geometries, where animation or transition at the moment is still in consideration.
+					</p>
+					<p>
+						There are several design principles with ASD:
+					</p>
+					<list>
+						<li>
+							<b>No guarantee in forward or backward compatibility</b>.
+							Contents must only support the Version it specified.
+						</li>
+						<li>
+							<b>Complementary to structured documents</b>.
+							ASD complements structured Contents, providing stylistic information.
+							It should be easy to change the ASD with little or no impact on the Contents.
+						</li>
+						<li>
+							<b>Flexibility</b>.
+							The key feature is the ability to cascade and abstract style information in levels and modules.
+						</li>
+						<li>
+							<b>Abstract and non-linearity</b>.
+							As in characteristics of being abstract, style information may not be sequential nor always available.
+						</li>
+						<li>
+							<b>Strict</b>.
+							Parsing of malformed ASD shall fail fast to prevent using non-conformant style information
+							and overly complicated handling of complex styles.
+							This may also avoid misinterpretation of unsupported combinations of values.
+						</li>
+					</list>
+					<p>
+						To incorporate into AGIM, there are a few special features.
+						ASD Properties are often constrained and limited in various conditions largely depending
+						on structures and applied style information,
+						and may sometimes be computed from cascading style information or
+						others by certain specified processors and types.
+						ASD is strict about Content Structures, and thus CSS features like pseudo-elements and
+						pseudo-classes are not compatible with AGIM System,
+						unless certain Contents are formed from Components (potentially with Secondary Selectors)
+						that could be identified via Selectors and controlled by ASD.
+						Everything in ASD is block-level in the sense of CSS, text formatting is separately handled,
+						although overall formatting can still be specified in ASD of text-related Components.
+					</p>
+					<p>
+						Like CSS, there are Selectors in ASD, and ASD Entries may be nested for certain structures,
+						but a few Selectors shall be prohibited.
+						However, cascading rules are very different.
+						For each Entry, there may be Priorities, without any specificity.
+						There is also no inheritance of Properties, but other Entries can be referenced.
+						Other than assigned Priorities, sequences of Entries and modules are also considered.
+						This may also reduce opportunities abusing or flooding Rules to irrelevant Subjects,
+						reducing sizes of Lists of Rules for Subjects while increasing accuracy of Subjects;
+						Authors are expected to tend to narrower Selectors to avoid overriding Rules on unintended Subjects.
+					</p>
+				</content>
+				<section title="Selectors">
+					<content>
+						<p>
+							A Primary Selector consists of a class name, an assigned identifier (if any) and
+							a Primary Attribute Selector, where only one or more of them can be specified.
+						</p>
+					</content>
+				</section>
+			</section>
 		</section>
 		<section title="Rendering Framework">
 			<content>
 				<p>
-					The entire rendering framework is backed by OpenGL, so the details are mostly based on
-					the features and functionalities provided by OpenGL.
-					Basically, the framework aligns the rendering pipeline of OpenGL and general rendering
-					procedures, such as shaders and textures.
+					For non-OpenGL backends, <code>wgpu</code> library shall be leveraged as an abstract interface over
+					other various lower-level backends.
+					For OpenGL, <code>glow</code> shall be used as the support of OpenGL in <code>wgpu</code> is not
+					optimal to our requirements, while a separate abstraction layer is strictly required.
+					Since in recent versions of <code>wgpu</code>, support for Direct3D 11 has been removed,
+					it is necessary to implement our own backend for Direct3D 11 via <code>d3d11</code> helper with
+					required traits exposed in <code>wgpu-hal</code>.
+					Any chance if <code>wgpu</code> is not compatible with D3D 11 during development,
+					another backend abstraction besides <code>wgpu</code> shall be implemented;
+					this is possible due to the fact that D3D 11 is higher level than D3D 12.
+					When one backend is chosen, a specific implementation with a chosen backend shall be used,
+					with all abstractions handled using traits and implemented structs.
 				</p>
 				<p>
-					On GUI, the camera is fixed, so the view is also fixed and constant.
-					Therefore, in shaders, the view matrix and transformation are omitted and disregarded.
-					The projection should always be orthogonal and thus being a uniform value, while
-					the model transformation and color filter would be done per instance as uniform values
-					evaluated each frame depending on the specifics, but not per vertex.
-				</p>
-				<p>
-					There would be several sets of texture atlases implemented in the Engine.
-					Texture atlases should be used to enhance performance since there would mostly be
-					a large number of texture units used in the game; otherwise frequent texture bindings
-					which are likely expensive operations may occur.
-					In general, one might use <a href="https://gamedev.stackexchange.com/a/49585">
-						<i><b>half pixel correction</b></i>
-					</a> to solve the issue, but the outcome may not be ideal or fit perfectly with
-					the rendering results due to the clipped outermost pixels in a tile as
-					a texture atlas element (later referred as "<i>texel</i>").
-					Therefore, it is more recommended to have paddings or border pixels for each texel
-					in an atlas to keep the outermost pixels rendered well.
-					Even using "<i>nearest neighbor</i>" filters without paddings may not help solve the issue
-					completely because of potential numeric rounding errors.
-					All GUI textures would be managed with an atlas without any mipmapping, while all tile,
-					item and entity textures would be managed with different atlases with mipmapping.
-				</p>
-				<p>
-					Different textures would have different constrains resulting different configurations.
-					Since GUI textures are not supposed to be scaled down, but scaled up depending on
-					the scaling setting with the base layout set based on the lowest reference scaling,
-					mipmapping is not suitable for this.
-					On the other hand, the gameplay region may be scaled up or down, so mipmapping may be
-					applied to enhance the performance of rendering diminished textures.
-					Regardless of whether the atlas would be mipmapped, paddings would be done by repeating
-					the outermost pixels to the desired extent for each texel.
-					However, when the atlas is mipmapped, the padding size would be the number of pixels by
-					two to the power of the maximum mipmap level with the atlas, so paddings still take effect
-					for each mipmap.
-					When the atlas reached the hardware-limited size (known by <code>GL_MAX_TEXTURE_SIZE</code>),
-					a new atlas for the same configurations should be used, but stored together in a managed set.
-					Also, manual mipmapping for each texel is required to avoid edge bleeding during mipmapping;
-					computations of texture atlases would be performed and designed with reference to
-					<a href="https://www.david-colson.com/2020/03/10/exploring-rect-packing.html">
-						the rectangle packing algorithm by David Colson
-					</a> or crates like <code>rectangle-pack</code> and <code>crunch-rs</code>; unless
-					the texels are explicitly constrained to only powers of two, this kind of
-					advanced algorithm would still be used.
-				</p>
-				<p>
-					In general, since the art style tends to be pixelated, mostly "<i>nearest neighbor</i>"
-					would be used to magnify the texels, but blending would be applied for diminishing to
-					simulate the similar colors.
-					At least, the mipmaps would be weighted using linear interpolation, but color filtering
-					could be either one of the available options through settings or launching options due
-					to rendering quality and computational complexity.
-					The maximum mipmapping level would be determined by the greatest power of two from
-					the common factors of all texel dimensions in the specific atlas, for which could be
-					further limited through settings or launching options.
-					Basically, there would still be the enforced constraint to the maximum value like four;
-					the dimensions of tile texels and that of entity texels must be a multiple of 8 and 2
-					respectively.
-				</p>
-				<p>
-					Besides, the application would first enter the early loading stage to render the progress
-					by initializing minimal components required to show the progress bar and the loading screen.
-					So, the logo used in the loading screen would be embedded in the application, and other
-					components would be started loading and tracked after the initialization of the screen.
-					The loading screen may also show during loading of updated resource pack configurations.
-					Moreover, a short animated splashscreen could show before the loading screen.
-				</p>
-				<p>
-					Any GMO would internally hold an opaque handle managed by the Engine.
-					When a Screen is sent to the active stack, the handle in the Engine would be sent to
-					the internally held state, <code>RenderingState</code>, to be used during rendering.
-					The state internally holds an empty <code>Mutex</code> lock which controls which thread
-					to allow access to only one thread for thread-safety.
-					Ideally, only the GMS ticking thread and the main thread, which performs rendering,
-					would access the state either for modifications or reading for rendering.
-					The state impacts the thread for modifications only when the GMOs are within the state,
-					where the state would internally mark it during transitions.
-					This pipeline could greatly reduce JNI calls during rendering to improve performance
-					with only one call per loop as the general ideas.
-					Note that synchronization must be carefully examined for any data accessed in the Engine.
-				</p>
-				<p>
-					In general, rendering of any GMO should avoid reading framebuffer data drawn by
-					any <i>previous</i> GMO in the rendering loop.
-					This includes applying visual effects like color inverting or copying;
-					this is due to parallelization of shader computations in the render devices.
-					(See <a href="https://gamedev.stackexchange.com/q/10964">the related question</a>.)
-					Various optimizations are also conducted, like reusing same shader programs as much
-					as possible when the previous draw call was also using the same program, eliminating
-					unnecessary OpenGL commands.
+					Abstraction layer with OpenGL is sophisticated as different version provide different features,
+					and when certain important extensions are available, those extension functions shall be used.
+					Like <code>wgpu</code> abstraction, there shall also be an abstraction with OpenGL across
+					different states of OpenGL features, so various traits for different situations may be handled.
+					For example, in a major handle of OpenGL, separate modules as dynamic traits for various features
+					like VAO and UBO handling shall be implemented in their own implementations,
+					where during initialization of handle, suitable implementations shall be chosen for each feature.
 				</p>
 			</content>
+			<section title="OpenGL">
+				<!-- Rewrite this section -->
+				<content>
+					<p>
+						On GUI, the camera is fixed, so the view is also fixed and constant.
+						Therefore, in shaders, the view matrix and transformation are omitted and disregarded.
+						The projection should always be orthogonal and thus being a uniform value, while
+						the model transformation and color filter would be done per instance as uniform values
+						evaluated each frame depending on the specifics, but not per vertex.
+					</p>
+					<p>
+						There would be several sets of texture atlases implemented in the Engine.
+						Texture atlases should be used to enhance performance since there would mostly be
+						a large number of texture units used in the game; otherwise frequent texture bindings
+						which are likely expensive operations may occur.
+						In general, one might use <a href="https://gamedev.stackexchange.com/a/49585">
+							<i><b>half pixel correction</b></i>
+						</a> to solve the issue, but the outcome may not be ideal or fit perfectly with
+						the rendering results due to the clipped outermost pixels in a tile as
+						a texture atlas element (later referred as "<i>texel</i>").
+						Therefore, it is more recommended to have paddings or border pixels for each texel
+						in an atlas to keep the outermost pixels rendered well.
+						Even using "<i>nearest neighbor</i>" filters without paddings may not help solve the issue
+						completely because of potential numeric rounding errors.
+						All GUI textures would be managed with an atlas without any mipmapping, while all tile,
+						item and entity textures would be managed with different atlases with mipmapping.
+					</p>
+					<p>
+						Different textures would have different constrains resulting different configurations.
+						Since GUI textures are not supposed to be scaled down, but scaled up depending on
+						the scaling setting with the base layout set based on the lowest reference scaling,
+						mipmapping is not suitable for this.
+						On the other hand, the gameplay region may be scaled up or down, so mipmapping may be
+						applied to enhance the performance of rendering diminished textures.
+						Regardless of whether the atlas would be mipmapped, paddings would be done by repeating
+						the outermost pixels to the desired extent for each texel.
+						However, when the atlas is mipmapped, the padding size would be the number of pixels by
+						two to the power of the maximum mipmap level with the atlas, so paddings still take effect
+						for each mipmap.
+						When the atlas reached the hardware-limited size (known by <code>GL_MAX_TEXTURE_SIZE</code>),
+						a new atlas for the same configurations should be used, but stored together in a managed set.
+						Also, manual mipmapping for each texel is required to avoid edge bleeding during mipmapping;
+						computations of texture atlases would be performed and designed with reference to
+						<a href="https://www.david-colson.com/2020/03/10/exploring-rect-packing.html">
+							the rectangle packing algorithm by David Colson
+						</a> or crates like <code>rectangle-pack</code> and <code>crunch-rs</code>; unless
+						the texels are explicitly constrained to only powers of two, this kind of
+						advanced algorithm would still be used.
+					</p>
+					<p>
+						In general, since the art style tends to be pixelated, mostly "<i>nearest neighbor</i>"
+						would be used to magnify the texels, but blending would be applied for diminishing to
+						simulate the similar colors.
+						At least, the mipmaps would be weighted using linear interpolation, but color filtering
+						could be either one of the available options through settings or launching options due
+						to rendering quality and computational complexity.
+						The maximum mipmapping level would be determined by the greatest power of two from
+						the common factors of all texel dimensions in the specific atlas, for which could be
+						further limited through settings or launching options.
+						Basically, there would still be the enforced constraint to the maximum value like four;
+						the dimensions of tile texels and that of entity texels must be a multiple of 8 and 2
+						respectively.
+					</p>
+					<p>
+						Besides, the application would first enter the early loading stage to render the progress
+						by initializing minimal components required to show the progress bar and the loading screen.
+						So, the logo used in the loading screen would be embedded in the application, and other
+						components would be started loading and tracked after the initialization of the screen.
+						The loading screen may also show during loading of updated resource pack configurations.
+						Moreover, a short animated splashscreen could show before the loading screen.
+					</p>
+					<p>
+						Any GMO would internally hold an opaque handle managed by the Engine.
+						When a Screen is sent to the active stack, the handle in the Engine would be sent to
+						the internally held state, <code>RenderingState</code>, to be used during rendering.
+						The state internally holds an empty <code>Mutex</code> lock which controls which thread
+						to allow access to only one thread for thread-safety.
+						Ideally, only the GMS ticking thread and the main thread, which performs rendering,
+						would access the state either for modifications or reading for rendering.
+						The state impacts the thread for modifications only when the GMOs are within the state,
+						where the state would internally mark it during transitions.
+						This pipeline could greatly reduce JNI calls during rendering to improve performance
+						with only one call per loop as the general ideas.
+						Note that synchronization must be carefully examined for any data accessed in the Engine.
+					</p>
+					<p>
+						In general, rendering of any GMO should avoid reading framebuffer data drawn by
+						any <i>previous</i> GMO in the rendering loop.
+						This includes applying visual effects like color inverting or copying;
+						this is due to parallelization of shader computations in the render devices.
+						(See <a href="https://gamedev.stackexchange.com/q/10964">the related question</a>.)
+						Various optimizations are also conducted, like reusing same shader programs as much
+						as possible when the previous draw call was also using the same program, eliminating
+						unnecessary OpenGL commands.
+					</p>
+				</content>
+			</section>
 		</section>
 		<section title="Audio System">
 			<content>
@@ -390,25 +498,64 @@
 			</content>
 		</section>
 		<section title="Platform Compatibility">
-			<content>
-				<p>
-					As a general idea, the minimal support version is OpenGL 2.0 with some extensions required.
-					Although at the time this is written, most consumer devices in the last decade should
-					support OpenGL 3.0 and above, 2.0 is still targeted as the minimal version for most other
-					potential users.
-					However, when a newer version or usable extension is detected with the OpenGL context,
-					advanced features that may improve performance or even other effects might be available.
-				</p>
-				<p>
-					According to Wikipedia, the GLSL version in OpenGL 2.0 is 1.10, so version 110 would be used
-					as the base GLSL version to use for all the shaders used in the Engine.
-					If a more advanced GLSL version is supported while advanced features are used, the target
-					GLSL version should be specified and the shaders are applied only when the target version
-					is matched for both GL and GLSL versions.
-					This is said, some shaders might be used or available only when they are available provided
-					by the OpenGL context.
-				</p>
-			</content>
+<!--			<content>-->
+<!--				<p>-->
+<!--					-->
+<!--				</p>-->
+<!--			</content>-->
+			<section title="Windows DirectX">
+				<content>
+					<p>
+						On Windows, DirectX may be preferred over other backends for optimal performance and support.
+						However, due to complexities of supports across different versions, only DirectX 11 and 12
+						shall be supported, while the later shall be used over the former when available.
+						This is especially important on older platforms of Windows 7/8/Vista or when support of
+						Direct3D 12 is problematic, that a fallback to an alternative may be required.
+					</p>
+					<p>
+						Information about DirectX can be fetched in the way as in
+						<a href="https://github.com/walbourn/directx-sdk-samples-reworked/blob/main/DxDiag/DxDiagOutput/DxDiagOutput.cpp">
+							a sample usage
+						</a>. This includes DirectX versions and all required features in DirectX.
+						When DirectX 12 is not available, DirectX 11 may be used if available.
+						When DirectX 12 is available, DirectX 11 should also be available.
+						If both of them are not available, the ability to choose DirectX as backend is disabled.
+						However, if one or more of them are available, abilities to choose them should be available.
+						It is suggested to use DirectX on Windows when a backend is not specified.
+					</p>
+				</content>
+			</section>
+			<section title="OpenGL">
+				<content>
+					<p>
+						As a general idea, the minimal support version is OpenGL 2.0.
+						Although at the time this is written, most consumer devices in the last decade should
+						support OpenGL 3.0 and above, 2.0 is still targeted as the minimal version for most other
+						potential users.
+						However, when a newer version or usable extension is detected with the OpenGL context,
+						advanced features that may improve performance or even other effects might be available.
+					</p>
+					<p>
+						In versions prior than 3.0, an extension of <code>GL_ARB_vertex_array_object</code> may be
+						required for VAOs.
+						Otherwise, manual bindings to objects shall be implemented.
+					</p>
+					<p>
+						In versions prior than 3.1, an extension of <code>GL_ARB_uniform_buffer_object</code> may be
+						required for UBOs.
+						Otherwise, regular uniforms shall be used instead.
+					</p>
+					<p>
+						According to Wikipedia, the GLSL version in OpenGL 2.0 is 1.10, so version 110 would be used
+						as the base GLSL version to use for all the shaders used in the Engine.
+						If a more advanced GLSL version is supported while advanced features are used, the target
+						GLSL version should be specified and the shaders are applied only when the target version
+						is matched for both GL and GLSL versions.
+						This is said, some shaders might be used or available only when they are available provided
+						by the OpenGL context.
+					</p>
+				</content>
+			</section>
 		</section>
 		<section title="See also">
 			<content>
