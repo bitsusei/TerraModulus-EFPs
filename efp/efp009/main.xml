@@ -257,6 +257,7 @@
 				<p>
 					Styles of AGIMOs shall be handled via Abstract Style Description (ASD).
 					Layouts of AGIMOs shall follow the styles specified, without any fallback to fail fast.
+					However, several attributes may still have default values assigned even there is no ASD Rules.
 				</p>
 			</content>
 			<section title="Abstract Style Description (ASD)">
@@ -277,6 +278,7 @@
 					<p>
 						Main uses of ASD include spacing, sizing, positioning, alignment, layout, images, textures,
 						patterns and geometries, where animation or transition at the moment is still in consideration.
+						It is possible that animation or transition may be implemented as keyframes or microprogramming.
 					</p>
 					<p>
 						There are several design principles with ASD:
@@ -334,9 +336,715 @@
 				<section title="Selectors">
 					<content>
 						<p>
-							A Primary Selector consists of a class name, an assigned identifier (if any) and
+							A Primary Selector consists of a Selector List of Primary Selector Entries,
+							which specify for Primary Selector Subjects.
+							A Primary Selector Subject consists of a class name, an assigned identifier (if any) and
 							a Primary Attribute Selector, where only one or more of them can be specified.
+							A Secondary Selector specify Facet(s) of Primary Subjects,
+							by an Identifier of Layout Element in the Layout, an assigned identifier (if any) and
+							a Secondary Attribute Selector, where only one or more of them can be specified.
 						</p>
+						<p>
+							A Selector List (Group) consists of Selector Entries with operators.
+							General operators include OR, ADJ LOSSY, DES LOSSY, ADJ CLOSE, DES CLOSE.
+							Special operators include NAME-ID, ID-NAME, NAME-ATTR, ATTR-NAME, ID-ATTR, ATTR-ID.
+							Special Operators shall be specified only when Left and Right entries match the values;
+							they operate as AND, and either side could be a List with only the specified type.
+							For each entry in a List, a Selector shall present.
+						</p>
+						<p>
+							For values of Selectors, there are special meanings.
+							All NULL shall match any Subject.
+							Class Name may be a fully qualified name (FQN) of Java Class for an AGIMO.
+							ID shall match any Subject with an assigned identifier equal to the value
+						</p>
+						<p>
+							For Selector Attributes, Ordinary Attributes are the Attributes that AGIMOs (Subjects)
+							shall process, identify and filter against;
+							Special Attributes are the Attributes that ASD Processors process,
+							identify and filter against.
+							Special Selector Attributes include FIRST CHILD, HOVER, ACTIVE, FOCUS.
+						</p>
+					</content>
+				</section>
+				<section title="Properties">
+					<content>
+						<p>
+							When a Property is not assigned, it shall likely be unset and thus not making any effect.
+							However, there may be required Properties that must be set by any ASD Rules;
+							absence of such Properties likely results in failures instead of fallbacks or initial values.
+							Usually, a Property declaration should be allowed to refer to another value
+							or declaration with a syntax, or inherit declarations with certain positions.
+						</p>
+						<p>
+							Type 0 and Type 1 Values may initiate errors if the Property or Subjects do not allow,
+							or an actual value cannot be fetched by any means.
+							In Type 1, cyclic relationships shall not be allowed.
+							Type 0 is DEFAULT, the default value of the Property;
+							not all Properties must be with initial values definitely defined.
+							Type 1 is REFERENCE, reference to another Property declaration for the value computed.
+							In Type 1, there are several types of parameters, including ANCESTOR, BASE, LOCAL, FOREIGN.
+							Type 2 is DEFINITE, a definite value is to be specified.
+						</p>
+					</content>
+				</section>
+				<section title="Image Patterns">
+					<content>
+						<p>
+							In ASD, backgrounds, textures and images can be specified, where there may also be
+							Image Patterns for usage of advanced tiling or forms of images.
+							They can be declared in variables or embedded in place of Property declarations.
+							References to an image resource by a Resource Location can be specified.
+							If in formatted images, references with URL links are used, they shall be resolved
+							in a way that can be resolved with Resource Location;
+							this part shall be resolved in its dedicated section.
+						</p>
+						<p>
+							Geometric patterns may be specified (to be used in borders),
+							like stroke dashes can be specified, as in SVG <code>stroke-dasharray</code>.
+							However, this may either be implemented with our own format or utilizing existing formats.
+						</p>
+						<p>
+							Instead of sophisticated microprogramming via a programming language,
+							an embedded SVG (or another mature format) may be recommended.
+							So in SVG, a <code>&lt;pattern&gt;</code> can be used to specify a pattern to be
+							used for this ASD entry, by a pattern ID specified along with the formatted image.
+							Moreover, unit resolution is also a part that worth noticing as units in those images
+							are most likely different from the way used in AGIM System and ASD.
+						</p>
+					</content>
+				</section>
+				<section title="Cascading Rules">
+					<content>
+						<p>
+							Cascading Rules in ASD differ from CSS, only a few factors are considered.
+							Most inheritance of values are handled via declaration references.
+							Other than this, there are also Priorities and Sequences,
+							where Priorities have the highest precedence of cascading.
+							Although Priorities may not be ideal, but should be useful for styles in end products,
+							and this is rather suggestive, that Priorities may eventually be not useful.
+						</p>
+						<p>
+							Unassigned Priority shall be given a Base Priority,
+							which has a lower priority than those with a Priority assigned.
+							In format, Priorities are Unsigned VarInt.
+						</p>
+						<p>
+							There are two kinds of sequences:
+							Sequence of ASD entries in a single module, and
+							Sequence of modules (possibly with their own priorities) of ASD.
+							The later or higher entries get the higher precedence.
+						</p>
+						<p>
+							This may also reduce opportunities abusing or flooding Rules to irrelevant Subjects,
+							reducing sizes of Lists of Rules for Subjects.
+							Authors are expected to tend to narrower Selectors to avoid overriding Rules on unintended Subjects.
+						</p>
+					</content>
+				</section>
+				<section title="Resources and Media">
+					<content>
+						<p>
+							All resources referred and used by ASD must present locally,
+							for the ability to execute without connection to the Internet, and security in any aspect.
+						</p>
+						<p>
+							ASD shall also format and style certain media like images and videos,
+							with special Properties and Components for the Contents.
+							Those may consider intrinsic (or natural) dimensions of the media,
+							while those dimensions may be either static or dynamic depending on the situations.
+							It is also possible that those media do not provide intrinsic information about certain media contents.
+						</p>
+					</content>
+				</section>
+				<section title="Processing">
+					<content>
+						<p>
+							Any values in ASD must not be ignored and must be processed by any means.
+							For unknown or unsupported values, errors or warnings (if suppressed) must be emitted,
+							unless the expectation is by an extension, which shall inject handlers into the processors.
+						</p>
+						<p>
+							Certain Properties may be Parameterized Enums or conditionally illegal depending on
+							states of any related values, so legal values of those Properties may not be static.
+						</p>
+						<p>
+							Certain values are regarded as fractions or ratios,
+							as a proportion of a reference dimension with a specified scale.
+							Those specified values in declarations may be (with a byte for data type) floats,
+							posits, fractions (fixed or varint), integers, Stern-Brocot rationals, etc.,
+							but procedures of processors must accurately compute without losing precision and information,
+							so algorithms may differ for different data types.
+							Integer-only Properties may likely use VarInt (LED128 with StreamVByte) for flexibility.
+						</p>
+						<p>
+							Comments may be enabled in Headers, but it is recommended to disable comments in production.
+							When comments are enabled, certain places may accept optional comments or NULL.
+						</p>
+						<p>
+							There are Relative Units and Absolute Units.
+							Relative Units must require and may adapt upon contexts for the applied Component.
+							Absolute Units are constant in a state of application environment.
+							Physical measurements of devices shall not be directly considered.
+							There are several Graphical Units for Numeric Values:
+						</p>
+						<list>
+							<li>
+								By font size (relative): each unit equals to the font size; VAT may display it as "em".
+							</li>
+							<li>
+								By a half of font size (relative): each unit equals to a half of the font size;
+								VAT may display it as "en".
+							</li>
+							<li>
+								By lowest recommended font size (relative): each unit equals to the lowest recommended
+								pixels per em of the font; VAT may display it as "lem".
+							</li>
+							<li>
+								By default font size (relative): each unit equals to the size of the default font;
+								VAT may display it as "rem".
+							</li>
+							<li>
+								By a half of default font size (relative): each unit equals to a half of the size
+								of the default font; VAT may display it as "ren".
+							</li>
+							<li>
+								By viewport width (relative): each unit equals to the width of the window viewport;
+								VAT may display it as "vw".
+							</li>
+							<li>
+								By viewport height (relative): each unit equals to the height of the window viewport;
+								VAT may display it as "vh".
+							</li>
+							<li>
+								By parent container width (relative): each unit equals to the width of the parent
+								Container of the Component; VAT may display it as "cw".
+							</li>
+							<li>
+								By parent container height (relative): each unit equals to the height of the parent
+								Container of the Component; VAT may display it as "ch".
+							</li>
+							<li>
+								By reference container width (relative): each unit equals to the width of the reference
+								Container of the Component, only when defined; VAT may display it as "rw".
+							</li>
+							<li>
+								By reference container height (relative): each unit equals to the height of the reference
+								Container of the Component, only when defined; VAT may display it as "rh".
+							</li>
+							<li>
+								By screen pixel (absolute): each unit equals to a screen pixel of the current display;
+								VAT may display it as "spx".
+							</li>
+							<li>
+								By logical pixel (absolute): each unit equals to a logical pixel on the screen without
+								influence of scale; VAT may display it as "lpx".
+							</li>
+						</list>
+						<p>
+							For Rational Units for Numeric Values, maybe some factors are accessible as constants or
+							variables with numerical calculations instead of being a dedicated unit.
+							There may be a screen scale factor, where each unit equals to a scale factor of
+							the screen device; VAT may display it as "ss".
+						</p>
+						<p>
+							Colors may be in various formats, but there shall not be preset colors;
+							such may be provided and aided by a VAT.
+							There may be variants for color spaces, algorithms, and numeric formats.
+							For example, percentage for linear RGB, 8-bit sRGB, HSL, Display P3, CIELAB color spaces.
+							Resultant colors must resemble as the closest as possible as defined in the color space
+							if the values lie outside the device gamut.
+						</p>
+						<p>
+							Colors filters (from different ancestors) on a Component must be summarized into
+							a single filter when rendering a graphics within the Component.
+						</p>
+						<p>
+							For cases when author settings specified invalid combinations of values,
+							errors or warnings shall be emitted whenever each one is discovered via certain algorithms.
+							This includes when layout values are "over-constrained",
+							that the combination of values mismatches the expected valid range of configuration,
+							by configurations from ancestors or elsewhere.
+						</p>
+						<p>
+							If some attributes like maximum or minimum values exist, there might be modes selectable.
+							For example, priorities of those value constrains when computations lie in,
+							like how it should magnify or diminish depending on situations.
+							However, if something has intrinsic ratios, it would not be as simple as just having
+							maximum/minimum width/height to compute using intrinsic ratios,
+							as the algorithm used in CSS is too specific and unparameterized
+							(too much constrains and may not be too useful,
+							and there is fixed preference of order of processing of attributes;
+							specifically it may be problematic to just have two separate different attributes
+							for attribute superseding, but having a mode of algorithm or the like,
+							so object-fit may be taken as a reference in this case).
+						</p>
+						<p>
+							It is quite possible that conditions of invalid configurations cannot be determined
+							during analysis time, but only determined during layout computations.
+							For such situation, if there is a possibility that configurations may be valid but
+							attribute conditions vary, analysis time validation shall be skipped for possible false positives.
+							When there is undetermined values during computation times, errors shall be thrown,
+							or else in compatibility mode, warnings may be logged.
+							Thus, it is possible that for some attributes, if authors are confident that
+							such undetermined condition must not occur, certain values could be set to
+							<i>undetermined/unimplemented</i> but errors must be thrown in strict mode
+							if it is reached in any way.
+							There is also a possibility for some situations,
+							environment conditions are not enough to trigger invalid configurations.
+						</p>
+						<p>
+							In order to log useful information, layout states may be recorded or printed for debugging
+							of errors if debugging mode is enabled in strict mode.
+							It might not be too useful in compatibility mode though,
+							and possibly that debugging mode cannot be implemented well in compatibility mode.
+						</p>
+					</content>
+				</section>
+				<section title="Positioning">
+					<content>
+						<p>
+							Certain layouts provide methods to position components by offsets.
+							The relative offsets are defined by anchors, where there are
+							a host anchor that is a chosen anchor in the subject,
+							and a target anchor that is a chosen anchor in the reference object.
+							A reference object could be its direct parent Container, or several levels of Container,
+							or specific reference point like how Selector works,
+							or its absolute Container (either Screen/Menu).
+						</p>
+						<p>
+							A Containing Block/Box is the Content Box of a box's direct parent Container.
+							A Visual Block includes background, border area, border box and any content.
+							A Layout Box includes margin box, etc.
+							(Those terminologies are actually not used below.)
+						</p>
+						<p>
+							<i>(Tentative Proposal)</i>
+							Not every Layout allows margins.
+							Each margin edge may specify clearance that may never be collapsed with clearance regions
+							of other margins.
+							Only non-clearance margin regions may collapse.
+							Clearance breadth must be equal or less than total margin breadth.
+							<i>(Another Proposal)</i>
+							Instead of dedicated margins, just make everything Containers,
+							and having a Layout in a Component to pad its Contents itself.
+							<i>(Roles of Margins)</i>
+							If positioning ability is enough, there is no need to implement something like Margins at all.
+							Margins have nothing to do with actual contents, even visible.
+							If Margin is not implemented, use cases should be possible to be replaced with
+							Paddings of Container or gaps between Objects set by a Layout,
+							or even just various positioning attributes.
+							If no Margins, no need to consider <i>collapsing</i> Margins.
+						</p>
+						<p>
+							If a Layout supports padding, borders, and potentially margins,
+							those properties can be set for a Facet.
+							A Facet of a Layout is a part or a feature in a Layout, like in Border Layout,
+							if there is a center element, the center element can be a specific Facet defined.
+						</p>
+						<p>
+							Overflowing is prohibited, but other features shall be utilized.
+							Note that Contents shall never exceed its Component's boundaries,
+							and thus shall always be hidden.
+							Scrolling mechanisms shall only be provided via special Panes,
+							including whether to provide scrollbars.
+						</p>
+						<p>
+							For Box Dimensions, it is common for Containers to adjust dimensions to fit their Contents,
+							so there may be several factors for a Box to construct dimensions.
+							Occasionally, dimensions of Boxes may affect positioning of other Contents.
+							It is also possible when configurations of factors result in undefined behaviors
+							or cyclic relationships, where a dimension may be a factor of another dimension.
+						</p>
+						<p>
+							Text must be rendered in lines for generally formatted contents,
+							except for those designed and laid out specifically for certain Layouts.
+							Occasionally, there may be just one line of text,
+							but such cases still follow the general rules for text rendering.
+							Each new style context may form a dedicated em-box (maybe another term).
+							For line height, the height must be the minimal height that
+							can just fit all em-boxes in such line with baseline alignment.
+							Text vertical alignment cannot be changed, but special styles like superscripts and subscripts
+							may vary, so a generalized behavior must be confirmed.
+						</p>
+						<p>
+							For optimization of line calculations and styles, there must be a primitive class
+							for a text line that is usable for simple text content.
+							Such content contain almost only simple style information usable for variety of usages,
+							to provide supports for displaying computed contents from advanced text contents.
+							However, for several situations including even the simplest situation where
+							the parent container includes just the simple line,
+							there shall (or may) be text style/layout context, including struts.
+						</p>
+						<p>
+							Styles that alter text contents shall not be implemented in ASD to reduce complexity,
+							including text indentation and text transform.
+						</p>
+					</content>
+					<section title="Dynamic Formatting">
+						<content>
+							<p>
+								When a depender takes attributes of a dependee as parameters,
+								a dependency dynamic formatting is formed.
+							</p>
+							<p>
+								Certain attributes may have ranges that depender may accept initially to reduce
+								unnecessary recomputations.
+								For example, if certain layouts requires a minimal space for another thing to be
+								laid out and the minimal value of the range exceeds that,
+								such condition could be predicted in advance.
+							</p>
+							<p>
+								It is also possible for several Components being juxtaposed with some or all of them
+								dynamically adjusted according to each other or total spacing of the area.
+							</p>
+							<p>
+								Cyclic dependencies cause errors in formatting and shall not proceed further.
+							</p>
+							<p>
+								No negative values are accepted in spacing and dimensions.
+								Dimensions likely only accept positive values.
+								Positions likely sometimes constrained by special ranges.
+							</p>
+						</content>
+					</section>
+				</section>
+				<section title="Structures">
+					<content>
+						<p>
+							A <code>LayoutManager</code> should include a <code>LayoutViewport</code>.
+							AGIMOs should include a <code>LayoutHandle</code> (read-only) representative
+							of the AGIMO in the Layout Viewport.
+							A <code>LayoutHandle</code> should include all data involved with this particular,
+							including a reference to containing block, boxes and positions.
+							A Container's Content Box shall be the Containing Block of descendant Components.
+						</p>
+						<p>
+							All Components are block-level in CSS's sense, inline elements do not exist in AGIM System,
+							but in another form in text formatting models.
+							Components are not free to configure Display modes, but shall be constrained in certain ways.
+							CSS Floats are likely impossible in current proposals of ASD;
+							there is no "inline" element in AGIM/ASD, so there is no point to implement floats from CSS.
+						</p>
+						<p>
+							Flow in CSS can be explained by Layout in AGIM and ASD.
+							Within a Layout, managed Components must not overlap each other within AGIM System.
+							Although the original draft is derived from CSS specs,
+							there is no intention to resemble most behaviors of CSS.
+						</p>
+						<p>
+							There is nothing called "generated content" in ASD but rather possibly generation algorithms
+							of contents provided as functions for Authors in Kyon.
+							Resolve issue about having counters as parts of styles of listing while
+							keeping principal of preserving all controls in Kyon:
+							this includes "content" and list styles per CSS;
+							it is quite complicated to implement this in ASD.
+							Also implementing counters in ASD seems not too aesthetic in specification.
+							It is possible that specific styles of counters being fully controlled in Kyon
+							but ASD can define or change the styles of said counters,
+							though specific counting and usages of counters shall still be in Kyon.
+							The box of the list markers must be constrained and controlled within AGIMO
+							as a part of an AGIMO, so the marker itself is a Component,
+							but whether it should be a part of a list item object or entry or a part of the entire list,
+							still yet to be considered.
+							Thus, the presence and primary styles of a marker must be defined within Kyon.
+						</p>
+						<p>
+							States of Cursor must be defined in ASD,
+							but this may be either system cursor or custom cursor.
+							In the case of system cursor, there may be about a dozen of preset depending on platforms,
+							and some platforms may support using custom cursor images.
+							Or otherwise, system cursor shall be hidden for the appearance of custom cursor in application.
+							It is a question whether to use system cursors by default,
+							or implement own custom cursors instead.
+							For custom cursors, maybe both vector (SVG) and bitmap (CUR, ICO, etc.)
+							cursors can be supported;
+							certain formats require hotspots to be defined separately, in ASD attribute.
+						</p>
+						<p>
+							System colors are not used in application, but in certain cases,
+							if some attributes are resolved in a way platform-specific,
+							there should be a way to determine availability for conditional values and fallbacks,
+							other than implementing hardcoded default values.
+							Likewise, system fonts are also not used, as system fonts commonly vary significantly,
+							authors may use provided fonts in/to application.
+						</p>
+						<p>
+							Outline may/might be implemented besides occasional available implementation of borders,
+							but might only be implemented with focus/active states.
+							Outlines are rendered as the same shape as borders, with enclosed shapes as defined in CSS.
+							may be either rendered from the position of border edge (outward) or padding edge (inward).
+							Always rendered on top of an AGIMO, but can be overlayed by other AGIMOs
+						</p>
+					</content>
+					<section title="Layouts">
+						<content>
+							<p>
+								Tables are likely implemented through Panes with Grid Layout or Table Layout.
+								Only Position Layout allows setting position relative to an anchor configured.
+							</p>
+							<p>
+								If a Layout is determined that bidirectionality may be effective in the Layout
+								definition and structure, one may apply the effect of bidirectionality.
+								Examples include list items, table columns, flex boxes, etc.
+								Writing directions and text bidirectionality may have different effects
+								depending on investigations.
+								Most likely, when a text content is internationalized,
+								its bidirectionality shall respect the attribute of the selected language,
+								meaning treating as if a character of RLI or LRI is inserted in the beginning,
+								but likely mixed international texts (not sure whether exists)
+								may generalize this algorithm better.
+								If certainly something is designed to be potentially affected by
+								writing or text direction, those attributes must either be or not be including
+								such factors for computing of said attributes.
+							</p>
+							<p>
+								for example, when there is are attributes called "left" and "right",
+								those are likely unaffected by direction settings,
+								but attributes like "inline-start" and "inline-end" would be affected
+								in the aspect of resultant layout.
+							</p>
+							<p>
+								Layout design principles include:
+								Author of contents must specify specific layout for intentional attributes and behaviors.
+								Layouts must avoid implications to certain layout configurations while providing
+								clear guidance and intentions for such layouts, so basically,
+								values like "defaults" or "auto" (as abstract ideas taken from CSS) may have to be avoided.
+							</p>
+							<p>
+								Usually when authors are choosing a layout, authors are likely given
+								a certain extent of freedom in selection of algorithms and configurations
+								despite limitations of attributes.
+							</p>
+							<p>
+								Scrolling ability must be provided by <code>ScrollPane</code> with optional
+								<code>ScrollBar</code> configured in the <code>ScrollPane</code>.
+								The Scroll Bar pads a space in the Scroll Pane with any side.
+								The styles of Scroll Bar can inherit from either the contents of the Scroll Pane or its parent.
+								Support up to at most two axial directions of scrolling (either or both horizontal and vertical).
+								Scroll bars can be chosen to be hidden when there is no scrolling needed.
+							</p>
+							<p>
+								<code>NavigationHelper</code> (or something another better name) can be
+								a superclass of <code>ScrollPane</code>.
+								This provides utilities to support mechanisms like scrolling including
+								but not limited to scroll bars.
+								Possible configurations include using a panner (panorama).
+								Possibly merge this into Scroll Pane, considering what scrolling actually means.
+								Should consider where there should be customizable styles like borders for Scroll Pane.
+								However, certain options like whether there should be a specific bar in a specific axis
+								(except for conditional hiding which should be in ASD) shall be in sole controls of AGIMO
+								(i.e. Kyon), and cannot be controlled in ASD.
+							</p>
+							<p>
+								There are two Layouts: (Integrated) Table Layout and Grid Layout.
+								In Table Layout, all cells do not have their own styles but managed via the Layout.
+								In Grid Layout, every grid cell is independently managed and styled,
+								but overall styles are managed by the Layout.
+								There shall be a common superclass Matrix Layout.
+							</p>
+							<p>
+								In Matrix Layout:
+								Either a number of rows or a number of columns must be specified.
+								If both are specified, excessive cells result in errors.
+								If there is a row or a column is not fully filled, either warning or error shall be emitted,
+								since this usually causes unsatisfactory experience.
+								Priorities of rows and columns are as balanced as possible,
+								so resolutions may always be used when collisions between specifiers to rows and columns occur.
+								Direction (both row/column but row/column must be horizontal/vertical) may be specified
+								in either Layout or ASD (not decided).
+								Cells are stored in linked lists in both forms of rows and columns, with indices.
+								A cell may span a number of rows and/or columns, specified in Layout, and thus rectangular.
+								Thus, two kinds of indices are made for each cell (or list node):
+								by atomic index (index of the unit cells) and by elemental index (index of the spanned cells).
+								It should be preferred that cells should not be updated during rendering of layouts
+								to reduce insertions of cells and computations of lists.
+								However, overlapped cells result in errors whenever occurred.
+								Most of the time, max/min width/height would be set for columns and rows,
+								but if constraints conflict, errors shall be emitted during layout process.
+								Each cell then lays out according to computed dimensions,
+								but it is possible that dimensions of Matrix depend fully on content dimensions
+								computed for individual cells.
+								However, if the dimensions of Matrix depend on its Container,
+								cells shall be justified for the dimensions or errors shall be thrown if the dimensions
+								cannot be fully justified.
+								Usually follow the general algorithm for unconstrained layouts.
+							</p>
+							<p>
+								In Table Layout:
+								To simplify structures, caption(s) of a Table must be made in a Layout that includes the Table,
+								like a Flexbox can include a caption and a Table.
+								Any rows and columns can be specified as headers but must be in rows and/or columns;
+								likewise, the same for footers.
+								Only when row specifiers and column specifiers are defined in Layout,
+								styles for those could be specified in ASD.
+								Certain properties like background and styles can be applied by rows and columns,
+								but when there is a possibility that a cell may be styled by both a row specifier
+								and a column specifier, a resolution function (or in ASD?) must be supplied or
+								an error shall be thrown.
+								Common specifier (including row, column or whole):
+							</p>
+							<list>
+								<li>background, text styles, borders, visibility (collapsing; only applicable to non-whole specifier)</li>
+								<li>
+									collapsing is by groups of rows or columns, with priority
+									<list>
+										<li>
+											collapsed cells are still in Layout and must not be excluded from computations,
+											but sizes of Table may be either justified or unchanged from collapsed cells
+										</li>
+										<li>
+											may specify how the state of collapsing is changed by user control or whatever,
+											so this attribute must be specified in Kotlin
+										</li>
+									</list>
+								</li>
+							</list>
+							<p>
+								Row specifier: min/max height OR fixed height.
+								Column specifier: min/max width OR fixed width.
+								When height and width are both specified for a cell,
+								a resolution to unconstraint a dimension or clipping must be specified.
+							</p>
+							<p>
+								In Grid Layout:
+								Styles can only be specified to whole (compared with Table).
+								Gaps may be specified vertically, horizontally or both, but must be explicitly set.
+							</p>
+							<p>
+								(Tentative Proposal; incomplete)
+								General Content Layout Algorithm (as entry):
+							</p>
+							<list>
+								<li>
+									Note: there is a constraint influenced by the Container on a dimension of this box
+									if and only if the dimension of the Container does not depend on this dimension.
+								</li>
+								<li>
+									Note: a fixed constraint means that the constraint only accepts
+									a single value rather than a range.
+								</li>
+								<li>
+									Note: if there are several constraints with different values on the same property
+									and there is no overlap with all those constraints, errors shall be emitted.
+									<list>
+										<li>
+											In compatibility mode, usually this would be resolved
+											with the smallest value with warnings emitted.
+										</li>
+									</list>
+								</li>
+								<li>
+									Note: a constraint can be influenced by the box's Container or
+									a set attribute on the box.
+								</li>
+								<li>
+									For each dimension:
+									<list>
+										<li>
+											If there is a fixed constraint on this dimension,
+											mark this dimension as fixed with the value.
+										</li>
+										<li>
+											Otherwise:
+											<list>
+												<li>
+													If there is an intrinsic value or a set fixed length for this dimension,
+													let it be the desired length (DL).
+													Or otherwise, compute DL for this dimension by
+													the General Unconstrained Dimension Algorithm.
+												</li>
+												<li>
+													If there is one or more constraint (range(s)) on this dimension:
+													<list>
+														<li>
+															Compute the overall constraint (OC), a range,
+															from the constraint(s).
+														</li>
+														<li>
+															If DL is smaller than OC, mark this dimension
+															as relaxed with the minimal value of OC.
+														</li>
+														<li>
+															Otherwise, if DL is greater than OC, mark this dimension
+															as constrained with the maximal value of OC.
+														</li>
+														<li>
+															Otherwise, mark this dimension as fit with the value of DL.
+														</li>
+													</list>
+												</li>
+												<li>
+													Otherwise, mark this dimension as fit with the value of DL.
+												</li>
+											</list>
+										</li>
+									</list>
+								</li>
+								<li>
+									Note: at the moment, those enums have the same meanings.
+									<list>
+										<li>
+											fixed, constrained: following is simplified as <code>fixed</code>
+											<list>
+												<li>
+													But with <code>constrained</code>, this usually means
+													the dimension is in excess if DL for this is a set value
+													than a computed value.
+												</li>
+											</list>
+										</li>
+										<li>
+											relaxed, fit: following is simplified as <code>fit</code>
+										</li>
+									</list>
+								</li>
+								<li>
+									If there is a dimension marked as fixed, apply the computed tentative dimensions
+									to the General Constrained Layout Algorithm.
+								</li>
+								<li>
+									Otherwise, apply the computed tentative dimensions to
+									the General Unconstrained Layout Algorithm.
+								</li>
+							</list>
+						</content>
+					</section>
+				</section>
+				<section title="Usage Coverage">
+					<content>
+						<p>
+							When implementing major features, make sure those use cases where anyway possible
+							in this architecture or framework, may be effective. Those include:
+						</p>
+						<list>
+							<li>
+								direct reference to another attribute in several modes; could be of the same Object
+							</li>
+							<li>
+								computations in attributes:
+								<list>
+									<li>
+										using other similar attribute values (either static (same context;
+										likely acting like <i>constant</i>) or dynamic (maybe updated or superseded by others))
+										as arguments or operators to compute value(s) for such attribute.
+										<list>
+											<li>
+												calculating maximum or minimum width/height by a relative value like
+												a percentage of another width/height attribute,
+												potentially with an offset or something.
+											</li>
+										</list>
+									</li>
+								</list>
+							</li>
+							<li>
+								(possibly) reproduce abilities of Margins from CSS,
+								in this framework of ASD solely by utilizing all available features,
+								for <i>any</i> use cases with same exact or similar
+								(but with the same exact intentions and objectives) behaviors.
+							</li>
+						</list>
 					</content>
 				</section>
 			</section>
@@ -370,6 +1078,7 @@
 			<section title="OpenGL">
 				<!-- Rewrite this section -->
 				<content>
+					<p><i>This section is outdated.</i></p>
 					<p>
 						On GUI, the camera is fixed, so the view is also fixed and constant.
 						Therefore, in shaders, the view matrix and transformation are omitted and disregarded.
